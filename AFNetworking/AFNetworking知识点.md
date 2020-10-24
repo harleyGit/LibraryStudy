@@ -84,11 +84,16 @@ NSInvocationOperation *op1 = [[NSInvocationOperation alloc] initWithTarget:self 
 
 &emsp;	官方文档也推荐在不同的功能场景下，使用不同的session。比如：一个session处理普通的请求，一个session处理background请求；1个session处理浏览器公开的请求，一个session专门处理隐私请求等等场景。
 
+
 -	TCP 3次握手：
+<br/>
+
 ![a29](https://raw.githubusercontent.com/harleyGit/StudyNotes/master/Pictures/a29.png)
 
 
 -	TCP 4次挥手：
+<br/>
+
 ![a30](https://raw.githubusercontent.com/harleyGit/StudyNotes/master/Pictures/a30.png)
 
 
