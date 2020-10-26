@@ -5,10 +5,11 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ * 导入文件Bug解决：https://cloud.tencent.com/developer/article/1128029
  * VersionNumber: 5.7.3
  */
 
-#import <SDWebImage/SDWebImageCompat.h>
+#import "SDWebImageCompat.h"
 
 //! Project version number for SDWebImage.
 FOUNDATION_EXPORT double SDWebImageVersionNumber;
@@ -18,59 +19,59 @@ FOUNDATION_EXPORT const unsigned char SDWebImageVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <WebImage/PublicHeader.h>
 
-#import <SDWebImage/SDWebImageManager.h>
-#import <SDWebImage/SDWebImageCacheKeyFilter.h>
-#import <SDWebImage/SDWebImageCacheSerializer.h>
-#import <SDWebImage/SDImageCacheConfig.h>
-#import <SDWebImage/SDImageCache.h>
-#import <SDWebImage/SDMemoryCache.h>
-#import <SDWebImage/SDDiskCache.h>
-#import <SDWebImage/SDImageCacheDefine.h>
-#import <SDWebImage/SDImageCachesManager.h>
-#import <SDWebImage/UIView+WebCache.h>
-#import <SDWebImage/UIImageView+WebCache.h>
-#import <SDWebImage/UIImageView+HighlightedWebCache.h>
-#import <SDWebImage/SDWebImageDownloaderConfig.h>
-#import <SDWebImage/SDWebImageDownloaderOperation.h>
-#import <SDWebImage/SDWebImageDownloaderRequestModifier.h>
-#import <SDWebImage/SDWebImageDownloaderResponseModifier.h>
-#import <SDWebImage/SDWebImageDownloaderDecryptor.h>
-#import <SDWebImage/SDImageLoader.h>
-#import <SDWebImage/SDImageLoadersManager.h>
-#import <SDWebImage/UIButton+WebCache.h>
-#import <SDWebImage/SDWebImagePrefetcher.h>
-#import <SDWebImage/UIView+WebCacheOperation.h>
-#import <SDWebImage/UIImage+Metadata.h>
-#import <SDWebImage/UIImage+MultiFormat.h>
-#import <SDWebImage/UIImage+MemoryCacheCost.h>
-#import <SDWebImage/UIImage+ExtendedCacheData.h>
-#import <SDWebImage/SDWebImageOperation.h>
-#import <SDWebImage/SDWebImageDownloader.h>
-#import <SDWebImage/SDWebImageTransition.h>
-#import <SDWebImage/SDWebImageIndicator.h>
-#import <SDWebImage/SDImageTransformer.h>
-#import <SDWebImage/UIImage+Transform.h>
-#import <SDWebImage/SDAnimatedImage.h>
-#import <SDWebImage/SDAnimatedImageView.h>
-#import <SDWebImage/SDAnimatedImageView+WebCache.h>
-#import <SDWebImage/SDAnimatedImagePlayer.h>
-#import <SDWebImage/SDImageCodersManager.h>
-#import <SDWebImage/SDImageCoder.h>
-#import <SDWebImage/SDImageAPNGCoder.h>
-#import <SDWebImage/SDImageGIFCoder.h>
-#import <SDWebImage/SDImageIOCoder.h>
-#import <SDWebImage/SDImageFrame.h>
-#import <SDWebImage/SDImageCoderHelper.h>
-#import <SDWebImage/SDImageGraphics.h>
-#import <SDWebImage/SDGraphicsImageRenderer.h>
-#import <SDWebImage/UIImage+GIF.h>
-#import <SDWebImage/UIImage+ForceDecode.h>
-#import <SDWebImage/NSData+ImageContentType.h>
-#import <SDWebImage/SDWebImageDefine.h>
-#import <SDWebImage/SDWebImageError.h>
-#import <SDWebImage/SDWebImageOptionsProcessor.h>
-#import <SDWebImage/SDImageIOAnimatedCoder.h>
-#import <SDWebImage/SDImageHEICCoder.h>
+#import "SDWebImageManager.h"
+#import "SDWebImageCacheKeyFilter.h"
+#import "SDWebImageCacheSerializer.h"
+#import "SDImageCacheConfig.h"
+#import "SDImageCache.h"
+#import "SDMemoryCache.h"
+#import "SDDiskCache.h"
+#import "SDImageCacheDefine.h"
+#import "SDImageCachesManager.h"
+#import "UIView+WebCache.h"
+#import "UIImageView+WebCache.h"
+#import "UIImageView+HighlightedWebCache.h"
+#import "SDWebImageDownloaderConfig.h"
+#import "SDWebImageDownloaderOperation.h"
+#import "SDWebImageDownloaderRequestModifier.h"
+#import "SDWebImageDownloaderResponseModifier.h"
+#import "SDWebImageDownloaderDecryptor.h"
+#import "SDImageLoader.h"
+#import "SDImageLoadersManager.h"
+#import "UIButton+WebCache.h"
+#import "SDWebImagePrefetcher.h"
+#import "UIView+WebCacheOperation.h"
+#import "UIImage+Metadata.h"
+#import "UIImage+MultiFormat.h"
+#import "UIImage+MemoryCacheCost.h"
+#import "UIImage+ExtendedCacheData.h"
+#import "SDWebImageOperation.h"
+#import "SDWebImageDownloader.h"
+#import "SDWebImageTransition.h"
+#import "SDWebImageIndicator.h"
+#import "SDImageTransformer.h"
+#import "UIImage+Transform.h"
+#import "SDAnimatedImage.h"
+#import "SDAnimatedImageView.h"
+#import "SDAnimatedImageView+WebCache.h"
+#import "SDAnimatedImagePlayer.h"
+#import "SDImageCodersManager.h"
+#import "SDImageCoder.h"
+#import "SDImageAPNGCoder.h"
+#import "SDImageGIFCoder.h"
+#import "SDImageIOCoder.h"
+#import "SDImageFrame.h"
+#import "SDImageCoderHelper.h"
+#import "SDImageGraphics.h"
+#import "SDGraphicsImageRenderer.h"
+#import "UIImage+GIF.h"
+#import "UIImage+ForceDecode.h"
+#import "NSData+ImageContentType.h"
+#import "SDWebImageDefine.h"
+#import "SDWebImageError.h"
+#import "SDWebImageOptionsProcessor.h"
+#import "SDImageIOAnimatedCoder.h"
+#import "SDImageHEICCoder.h"
 
 // Mac
 #if __has_include(<SDWebImage/NSImage+Compatibility.h>)
