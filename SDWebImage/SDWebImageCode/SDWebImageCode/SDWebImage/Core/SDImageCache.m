@@ -15,15 +15,18 @@
 #import "UIImage+Metadata.h"
 #import "UIImage+ExtendedCacheData.h"
 
-static NSString * _defaultDiskCacheDirectory;
-
 @interface SDImageCache ()
 
 #pragma mark - Properties
+//内存缓存对象
 @property (nonatomic, strong, readwrite, nonnull) id<SDMemoryCache> memoryCache;
+//磁盘缓存对象
 @property (nonatomic, strong, readwrite, nonnull) id<SDDiskCache> diskCache;
+//缓存配置对象，包含所有配置项
 @property (nonatomic, copy, readwrite, nonnull) SDImageCacheConfig *config;
+//磁盘缓存路径
 @property (nonatomic, copy, readwrite, nonnull) NSString *diskCachePath;
+//执行处理输入输出的队列
 @property (nonatomic, strong, nullable) dispatch_queue_t ioQueue;
 
 @end
@@ -33,6 +36,7 @@ static NSString * _defaultDiskCacheDirectory;
 
 #pragma mark - Singleton, init, dealloc
 
+//单例创建
 + (nonnull instancetype)sharedImageCache {
     static dispatch_once_t once;
     static id instance;
@@ -42,25 +46,17 @@ static NSString * _defaultDiskCacheDirectory;
     return instance;
 }
 
-+ (NSString *)defaultDiskCacheDirectory {
-    if (!_defaultDiskCacheDirectory) {
-        _defaultDiskCacheDirectory = [[self userCacheDirectory] stringByAppendingPathComponent:@"com.hackemist.SDImageCache"];
-    }
-    return _defaultDiskCacheDirectory;
-}
-
-+ (void)setDefaultDiskCacheDirectory:(NSString *)defaultDiskCacheDirectory {
-    _defaultDiskCacheDirectory = [defaultDiskCacheDirectory copy];
-}
 
 - (instancetype)init {
     return [self initWithNamespace:@"default"];
 }
 
+//新建一个存储类，如果是用init方法创建，默认传入的是default
 - (nonnull instancetype)initWithNamespace:(nonnull NSString *)ns {
     return [self initWithNamespace:ns diskCacheDirectory:nil];
 }
 
+//全能初始化方法，比起上一个方法，额外指定了存储目录，默认目录是在Cache/default的文件夹下
 - (nonnull instancetype)initWithNamespace:(nonnull NSString *)ns
                        diskCacheDirectory:(nullable NSString *)directory {
     return [self initWithNamespace:ns diskCacheDirectory:directory config:SDImageCacheConfig.defaultCacheConfig];
@@ -73,6 +69,7 @@ static NSString * _defaultDiskCacheDirectory;
         NSAssert(ns, @"Cache namespace should not be nil");
         
         // Create IO serial queue
+        //创建专门读写磁盘的串行队列，注意是并发
         _ioQueue = dispatch_queue_create("com.hackemist.SDImageCache", DISPATCH_QUEUE_SERIAL);
         
         if (!config) {
@@ -82,14 +79,17 @@ static NSString * _defaultDiskCacheDirectory;
         
         // Init the memory cache
         NSAssert([config.memoryCacheClass conformsToProtocol:@protocol(SDMemoryCache)], @"Custom memory cache class must conform to `SDMemoryCache` protocol");
+        //初始化内存空间
         _memoryCache = [[config.memoryCacheClass alloc] initWithConfig:_config];
         
         // Init the disk cache
-        if (!directory) {
-            // Use default disk cache directory
-            directory = [self.class defaultDiskCacheDirectory];
+         //初始化存储目录
+        if (directory != nil) {
+            _diskCachePath = [directory stringByAppendingPathComponent:ns];
+        } else {
+            NSString *path = [[[self userCacheDirectory] stringByAppendingPathComponent:@"com.hackemist.SDImageCache"] stringByAppendingPathComponent:ns];
+            _diskCachePath = path;
         }
-        _diskCachePath = [directory stringByAppendingPathComponent:ns];
         
         NSAssert([config.diskCacheClass conformsToProtocol:@protocol(SDDiskCache)], @"Custom disk cache class must conform to `SDDiskCache` protocol");
         _diskCache = [[config.diskCacheClass alloc] initWithCachePath:_diskCachePath config:_config];
@@ -99,6 +99,7 @@ static NSString * _defaultDiskCacheDirectory;
 
 #if SD_UIKIT
         // Subscribe to app events
+        //注册通知，大意就是在程序进后台和退出的时候，清理一下磁盘
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationWillTerminate:)
                                                      name:UIApplicationWillTerminateNotification
@@ -133,7 +134,7 @@ static NSString * _defaultDiskCacheDirectory;
     return [self.diskCache cachePathForKey:key];
 }
 
-+ (nullable NSString *)userCacheDirectory {
+- (nullable NSString *)userCacheDirectory {
     NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     return paths.firstObject;
 }
@@ -143,9 +144,9 @@ static NSString * _defaultDiskCacheDirectory;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             // ~/Library/Caches/com.hackemist.SDImageCache/default/
-            NSString *newDefaultPath = [[[self.class userCacheDirectory] stringByAppendingPathComponent:@"com.hackemist.SDImageCache"] stringByAppendingPathComponent:@"default"];
+            NSString *newDefaultPath = [[[self userCacheDirectory] stringByAppendingPathComponent:@"com.hackemist.SDImageCache"] stringByAppendingPathComponent:@"default"];
             // ~/Library/Caches/default/com.hackemist.SDWebImageCache.default/
-            NSString *oldDefaultPath = [[[self.class userCacheDirectory] stringByAppendingPathComponent:@"default"] stringByAppendingPathComponent:@"com.hackemist.SDWebImageCache.default"];
+            NSString *oldDefaultPath = [[[self userCacheDirectory] stringByAppendingPathComponent:@"default"] stringByAppendingPathComponent:@"com.hackemist.SDWebImageCache.default"];
             dispatch_async(self.ioQueue, ^{
                 [((SDDiskCache *)self.diskCache) moveCacheDirectoryFromPath:oldDefaultPath toPath:newDefaultPath];
             });
@@ -189,12 +190,14 @@ static NSString * _defaultDiskCacheDirectory;
         return;
     }
     // if memory cache is enabled
+    //缓存到内存
     if (toMemory && self.config.shouldCacheImagesInMemory) {
         NSUInteger cost = image.sd_memoryCost;
         [self.memoryCache setObject:image forKey:key cost:cost];
     }
     
     if (toDisk) {
+        //异步操作，缓存到磁盘
         dispatch_async(self.ioQueue, ^{
             @autoreleasepool {
                 NSData *data = imageData;
@@ -204,6 +207,8 @@ static NSString * _defaultDiskCacheDirectory;
                 }
                 if (!data && image) {
                     // Check image's associated image format, may return .undefined
+                    //如果我们没有任何数据来检测图像格式，请检查它是否包含使用PNG或JPEG格式的Alpha通道
+                    //在前面，当image被转换时，传入的data为nil，在这里重新计算
                     SDImageFormat format = image.sd_imageFormat;
                     if (format == SDImageFormatUndefined) {
                         // If image is animated, use GIF (APNG may be better, but has bugs before macOS 10.14)
@@ -211,6 +216,7 @@ static NSString * _defaultDiskCacheDirectory;
                             format = SDImageFormatGIF;
                         } else {
                             // If we do not have any data to detect image format, check whether it contains alpha channel to use PNG or JPEG format
+                            //选择图片的格式
                             if ([SDImageCoderHelper CGImageContainsAlpha:image.CGImage]) {
                                 format = SDImageFormatPNG;
                             } else {
@@ -220,6 +226,7 @@ static NSString * _defaultDiskCacheDirectory;
                     }
                     data = [[SDImageCodersManager sharedManager] encodedDataWithImage:image format:format options:nil];
                 }
+                //将图片存储到磁盘
                 [self _storeImageDataToDisk:data forKey:key];
                 if (image) {
                     // Check extended data
@@ -262,6 +269,7 @@ static NSString * _defaultDiskCacheDirectory;
     }
 }
 
+//存储image到缓存
 - (void)storeImageToMemory:(UIImage *)image forKey:(NSString *)key {
     if (!image || !key) {
         return;
@@ -270,18 +278,19 @@ static NSString * _defaultDiskCacheDirectory;
     [self.memoryCache setObject:image forKey:key cost:cost];
 }
 
+//存储Image到磁盘
 - (void)storeImageDataToDisk:(nullable NSData *)imageData
                       forKey:(nullable NSString *)key {
     if (!imageData || !key) {
         return;
     }
-    
+    //使用的是串行同步队列
     dispatch_sync(self.ioQueue, ^{
         [self _storeImageDataToDisk:imageData forKey:key];
     });
 }
 
-// Make sure to call from io queue by caller
+// Make sure to call form io queue by caller
 - (void)_storeImageDataToDisk:(nullable NSData *)imageData forKey:(nullable NSString *)key {
     if (!imageData || !key) {
         return;
@@ -291,7 +300,7 @@ static NSString * _defaultDiskCacheDirectory;
 }
 
 #pragma mark - Query and Retrieve Ops
-
+//异步检查图片是否缓存在磁盘中
 - (void)diskImageExistsWithKey:(nullable NSString *)key completion:(nullable SDImageCacheCheckCompletionBlock)completionBlock {
     dispatch_async(self.ioQueue, ^{
         BOOL exists = [self _diskImageDataExistsWithKey:key];
@@ -316,7 +325,7 @@ static NSString * _defaultDiskCacheDirectory;
     return exists;
 }
 
-// Make sure to call from io queue by caller
+// Make sure to call form io queue by caller
 - (BOOL)_diskImageDataExistsWithKey:(nullable NSString *)key {
     if (!key) {
         return NO;
@@ -336,6 +345,7 @@ static NSString * _defaultDiskCacheDirectory;
     });
 }
 
+//根据key返回磁盘中imageData
 - (nullable NSData *)diskImageDataForKey:(nullable NSString *)key {
     if (!key) {
         return nil;
@@ -348,10 +358,12 @@ static NSString * _defaultDiskCacheDirectory;
     return imageData;
 }
 
+//根据key返回缓存中image
 - (nullable UIImage *)imageFromMemoryCacheForKey:(nullable NSString *)key {
     return [self.memoryCache objectForKey:key];
 }
 
+//根据key返回磁盘中image
 - (nullable UIImage *)imageFromDiskCacheForKey:(nullable NSString *)key {
     return [self imageFromDiskCacheForKey:key options:0 context:nil];
 }
@@ -528,18 +540,16 @@ static NSString * _defaultDiskCacheDirectory;
         @autoreleasepool {
             NSData *diskData = [self diskImageDataBySearchingAllPathsForKey:key];
             UIImage *diskImage;
+            SDImageCacheType cacheType = SDImageCacheTypeNone;
             if (image) {
                 // the image is from in-memory cache, but need image data
                 diskImage = image;
+                cacheType = SDImageCacheTypeMemory;
             } else if (diskData) {
-                BOOL shouldCacheToMomery = YES;
-                if (context[SDWebImageContextStoreCacheType]) {
-                    SDImageCacheType cacheType = [context[SDWebImageContextStoreCacheType] integerValue];
-                    shouldCacheToMomery = (cacheType == SDImageCacheTypeAll || cacheType == SDImageCacheTypeMemory);
-                }
+                cacheType = SDImageCacheTypeDisk;
                 // decode image data only if in-memory cache missed
                 diskImage = [self diskImageForKey:key data:diskData options:options context:context];
-                if (shouldCacheToMomery && diskImage && self.config.shouldCacheImagesInMemory) {
+                if (diskImage && self.config.shouldCacheImagesInMemory) {
                     NSUInteger cost = diskImage.sd_memoryCost;
                     [self.memoryCache setObject:diskImage forKey:key cost:cost];
                 }
@@ -547,10 +557,10 @@ static NSString * _defaultDiskCacheDirectory;
             
             if (doneBlock) {
                 if (shouldQueryDiskSync) {
-                    doneBlock(diskImage, diskData, SDImageCacheTypeDisk);
+                    doneBlock(diskImage, diskData, cacheType);
                 } else {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        doneBlock(diskImage, diskData, SDImageCacheTypeDisk);
+                        doneBlock(diskImage, diskData, cacheType);
                     });
                 }
             }
@@ -618,7 +628,7 @@ static NSString * _defaultDiskCacheDirectory;
     });
 }
 
-// Make sure to call from io queue by caller
+// Make sure to call form io queue by caller
 - (void)_removeImageFromDiskForKey:(NSString *)key {
     if (!key) {
         return;

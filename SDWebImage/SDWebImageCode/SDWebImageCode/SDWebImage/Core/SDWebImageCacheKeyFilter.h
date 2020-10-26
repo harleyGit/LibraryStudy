@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SDWebImageCompat.h"
-
+//允许用户根据 Url 自定义缓存的 Key
 typedef NSString * _Nullable(^SDWebImageCacheKeyFilterBlock)(NSURL * _Nonnull url);
 
 /**

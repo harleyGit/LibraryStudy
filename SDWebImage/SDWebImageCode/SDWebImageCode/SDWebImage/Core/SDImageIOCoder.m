@@ -11,6 +11,7 @@
 #import "NSImage+Compatibility.h"
 #import <ImageIO/ImageIO.h>
 #import "UIImage+Metadata.h"
+#import "SDImageHEICCoderInternal.h"
 #import "SDImageIOAnimatedCoderInternal.h"
 
 // Specify File Size for lossy format encoding, like JPEG
@@ -54,7 +55,19 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 
 #pragma mark - Decode
 - (BOOL)canDecodeFromData:(nullable NSData *)data {
-    return YES;
+    switch ([NSData sd_imageFormatForImageData:data]) {
+        case SDImageFormatWebP:
+            // Do not support WebP decoding
+            return NO;
+        case SDImageFormatHEIC:
+            // Check HEIC decoding compatibility
+            return [SDImageHEICCoder canDecodeFromHEICFormat];
+        case SDImageFormatHEIF:
+            // Check HEIF decoding compatibility
+            return [SDImageHEICCoder canDecodeFromHEIFFormat];
+        default:
+            return YES;
+    }
 }
 
 - (UIImage *)decodedImageWithData:(NSData *)data options:(nullable SDImageCoderOptions *)options {
@@ -192,7 +205,19 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 
 #pragma mark - Encode
 - (BOOL)canEncodeToFormat:(SDImageFormat)format {
-    return YES;
+    switch (format) {
+        case SDImageFormatWebP:
+            // Do not support WebP encoding
+            return NO;
+        case SDImageFormatHEIC:
+            // Check HEIC encoding compatibility
+            return [SDImageHEICCoder canEncodeToHEICFormat];
+        case SDImageFormatHEIF:
+            // Check HEIF encoding compatibility
+            return [SDImageHEICCoder canEncodeToHEIFFormat];
+        default:
+            return YES;
+    }
 }
 
 - (NSData *)encodedDataWithImage:(UIImage *)image format:(SDImageFormat)format options:(nullable SDImageCoderOptions *)options {
@@ -252,7 +277,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     NSUInteger pixelWidth = CGImageGetWidth(imageRef);
     NSUInteger pixelHeight = CGImageGetHeight(imageRef);
-    if (maxPixelSize.width > 0 && maxPixelSize.height > 0 && pixelWidth > maxPixelSize.width && pixelHeight > maxPixelSize.height) {
+    if (maxPixelSize.width > 0 && maxPixelSize.height > 0 && pixelWidth > 0 && pixelHeight > 0) {
         CGFloat pixelRatio = pixelWidth / pixelHeight;
         CGFloat maxPixelSizeRatio = maxPixelSize.width / maxPixelSize.height;
         CGFloat finalPixelSize;
@@ -269,11 +294,6 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         // Remove the quality if we have file size limit
         properties[(__bridge NSString *)kCGImageDestinationLossyCompressionQuality] = nil;
     }
-    BOOL embedThumbnail = NO;
-    if (options[SDImageCoderEncodeEmbedThumbnail]) {
-        embedThumbnail = [options[SDImageCoderEncodeEmbedThumbnail] boolValue];
-    }
-    properties[(__bridge NSString *)kCGImageDestinationEmbedThumbnail] = @(embedThumbnail);
     
     // Add your image to the destination.
     CGImageDestinationAddImage(imageDestination, imageRef, (__bridge CFDictionaryRef)properties);

@@ -17,7 +17,9 @@ static void * SDMemoryCacheContext = &SDMemoryCacheContext;
 
 @property (nonatomic, strong, nullable) SDImageCacheConfig *config;
 #if SD_UIKIT
+//弱引用缓存
 @property (nonatomic, strong, nonnull) NSMapTable<KeyType, ObjectType> *weakCache; // strong-weak cache
+//信号量的锁
 @property (nonatomic, strong, nonnull) dispatch_semaphore_t weakCacheLock; // a lock to keep the access to `weakCache` thread-safe
 #endif
 @end
@@ -60,6 +62,7 @@ static void * SDMemoryCacheContext = &SDMemoryCacheContext;
     [config addObserver:self forKeyPath:NSStringFromSelector(@selector(maxMemoryCount)) options:0 context:SDMemoryCacheContext];
 
 #if SD_UIKIT
+    //weakCache是一个键是强引用，值是弱引用的MapTable
     self.weakCache = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsWeakMemory capacity:0];
     self.weakCacheLock = dispatch_semaphore_create(1);
 
@@ -72,12 +75,16 @@ static void * SDMemoryCacheContext = &SDMemoryCacheContext;
 
 // Current this seems no use on macOS (macOS use virtual memory and do not clear cache when memory warning). So we only override on iOS/tvOS platform.
 #if SD_UIKIT
+//在收到内存警告的时候，仅仅清除了父类的对象，并没有清除weakCache的对象，因为是弱引用类型，也不用手动清除
 - (void)didReceiveMemoryWarning:(NSNotification *)notification {
     // Only remove cache, but keep weak cache
+    //移除父类的对象
     [super removeAllObjects];
 }
 
 // `setObject:forKey:` just call this with 0 cost. Override this is enough
+//setObject的相关方法都会调到这里来，因此只需重写这个方法
+//将图片的数据存进缓存中，使用的是weakCache
 - (void)setObject:(id)obj forKey:(id)key cost:(NSUInteger)g {
     [super setObject:obj forKey:key cost:g];
     if (!self.config.shouldUseWeakMemoryCache) {
@@ -85,8 +92,11 @@ static void * SDMemoryCacheContext = &SDMemoryCacheContext;
     }
     if (key && obj) {
         // Store weak cache
+        //宏定义使用的是 dispatch_semaphore_wait，使其信号量减1
         SD_LOCK(self.weakCacheLock);
+        //weakCache是一个键是强引用，值是弱引用的MapTable
         [self.weakCache setObject:obj forKey:key];
+        //宏定义使用的是dispatch_semphore_signal  信号量加1
         SD_UNLOCK(self.weakCacheLock);
     }
 }

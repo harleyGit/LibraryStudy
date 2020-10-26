@@ -22,6 +22,7 @@
  @param config The cache config to be used to create the cache.
  @return The new memory cache instance.
  */
+
 - (nonnull instancetype)initWithConfig:(nonnull SDImageCacheConfig *)config;
 
 /**
@@ -73,6 +74,7 @@
  */
 @interface SDMemoryCache <KeyType, ObjectType> : NSCache <KeyType, ObjectType> <SDMemoryCache>
 
+//配置
 @property (nonatomic, strong, nonnull, readonly) SDImageCacheConfig *config;
 
 @end

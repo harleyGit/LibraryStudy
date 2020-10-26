@@ -22,6 +22,7 @@ typedef void(^SDInternalCompletionBlock)(UIImage * _Nullable image, NSData * _Nu
 /**
  A combined operation representing the cache and loader operation. You can use it to cancel the load process.
  */
+//对每一个下载任务的封装，重要的是它提供了一个取消功能
 @interface SDWebImageCombinedOperation : NSObject <SDWebImageOperation>
 
 /**
@@ -47,6 +48,7 @@ typedef void(^SDInternalCompletionBlock)(UIImage * _Nullable image, NSData * _Nu
 /**
  The manager delegate protocol.
  */
+//提供下载图片之前和之后的回调
 @protocol SDWebImageManagerDelegate <NSObject>
 
 @optional
@@ -95,10 +97,14 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
 
  * @endcode
  */
+//提供一个单例对象，用来统一控制下载和缓存操作
+/*
+ *SDWebImageManager类是SDWebImage中的核心类，主要负责调用SDWebImageDownloader进行图片下载，以及在下载之后利用SDImageCache进行图片缓存。并且此类还可以跳过UIImageViewe/Cache或者UIView/Cache单独使用，不仅局限于一个UIView。
+ */
 @interface SDWebImageManager : NSObject
 
 /**
- * The delegate for manager. Defaults to nil.
+ * The delegate for manager. Defatuls to nil.
  */
 @property (weak, nonatomic, nullable) id <SDWebImageManagerDelegate> delegate;
 
@@ -136,8 +142,8 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
 
 /**
  * The cache serializer is used to convert the decoded image, the source downloaded data, to the actual data used for storing to the disk cache. If you return nil, means to generate the data from the image instance, see `SDImageCache`.
- * For example, if you are using WebP images and facing the slow decoding time issue when later retrieving from disk cache again. You can try to encode the decoded image to JPEG/PNG format to disk cache instead of source downloaded data.
- * @note The `image` arg is nonnull, but when you also provide an image transformer and the image is transformed, the `data` arg may be nil, take attention to this case.
+ * For example, if you are using WebP images and facing the slow decoding time issue when later retriving from disk cache again. You can try to encode the decoded image to JPEG/PNG format to disk cache instead of source downloaded data.
+ * @note The `image` arg is nonnull, but when you also provide a image transformer and the image is transformed, the `data` arg may be nil, take attention to this case.
  * @note This method is called from a global queue in order to not to block the main thread.
  * @code
  SDWebImageManager.sharedManager.cacheSerializer = [SDWebImageCacheSerializer cacheSerializerWithBlock:^NSData * _Nullable(UIImage * _Nonnull image, NSData * _Nullable data, NSURL * _Nullable imageURL) {
@@ -225,7 +231,7 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
  *   The forth parameter is an `SDImageCacheType` enum indicating if the image was retrieved from the local cache
  *   or from the memory cache or from the network.
  *
- *   The fifth parameter is set to NO when the SDWebImageProgressiveLoad option is used and the image is
+ *   The fith parameter is set to NO when the SDWebImageProgressiveLoad option is used and the image is
  *   downloading. This block is thus called repeatedly with a partial image. When image is fully downloaded, the
  *   block is called a last time with the full image and the last parameter set to YES.
  *
@@ -260,17 +266,6 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
  * Cancel all current operations
  */
 - (void)cancelAll;
-
-/**
- * Remove the specify URL from failed black list.
- * @param url The failed URL.
- */
-- (void)removeFailedURL:(nonnull NSURL *)url;
-
-/**
- * Remove all the URL from failed black list.
- */
-- (void)removeAllFailedURLs;
 
 /**
  * Return the cache key for a given URL, does not considerate transformer or thumbnail.
