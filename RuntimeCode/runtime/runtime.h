@@ -53,18 +53,18 @@ typedef struct objc_category *Category;
 typedef struct objc_property *objc_property_t;
 
 struct objc_class {
-    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;
+    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;  // objc_class 结构体的实例指针
 
 #if !__OBJC2__
-    Class _Nullable super_class                              OBJC2_UNAVAILABLE;
-    const char * _Nonnull name                               OBJC2_UNAVAILABLE;
-    long version                                             OBJC2_UNAVAILABLE;
-    long info                                                OBJC2_UNAVAILABLE;
-    long instance_size                                       OBJC2_UNAVAILABLE;
-    struct objc_ivar_list * _Nullable ivars                  OBJC2_UNAVAILABLE;
-    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;
-    struct objc_cache * _Nonnull cache                       OBJC2_UNAVAILABLE;
-    struct objc_protocol_list * _Nullable protocols          OBJC2_UNAVAILABLE;
+    Class _Nullable super_class                              OBJC2_UNAVAILABLE; // 指向父类的指针
+    const char * _Nonnull name                               OBJC2_UNAVAILABLE; // 类的名字
+    long version                                             OBJC2_UNAVAILABLE; // 类的版本信息，默认为 0
+    long info                                                OBJC2_UNAVAILABLE; // 类的信息，供运行期使用的一些位标识
+    long instance_size                                       OBJC2_UNAVAILABLE; // 该类的实例变量大小;
+    struct objc_ivar_list * _Nullable ivars                  OBJC2_UNAVAILABLE; // 该类的实例变量列表
+    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;  // 方法定义的列表
+    struct objc_cache * _Nonnull cache                       OBJC2_UNAVAILABLE; // 方法缓存
+    struct objc_protocol_list * _Nullable protocols          OBJC2_UNAVAILABLE; // 遵守的协议列表
 #endif
 
 } OBJC2_UNAVAILABLE;
@@ -1971,9 +1971,9 @@ struct objc_ivar_list {
 
 
 struct objc_method {
-    SEL _Nonnull method_name                                 OBJC2_UNAVAILABLE;
-    char * _Nullable method_types                            OBJC2_UNAVAILABLE;
-    IMP _Nonnull method_imp                                  OBJC2_UNAVAILABLE;
+    SEL _Nonnull method_name                                 OBJC2_UNAVAILABLE;//方法的名字
+    char * _Nullable method_types                            OBJC2_UNAVAILABLE;//参数的类型
+    IMP _Nonnull method_imp                                  OBJC2_UNAVAILABLE;//就是函数的地址
 }                                                            OBJC2_UNAVAILABLE;
 
 struct objc_method_list {
