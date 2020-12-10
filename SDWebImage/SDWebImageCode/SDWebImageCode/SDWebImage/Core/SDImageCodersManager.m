@@ -63,6 +63,7 @@
 #pragma mark - Coder IO operations
 
 - (void)addCoder:(nonnull id<SDImageCoder>)coder {
+    /// 判断该编码器是否实现了SDWebImageCode协议
     if (![coder conformsToProtocol:@protocol(SDImageCoder)]) {
         return;
     }
@@ -91,6 +92,7 @@
     return NO;
 }
 
+/// 判断该图片是否可用编码
 - (BOOL)canEncodeToFormat:(SDImageFormat)format {
     NSArray<id<SDImageCoder>> *coders = self.coders;
     for (id<SDImageCoder> coder in coders.reverseObjectEnumerator) {
@@ -101,6 +103,7 @@
     return NO;
 }
 
+/// 图像解码方法
 - (UIImage *)decodedImageWithData:(NSData *)data options:(nullable SDImageCoderOptions *)options {
     if (!data) {
         return nil;

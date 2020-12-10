@@ -21,10 +21,13 @@ static inline size_t SDByteAlign(size_t size, size_t alignment) {
     return ((size + (alignment - 1)) / alignment) * alignment;
 }
 
+// 每个像素占用的字节数
 static const size_t kBytesPerPixel = 4;
+// 色彩空间占用的字节数
 static const size_t kBitsPerComponent = 8;
 
 static const CGFloat kBytesPerMB = 1024.0f * 1024.0f;
+// 1MB可以存储多少像素
 static const CGFloat kPixelsPerMB = kBytesPerMB / kBytesPerPixel;
 /*
  * Defines the maximum size in MB of the decoded image when the flag `SDWebImageScaleDownLargeImages` is set
@@ -347,6 +350,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     return decodedImage;
 }
 
+/// 解压缩图片
 + (UIImage *)decodedAndScaledDownImageWithImage:(UIImage *)image limitBytes:(NSUInteger)bytes {
     if (![self shouldDecodeImage:image]) {
         return image;
@@ -367,6 +371,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     
     // autorelease the bitmap context and all vars to help system to free memory when there are memory warning.
     // on iOS7, do not forget to call [[SDImageCache sharedImageCache] clearMemory];
+    // 解压缩操作放入一个自动释放池里面，以便自动释放所有的变量
     @autoreleasepool {
         CGImageRef sourceImageRef = image.CGImage;
         
@@ -383,6 +388,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
         destResolution.height = (int)(sourceResolution.height * imageScale);
         
         // device color space
+        // 获取图片的色彩空间
         CGColorSpaceRef colorspaceRef = [self colorSpaceGetDeviceRGB];
         BOOL hasAlpha = [self CGImageContainsAlpha:sourceImageRef];
         // iOS display alpha info (BGRA8888/BGRX8888)
@@ -583,6 +589,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     return YES;
 }
 
+// 是否需要减少原始图片的大小
 + (BOOL)shouldScaleDownImage:(nonnull UIImage *)image limitBytes:(NSUInteger)bytes {
     BOOL shouldScaleDown = YES;
     

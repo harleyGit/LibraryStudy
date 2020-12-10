@@ -40,7 +40,7 @@ static NSString * kSDCGImagePropertyHEICSUnclampedDelayTime = @"UnclampedDelayTi
 }
 
 #pragma mark - SDImageCoder
-
+/// 判断是否可以解码
 - (BOOL)canDecodeFromData:(nullable NSData *)data {
     switch ([NSData sd_imageFormatForImageData:data]) {
         case SDImageFormatHEIC:
@@ -48,12 +48,14 @@ static NSString * kSDCGImagePropertyHEICSUnclampedDelayTime = @"UnclampedDelayTi
             return [self.class canDecodeFromHEICFormat];
         case SDImageFormatHEIF:
             // Check HEIF decoding compatibility
+            // 检查HEIC解码的兼容性
             return [self.class canDecodeFromHEIFFormat];
         default:
             return NO;
     }
 }
 
+/// 判断是否可以解码，并且实现逐渐显示效果
 - (BOOL)canIncrementalDecodeFromData:(NSData *)data {
     return [self canDecodeFromData:data];
 }
