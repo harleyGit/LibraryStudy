@@ -196,11 +196,11 @@
 		6EACCF3B2546744F00F50C41 /* NSURLSession */ = {
 			isa = PBXGroup;
 			children = (
-				6EACCF3C2546744F00F50C41 /* AFURLSessionManager.h */,
-				6EACCF3D2546744F00F50C41 /* AFHTTPSessionManager.m */,
-				6EACCF3E2546744F00F50C41 /* AFURLSessionManager.m */,
 				6EACCF3F2546744F00F50C41 /* AFCompatibilityMacros.h */,
 				6EACCF402546744F00F50C41 /* AFHTTPSessionManager.h */,
+				6EACCF3D2546744F00F50C41 /* AFHTTPSessionManager.m */,
+				6EACCF3C2546744F00F50C41 /* AFURLSessionManager.h */,
+				6EACCF3E2546744F00F50C41 /* AFURLSessionManager.m */,
 			);
 			path = NSURLSession;
 			sourceTree = "<group>";

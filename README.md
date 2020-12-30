@@ -1,14 +1,18 @@
 # LibraryStudy
 优秀三方库学习
 
+- **终端代理设置**
+- [**AFNetworking**](https://juejin.cn/post/6844903825581555726)
+
 <br/>
 
 ***
 <br/>
 
->#	终端代理设置
+>#	 终端代理设置
 
 -	两个命令可以查看当前的http、https代理
+
 ```diff
 //查询代理
 -	echo $http_proxy	check http proxy
@@ -26,6 +30,7 @@
 ```
 
 -	代理设置
+
 ```
 export http_proxy=http://代理ip:端口
 
@@ -33,6 +38,13 @@ export https_proxy=http://代理ip:端口
 ```
 
 
+
+<br/>
+
+***
+<br/>
+
+># AFNetworking
 
 
 
