@@ -1300,7 +1300,10 @@ public:
     }
 };
 
-
+/**
+ *一个类的所有信息都存储在该类对象的class_data_bits_t的结构中，其中包括很多的信息，包括属性方法，协议，实例等等。
+ *
+ */
 struct class_data_bits_t {
     friend objc_class;
 
