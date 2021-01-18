@@ -595,6 +595,10 @@ objc_moveWeak(id *dst, id *src)
 BREAKPOINT_FUNCTION(void objc_autoreleaseNoPool(id obj));
 BREAKPOINT_FUNCTION(void objc_autoreleasePoolInvalid(const void *token));
 
+/**
+ *深入理解自动释放池：https://www.jianshu.com/p/7bd2f85f03dc
+ *
+ */
 class AutoreleasePoolPage : private AutoreleasePoolPageData
 {
 	friend struct thread_data_t;
@@ -740,6 +744,7 @@ private:
         return (next - begin() < (end() - begin()) / 2);
     }
 
+    //压栈操作：将对象加入AutoreleaseNoPage并移动栈顶的指针
     id *add(id obj)
     {
         ASSERT(!full());
@@ -907,6 +912,7 @@ private:
     }
 
     static __attribute__((noinline))
+    //当前hotPage已满时调用
     id *autoreleaseFullPage(id obj, AutoreleasePoolPage *page)
     {
         // The hot page is full. 
@@ -925,6 +931,7 @@ private:
     }
 
     static __attribute__((noinline))
+    //当前hotpage不存在时调用
     id *autoreleaseNoPage(id obj)
     {
         // "No page" could mean no pool has been pushed
@@ -991,7 +998,7 @@ public:
         return obj;
     }
 
-
+    //每次push时就相当于重新添加一个自动释放池页
     static inline void *push() 
     {
         id *dest;
@@ -1035,11 +1042,12 @@ public:
     static void
     popPage(void *token, AutoreleasePoolPage *page, id *stop)
     {
-        if (allowDebug && PrintPoolHiwat) printHiwat();
+        if (allowDebug && PrintPoolHiwat) printHiwat();// 记录最高水位标记
 
-        page->releaseUntil(stop);
+        page->releaseUntil(stop);//向栈中的对象发送release消息，直到遇到第一个哨兵对象
 
         // memory: delete empty children
+        // 删除空掉的节点
         if (allowDebug && DebugPoolAllocation  &&  page->empty()) {
             // special case: delete everything during page-per-pool debugging
             AutoreleasePoolPage *parent = page->parent;
@@ -1069,7 +1077,7 @@ public:
     }
 
     static inline void
-    pop(void *token)
+    pop(void *token)    //POOL_BOUNDARY的地址
     {
         AutoreleasePoolPage *page;
         id *stop;
@@ -1085,7 +1093,7 @@ public:
             page = coldPage();
             token = page->begin();
         } else {
-            page = pageForPointer(token);
+            page = pageForPointer(token);//通过POOL_BOUNDARY找到对应的page
         }
 
         stop = (id *)token;
