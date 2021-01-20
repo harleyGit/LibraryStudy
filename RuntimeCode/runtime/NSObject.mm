@@ -664,6 +664,7 @@ private:
         protect();
     }
 
+    //C++析构函数
     ~AutoreleasePoolPage() 
     {
         check();
