@@ -13,10 +13,13 @@
 #import "UIImage+Metadata.h"
 #import "SDInternalMacros.h"
 
+//解码：https://zhang759740844.github.io/2018/03/07/sdwebimage4/
 UIImage * _Nullable SDImageCacheDecodeImageData(NSData * _Nonnull imageData, NSString * _Nonnull cacheKey, SDWebImageOptions options, SDWebImageContext * _Nullable context) {
     UIImage *image;
+    /// 判断是否只要解码第一帧
     BOOL decodeFirstFrame = SD_OPTIONS_CONTAINS(options, SDWebImageDecodeFirstFrameOnly);
     NSNumber *scaleValue = context[SDWebImageContextImageScaleFactor];
+    /// 获取解码的 scale
     CGFloat scale = scaleValue.doubleValue >= 1 ? scaleValue.doubleValue : SDImageScaleFactorForKey(cacheKey);
     NSNumber *preserveAspectRatioValue = context[SDWebImageContextImagePreserveAspectRatio];
     NSValue *thumbnailSizeValue;
@@ -46,6 +49,7 @@ UIImage * _Nullable SDImageCacheDecodeImageData(NSData * _Nonnull imageData, NSS
         imageCoder = [SDImageCodersManager sharedManager];
     }
     
+    /// 如果不仅仅解码第一帧，则从 context 中取出 AnimatedImageClass，默认使用的是 SDAnimatedImage，然后进行图片数据的解码，根据需要还可以预解码所有帧
     if (!decodeFirstFrame) {
         Class animatedImageClass = context[SDWebImageContextAnimatedImageClass];
         // check whether we should use `SDAnimatedImage`
@@ -65,17 +69,21 @@ UIImage * _Nullable SDImageCacheDecodeImageData(NSData * _Nonnull imageData, NSS
         }
     }
     if (!image) {
+        /// 从 data 转为 image
         image = [imageCoder decodedImageWithData:imageData options:coderOptions];
     }
     if (image) {
+        /// 查看是否需要解码
         BOOL shouldDecode = !SD_OPTIONS_CONTAINS(options, SDWebImageAvoidDecodeImage);
         if ([image.class conformsToProtocol:@protocol(SDAnimatedImage)]) {
             // `SDAnimatedImage` do not decode
+            /// 动图不需要解码
             shouldDecode = NO;
         } else if (image.sd_isAnimated) {
             // animated image do not decode
             shouldDecode = NO;
         }
+        /// 需要解码就开始解码，把 image 加载到内存中
         if (shouldDecode) {
             image = [SDImageCoderHelper decodedImageWithImage:image];
         }
