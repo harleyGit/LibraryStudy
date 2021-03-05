@@ -1,0 +1,37 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '13.0'
+
+target 'SwiftTest' do
+  use_frameworks!
+  
+  #Rx
+  pod 'RxRelay', '5.1.1'
+  pod 'RxSwift', '5.1.1'
+  pod 'RxTheme', '4.1.1'
+  pod 'R.swift', '5.2.2'
+  pod 'RxViewController', '1.0.0'
+  
+  #UI
+  
+  #日志
+  # https://github.com/tomcat2088/CocoaLumberjack-RemoteAccess.git
+  pod 'CocoaLumberjack/Swift','3.7.0'
+  
+  #分析
+  #Mixpanel是非常好用的移动数据统计分析工具：https://blog.csdn.net/icetime17/article/details/48530709
+  pod 'Mixpanel', '2.8.1'
+  #Firebase：https://firebase.google.cn/docs/ios/setup?hl=zh-cn
+  #pod 'Firebase/Analytics', '7.3.0'
+  #Firebase Crashlytics: https://firebase.google.cn/docs/crashlytics?hl=zh-cn
+  #pod 'Firebase/Crashlytics', '7.3.0'
+  
+  #KeyChain
+  pod 'KeychainAccess', '4.2.1'
+  
+  
+  #代码质量
+  pod 'SwifterSwift'
+  
+  # Pods for SwiftTest
+  
+end

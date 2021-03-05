@@ -1,8 +1,9 @@
 # LibraryStudy
-优秀三方库学习
+**优秀三方库学习**
 
 - **终端代理设置**
 - [**AFNetworking**](https://juejin.cn/post/6844903825581555726)
+- **Project**
 
 <br/>
 
@@ -47,6 +48,22 @@ export https_proxy=http://代理ip:端口
 ># AFNetworking
 
 
+
+
+<br/>
+
+***
+<br/>
+
+># Project
+优秀项目代码的学习借鉴
+
+- 仿喜马拉雅
+- C2: C和C++ 代码练习
+- FlutterDeer： Flutter项目代码学习借鉴
+- headlineNews
+- SwiftEOS: 加密库练习
+- SwiftHub： 国外大神借助RxSwift的优秀代码项目
 
 
 

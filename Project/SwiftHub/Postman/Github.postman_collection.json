@@ -1,0 +1,1878 @@
+{
+	"info": {
+		"_postman_id": "85e4199c-818e-4cbc-8aca-3777c173cfa7",
+		"name": "Github",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "OAuth Authorizations",
+			"item": [
+				{
+					"name": "Create access token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "00cbdbffb01ec72e280a",
+									"description": "Required. The client ID you received from GitHub for your GitHub App.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "5a39979251c0452a9476bd45c82a14d8e98c3fb3",
+									"description": "Required. The client secret you received from GitHub for your GitHub App.",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "341528369f195e72c88e",
+									"description": "Required. The code you received as a response to Step 1.",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "swifthub://",
+									"description": "The URL in your application where users are sent after authorization.",
+									"type": "text"
+								},
+								{
+									"key": "state",
+									"value": "",
+									"description": "The unguessable random string you provided in Step 1.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://github.com/login/oauth/access_token",
+							"protocol": "https",
+							"host": [
+								"github",
+								"com"
+							],
+							"path": [
+								"login",
+								"oauth",
+								"access_token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "You can use this API to manage the access OAuth applications have to your account. You can only access this API via Basic Authentication using your username and password, not tokens.\n\nMake sure you understand how to work with two-factor authentication if you or your users have two-factor authentication enabled.",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Repositories",
+			"item": [
+				{
+					"name": "Contents",
+					"item": [
+						{
+							"name": "Get the README",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/readme?ref=master",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"readme"
+									],
+									"query": [
+										{
+											"key": "ref",
+											"value": "master"
+										}
+									]
+								},
+								"description": "This method returns the preferred README for a repository."
+							},
+							"response": []
+						},
+						{
+							"name": "Get contents",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/contents/:path",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"contents",
+										":path"
+									],
+									"query": [
+										{
+											"key": "ref",
+											"value": "master",
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "path",
+											"value": ""
+										}
+									]
+								},
+								"description": "Gets the contents of a file or directory in a repository. Specify the file path or directory in :path. If you omit :path, you will receive the contents of all files in the repository."
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Commits",
+					"item": [
+						{
+							"name": "List commits on a repository",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/commits?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"commits"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get a single commit",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/commits/:sha",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"commits",
+										":sha"
+									],
+									"variable": [
+										{
+											"key": "sha",
+											"value": "e2dba47c808cd2dc1a5fb1a26db755a1fccb3415"
+										}
+									]
+								},
+								"description": "Diffs with binary data will have no patch property. Pass the appropriate media type to fetch diff and patch formats."
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Branches",
+					"item": [
+						{
+							"name": "List branches",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/branches?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"branches"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get branch",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/branches/:branch",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"branches",
+										":branch"
+									],
+									"variable": [
+										{
+											"key": "branch",
+											"value": "3.1.2"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Releases",
+					"item": [
+						{
+							"name": "List releases for a repository",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/releases?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"releases"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								},
+								"description": "Information about published releases are available to everyone. Only users with push access will receive listings for draft releases."
+							},
+							"response": []
+						},
+						{
+							"name": "Get a single release",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/releases/:release_id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"releases",
+										":release_id"
+									],
+									"variable": [
+										{
+											"key": "release_id",
+											"value": "16165731"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Forks",
+					"item": [
+						{
+							"name": "List Forks",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/forks?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"forks"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "List your repositories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/repos?page=1&visibility=all&affiliation=owner,collaborator,organization_member&sort=full_name&direction=asc&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"repos"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "visibility",
+									"value": "all"
+								},
+								{
+									"key": "affiliation",
+									"value": "owner,collaborator,organization_member"
+								},
+								{
+									"key": "sort",
+									"value": "full_name"
+								},
+								{
+									"key": "direction",
+									"value": "asc"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								}
+							]
+						},
+						"description": "List repositories that are accessible to the authenticated user.\n\nThis includes repositories owned by the authenticated user, repositories where the authenticated user is a collaborator, and repositories that the authenticated user has access to through an organization membership."
+					},
+					"response": []
+				},
+				{
+					"name": "List user repositories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/{{username}}/repos?page=1&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{username}}",
+								"repos"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								}
+							]
+						},
+						"description": "List public repositories for the specified user."
+					},
+					"response": []
+				},
+				{
+					"name": "List organization repositories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/orgs/{{org}}/repos?type=all&page=1&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orgs",
+								"{{org}}",
+								"repos"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "all"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								}
+							]
+						},
+						"description": "List repositories for the specified org."
+					},
+					"response": []
+				},
+				{
+					"name": "List all public repositories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repositories?since=364&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repositories"
+							],
+							"query": [
+								{
+									"key": "since",
+									"value": "364"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								}
+							]
+						},
+						"description": "This provides a dump of every public repository, in the order that they were created.\n\nNote: Pagination is powered exclusively by the since parameter. Use the Link header to get the URL for the next page of repositories."
+					},
+					"response": []
+				},
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List contributors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/contributors?page=1&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}",
+								"contributors"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								}
+							]
+						},
+						"description": "List contributors to the specified repository, sorted by the number of commits per contributor in descending order."
+					},
+					"response": []
+				},
+				{
+					"name": "List languages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/languages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}",
+								"languages"
+							]
+						},
+						"description": "List languages for the specified repository. The value on the right of a language is the number of bytes of code written in that language."
+					},
+					"response": []
+				},
+				{
+					"name": "List Teams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/teams",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}",
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Tags",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/tags?page=1&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}",
+								"tags"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Organizations",
+			"item": [
+				{
+					"name": "Get an organization",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/orgs/{{org}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orgs",
+								"{{org}}"
+							]
+						},
+						"description": "To see many of the organization response values, you need to be an authenticated organization owner with the admin:org scope. When the value of two_factor_requirement_enabled is true, the organization requires all members, billing managers, and outside collaborators to enable two-factor authentication."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Followers",
+					"item": [
+						{
+							"name": "List followers of a user",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/{{username}}/followers?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"{{username}}",
+										"followers"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								},
+								"description": "List a user's followers:"
+							},
+							"response": []
+						},
+						{
+							"name": "List users followed by another user",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/{{username}}/following?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"{{username}}",
+										"following"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								},
+								"description": "List who a user is following:"
+							},
+							"response": []
+						},
+						{
+							"name": "Check if you are following a user",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/following/{{owner}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"following",
+										"{{owner}}"
+									]
+								},
+								"description": "Response: \nThe parent and source objects are present when the repository is a fork. parent is the repository this repository was forked from, source is the ultimate source for the network."
+							},
+							"response": []
+						},
+						{
+							"name": "Follow a user",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/following/{{owner}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"following",
+										"{{owner}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Unfollow a user",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/following/{{owner}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"following",
+										"{{owner}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get the authenticated user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/{{owner}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{owner}}"
+							]
+						},
+						"description": "Provides publicly available information about someone with a GitHub account."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Search Repositories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/search/repositories?q=swift&sort=stars&order=desc&page=1&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"search",
+								"repositories"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "swift",
+									"description": "Required. The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see Constructing a search query. See \"Searching for repositories\" for a detailed list of qualifiers."
+								},
+								{
+									"key": "sort",
+									"value": "stars",
+									"description": "Sorts the results of your query by number of stars, forks, or help-wanted-issues or how recently the items were updated. Default: best match"
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"description": "Determines whether the first search result returned is the highest number of matches (desc) or lowest number of matches (asc). This parameter is ignored unless you provide sort. Default: desc"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								}
+							]
+						},
+						"description": "Find repositories via various criteria. This method returns up to 100 results per page."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/search/users?q=realm&sort&order&page=1&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"search",
+								"users"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "realm",
+									"description": "Required. The query contains one or more search keywords and qualifiers. Qualifiers allow you to limit your search to specific areas of GitHub. The REST API supports the same qualifiers as GitHub.com. To learn more about the format of the query, see Constructing a search query. See \"Searching users\" for a detailed list of qualifiers."
+								},
+								{
+									"key": "sort",
+									"value": null,
+									"description": "Sorts the results of your query by number of followers or repositories, or when the person joined GitHub. Default: best match"
+								},
+								{
+									"key": "order",
+									"value": null,
+									"description": "Determines whether the first search result returned is the highest number of matches (desc) or lowest number of matches (asc). This parameter is ignored unless you provide sort. Default: desc"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								}
+							]
+						},
+						"description": "Find users via various criteria. This method returns up to 100 results per page."
+					},
+					"response": []
+				}
+			],
+			"description": "The Search API is optimized to help you find the specific item you're looking for (e.g., a specific user, a specific file in a repository, etc.). Think of it the way you think of performing a search on Google. It's designed to help you find the one result you're looking for (or maybe the few results you're looking for). Just like searching on Google, you sometimes want to see a few pages of search results so that you can find the item that best meets your needs. To satisfy that need, the GitHub Search API provides up to 1,000 results for each search.",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Activity",
+			"item": [
+				{
+					"name": "Events",
+					"item": [
+						{
+							"name": "List public events for an organization",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/orgs/{{org}}/events?page=1&per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"orgs",
+										"{{org}}",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List events that a user has received",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/{{username}}/received_events?page=1&per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"{{username}}",
+										"received_events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								},
+								"description": "These are events that you've received by watching repos and following users. If you are authenticated as the given user, you will see private events. Otherwise, you'll only see public events."
+							},
+							"response": []
+						},
+						{
+							"name": "List repository events",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/events?page=1&per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List public events",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/events?page=1&per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								},
+								"description": "We delay the public events feed by five minutes, which means the most recent event returned by the public events API actually occurred at least five minutes ago."
+							},
+							"response": []
+						},
+						{
+							"name": "List events performed by a user",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/{{username}}/events?page=1&per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"{{username}}",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								},
+								"description": "If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events."
+							},
+							"response": []
+						},
+						{
+							"name": "List repository issue events",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/issues/events?page=1&per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"issues",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "This is a read-only API to the GitHub events. These events power the various activity streams on the site.",
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Starring",
+					"item": [
+						{
+							"name": "List Stargazers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/stargazers?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"stargazers"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List repositories being starred",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/{{username}}/starred?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"{{username}}",
+										"starred"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								},
+								"description": "List repositories being starred by a user."
+							},
+							"response": []
+						},
+						{
+							"name": "Check if you are starring a repository",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/starred/{{owner}}/{{repo}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"starred",
+										"{{owner}}",
+										"{{repo}}"
+									]
+								},
+								"description": "Requires for the user to be authenticated."
+							},
+							"response": []
+						},
+						{
+							"name": "Star a repository",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/starred/{{owner}}/{{repo}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"starred",
+										"{{owner}}",
+										"{{repo}}"
+									]
+								},
+								"description": "Requires for the user to be authenticated."
+							},
+							"response": []
+						},
+						{
+							"name": "Unstar a repository",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/starred/{{owner}}/{{repo}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"starred",
+										"{{owner}}",
+										"{{repo}}"
+									]
+								},
+								"description": "Requires for the user to be authenticated."
+							},
+							"response": []
+						}
+					],
+					"description": "Repository Starring is a feature that lets users bookmark repositories. Stars are shown next to repositories to show an approximate level of interest. Stars have no effect on notifications or the activity feed. For that, see Repository Watching.",
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Watching",
+					"item": [
+						{
+							"name": "List watchers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/subscribers?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"subscribers"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List repositories being watched",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/{{username}}/subscriptions?per_page={{per_page}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"{{username}}",
+										"subscriptions"
+									],
+									"query": [
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										}
+									]
+								},
+								"description": "List repositories being watched by a user."
+							},
+							"response": []
+						}
+					],
+					"description": "Watching a Repository registers the user to receive notifications on new discussions, as well as events in the user's activity feed. See Repository Starring for simple repository bookmarks.",
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Notifications",
+					"item": [
+						{
+							"name": "List your notifications",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/notifications?page=1&per_page={{per_page}}&all=true&participating=false",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"notifications"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										},
+										{
+											"key": "all",
+											"value": "true"
+										},
+										{
+											"key": "participating",
+											"value": "false"
+										}
+									]
+								},
+								"description": "List all notifications for the current user, sorted by most recently updated."
+							},
+							"response": []
+						},
+						{
+							"name": "List your notifications in a repository",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/notifications?page=1&per_page={{per_page}}&all=true&participating=false",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"notifications"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}"
+										},
+										{
+											"key": "all",
+											"value": "true"
+										},
+										{
+											"key": "participating",
+											"value": "false"
+										}
+									]
+								},
+								"description": "List all notifications for the current user."
+							},
+							"response": []
+						}
+					],
+					"description": "Users receive notifications for conversations in repositories they watch",
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Issues",
+			"item": [
+				{
+					"name": "Comments",
+					"item": [
+						{
+							"name": "List comments on an issue",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/issues/:number/comments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"repos",
+										"{{owner}}",
+										"{{repo}}",
+										"issues",
+										":number",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "per_page",
+											"value": "{{per_page}}",
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "number",
+											"value": "7"
+										}
+									]
+								},
+								"description": "Issue Comments are ordered by ascending ID."
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "List issues",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues?page=1&per_page={{per_page}}&state=all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								},
+								{
+									"key": "state",
+									"value": "all"
+								}
+							]
+						},
+						"description": "List all issues assigned to the authenticated user across all visible repositories including owned repositories, member repositories, and organization repositories."
+					},
+					"response": []
+				},
+				{
+					"name": "List user issues",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/issues?page=1&per_page={{per_page}}&state=all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"issues"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								},
+								{
+									"key": "state",
+									"value": "all"
+								}
+							]
+						},
+						"description": "List all issues across owned and member repositories assigned to the authenticated user:"
+					},
+					"response": []
+				},
+				{
+					"name": "List issues for a repository",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/issues?page=1&per_page={{per_page}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}",
+								"issues"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}"
+								},
+								{
+									"key": "state",
+									"value": "closed",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single issue",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/issues/:number",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}",
+								"issues",
+								":number"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "{{per_page}}",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "number",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Pull Requests",
+			"item": [
+				{
+					"name": "List pull requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/pulls?state=all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}",
+								"pulls"
+							],
+							"query": [
+								{
+									"key": "state",
+									"value": "all"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single pull request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/repos/{{owner}}/{{repo}}/pulls/:number",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"repos",
+								"{{owner}}",
+								"{{repo}}",
+								"pulls",
+								":number"
+							],
+							"variable": [
+								{
+									"key": "number",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Lists details of a pull request by providing its number."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Trending",
+			"item": [
+				{
+					"name": "List trending repositories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{trending_base_url}}/repositories?language=swift&since=",
+							"host": [
+								"{{trending_base_url}}"
+							],
+							"path": [
+								"repositories"
+							],
+							"query": [
+								{
+									"key": "language",
+									"value": "swift",
+									"description": "Programming language"
+								},
+								{
+									"key": "since",
+									"value": "",
+									"description": "Trending period: daily, weekly, monthly Default: daily."
+								}
+							]
+						},
+						"description": "Receive an array of trending repositories."
+					},
+					"response": []
+				},
+				{
+					"name": "List trending developers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{trending_base_url}}/developers?language=swift&since",
+							"host": [
+								"{{trending_base_url}}"
+							],
+							"path": [
+								"developers"
+							],
+							"query": [
+								{
+									"key": "language",
+									"value": "swift",
+									"description": "Programming language"
+								},
+								{
+									"key": "since",
+									"value": null,
+									"description": "Trending period: daily, weekly, monthly Default: daily."
+								}
+							]
+						},
+						"description": "Receive an array of trending developers."
+					},
+					"response": []
+				},
+				{
+					"name": "List languages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{trending_base_url}}/languages",
+							"host": [
+								"{{trending_base_url}}"
+							],
+							"path": [
+								"languages"
+							]
+						},
+						"description": "Receive popular languages and all languages."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Codetabs",
+			"item": [
+				{
+					"name": "Number of lines",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{codetabs_base_url}}/loc?github={{owner}}/{{repo}}",
+							"host": [
+								"{{codetabs_base_url}}"
+							],
+							"path": [
+								"loc"
+							],
+							"query": [
+								{
+									"key": "github",
+									"value": "{{owner}}/{{repo}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GraphQL",
+			"item": [
+				{
+					"name": "Search Repositories",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query SearchRepositories($query: String!, $before: String) {\n    search(first: 20, query: $query, type: REPOSITORY, before: $before) {\n        repositoryCount\n        pageInfo {\n            endCursor\n            hasNextPage\n        }\n        nodes {\n            ... on Repository {\n                name\n                nameWithOwner\n                description\n                owner {\n                    avatarUrl\n                    ... on Organization {\n                        description\n                    }\n                }\n                updatedAt\n                viewerHasStarred\n                primaryLanguage {\n                    name\n                    color\n                }\n                stargazers {\n                    totalCount\n                }\n            }\n        }\n    }\n}",
+								"variables": "{\n  \"query\": \"{{repo}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{graphql_base_url}}",
+							"host": [
+								"{{graphql_base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query SearchUsers($query: String!, $before: String) {\n    search(first: 20, query: $query, type: USER, before: $before) {\n        nodes {\n            ... on User {\n                name\n                login\n                avatarUrl\n                viewerCanFollow\n                viewerIsFollowing\n                followers {\n                    totalCount\n                }\n                repositories {\n                    totalCount\n                }\n            }\n        }\n        pageInfo {\n            endCursor\n            hasNextPage\n        }\n        userCount\n    }\n}\n",
+								"variables": "{\n  \"query\": \"{{owner}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{graphql_base_url}}",
+							"host": [
+								"{{graphql_base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Repository",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query Repository($owner: String!, $name: String!, $qualifiedName: String!) {\n    repository(owner: $owner, name: $name) {\n        name\n        nameWithOwner\n        description\n        url\n        homepageUrl\n        createdAt\n        updatedAt\n        viewerHasStarred\n        diskUsage\n        isFork\n        parent {\n            nameWithOwner\n        }\n        owner {\n            login\n            avatarUrl\n            ... on Organization {\n                description\n            }\n        }\n        primaryLanguage {\n            name\n            color\n        }\n        languages(first: 20) {\n            totalCount\n            totalSize\n            edges {\n                size\n                node {\n                    name\n                    color\n                }\n            }\n        }\n        licenseInfo {\n            name\n        }\n        defaultBranchRef {\n            name\n        }\n        stargazers {\n            totalCount\n        }\n        forks {\n            totalCount\n        }\n        watchers {\n            totalCount\n        }\n        mentionableUsers {\n            totalCount\n        }\n        issues(states: [OPEN]) {\n            totalCount\n        }\n        pullRequests(states: [OPEN]) {\n            totalCount\n        }\n        releases {\n            totalCount\n        }\n        ref(qualifiedName: $qualifiedName) {\n            target {\n                ... on Commit {\n                    history {\n                        totalCount\n                    }\n                }\n            }\n        }\n    }\n}\n",
+								"variables": "{\n  \"owner\": \"{{owner}}\",\n  \"name\": \"{{repo}}\",\n  \"qualifiedName\": \"master\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{graphql_base_url}}",
+							"host": [
+								"{{graphql_base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Viewer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query Viewer {\n    viewer {\n        id\n        name\n        login\n        avatarUrl\n        url\n        websiteUrl\n        bio\n        company\n        email\n        location\n        createdAt\n        updatedAt\n        viewerCanFollow\n        viewerIsFollowing\n        isViewer\n        followers {\n            totalCount\n        }\n        following {\n            totalCount\n        }\n        starredRepositories {\n            totalCount\n        }\n        issues {\n            totalCount\n        }\n        repositories {\n            totalCount\n        }\n        watching {\n            totalCount\n        }\n        contributionsCollection {\n            totalRepositoryContributions\n        }\n        pinnedItems(first: 6) {\n            nodes {\n              ... on Repository {\n                name\n                nameWithOwner\n                description\n                owner {\n                  avatarUrl\n                }\n                updatedAt\n                viewerHasStarred\n                primaryLanguage {\n                  name\n                  color\n                }\n                stargazers {\n                  totalCount\n                }\n              }\n            }\n        }\n        organizations(first: 10) {\n            nodes {\n                name\n                login\n                avatarUrl\n                ... on Organization {\n                    description\n                }\n            }\n        }\n    }\n}\n\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{graphql_base_url}}",
+							"host": [
+								"{{graphql_base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query User($login: String!) {\n    user(login: $login) {\n        name\n        login\n        avatarUrl\n        url\n        websiteUrl\n        bio\n        company\n        email\n        location\n        createdAt\n        updatedAt\n        viewerCanFollow\n        viewerIsFollowing\n        isViewer\n        followers {\n            totalCount\n        }\n        following {\n            totalCount\n        }\n        starredRepositories {\n            totalCount\n        }\n        issues {\n            totalCount\n        }\n        repositories {\n            totalCount\n        }\n        watching {\n            totalCount\n        }\n        pinnedItems(first: 6) {\n            nodes {\n              ... on Repository {\n                name\n                nameWithOwner\n                description\n                owner {\n                  avatarUrl\n                }\n                updatedAt\n                viewerHasStarred\n                primaryLanguage {\n                  name\n                  color\n                }\n                stargazers {\n                  totalCount\n                }\n              }\n            }\n        }\n        organizations(first: 10) {\n            nodes {\n                name\n                login\n                avatarUrl\n                ... on Organization {\n                    description\n                }\n            }\n        }\n    }\n}",
+								"variables": "{\n  \"login\": \"{{owner}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{graphql_base_url}}",
+							"host": [
+								"{{graphql_base_url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "39d69d76-ab50-4bd6-bfad-067254935903",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9e1e097e-0de6-4c27-9d31-bc9ad4c7d884",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
