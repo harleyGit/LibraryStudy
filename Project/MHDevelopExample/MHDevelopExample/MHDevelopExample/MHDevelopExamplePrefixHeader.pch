@@ -1,0 +1,290 @@
+//
+//  MHDevelopExamplePrefixHeader.pch
+//  MHDevelopExample
+//
+//  Created by CoderMikeHe on 17/2/7.
+//  Copyright © 2017年 CoderMikeHe. All rights reserved.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_5_0
+#warning "This project uses features only available in iOS SDK 5.0 and later."
+#endif
+
+#ifdef __OBJC__
+
+
+/// 系统or第三方框架
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <MJRefresh/MJRefresh.h>
+#import <ReactiveObjC/ReactiveObjC.h>
+#import <HYBImageCliped/HYBImageCliped.h>
+
+/// User Custom File
+/// 协议
+#import "CMHConfigureCell.h"
+
+
+
+/// YYKit
+#import "YYText.h"
+#import "YYCategories.h"
+#import "YYModel.h"
+#import "YYWebImage.h"
+#import <IQKeyboardManager/IQKeyboardManager.h>
+// category
+#import "UIBarButtonItem+MHExtension.h"
+#import "UIAlertController+MHColor.h"
+#import "UIView+MH.h"
+#import "UIFont+MHExtension.h"
+#import "NSString+MH.h"
+#import "UINavigationController+FDFullscreenPopGesture.h"
+#import "NSObject+MH.h"
+#import "Colours.h"
+#import "UIImage+MH.h"
+#import "UIViewController+MHDismissKeyboard.h"
+#import "UIViewController+MHHUD.h"
+#import "NSDate+Extension.h"
+#import "MBProgressHUD+MHExtension.h"
+#import "HJCornerRadius.h"
+#import "UIImageView+CornerRadius.h"
+#import "NSError+MHExtension.h"
+#import "UITableView+MHExtension.h"
+#import "BlocksKit.h"
+#import "BlocksKit+UIKit.h"
+
+
+// tool
+#import "MHWebImageTool.h"
+#import "MHSingleton.h"
+#import "Masonry.h"
+#import "CMHFileManager.h"
+#import "KVOController.h"
+
+
+#import "FBKVOController+MHExtension.h"
+#import "UIScrollView+MHRefresh.h"
+#import "UIScrollView+CMHRefresh.h"
+#import "YYCache+CMHHelper.h"
+#import "UIView+CMHEmptyView.h"
+#import "SAMKeychain+CMHUtil.h"
+// UIKit
+#import "MHButton.h"
+
+#import "MHImageView.h"
+#import "MHDivider.h"
+#import "MHBackButton.h"
+
+// 模型
+#import "AppDelegate.h"
+#import "CMHHTTPService.h"
+
+/// 常量
+#import "SUConstant.h"
+#import "MHInline.h"
+
+
+
+
+///------
+/// Block
+///------
+typedef void (^VoidBlock)(void);
+typedef BOOL (^BoolBlock)(void);
+typedef int  (^IntBlock) (void);
+typedef id   (^IDBlock)  (void);
+
+typedef void (^VoidBlock_int)(int);
+typedef BOOL (^BoolBlock_int)(int);
+typedef int  (^IntBlock_int) (int);
+typedef id   (^IDBlock_int)  (int);
+
+typedef void (^VoidBlock_string)(NSString *);
+typedef BOOL (^BoolBlock_string)(NSString *);
+typedef int  (^IntBlock_string) (NSString *);
+typedef id   (^IDBlock_string)  (NSString *);
+
+typedef void (^VoidBlock_id)(id);
+typedef BOOL (^BoolBlock_id)(id);
+typedef int  (^IntBlock_id) (id);
+typedef id   (^IDBlock_id)  (id);
+
+/// 类型相关
+#define MH_IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define MH_IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define MH_IS_RETINA ([[UIScreen mainScreen] scale] >= 2.0)
+
+/// 屏幕尺寸相关
+#define MH_SCREEN_WIDTH  ([[UIScreen mainScreen] bounds].size.width)
+#define MH_SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
+#define MH_SCREEN_BOUNDS ([[UIScreen mainScreen] bounds])
+#define MH_SCREEN_MAX_LENGTH (MAX(MH_SCREEN_WIDTH, MH_SCREEN_HEIGHT))
+#define MH_SCREEN_MIN_LENGTH (MIN(MH_SCREEN_WIDTH, MH_SCREEN_HEIGHT))
+
+/// 手机类型相关
+#define MH_IS_IPHONE_4_OR_LESS  (MH_IS_IPHONE && MH_SCREEN_MAX_LENGTH  < 568.0)
+#define MH_IS_IPHONE_5          (MH_IS_IPHONE && MH_SCREEN_MAX_LENGTH == 568.0)
+#define MH_IS_IPHONE_6          (MH_IS_IPHONE && MH_SCREEN_MAX_LENGTH == 667.0)
+#define MH_IS_IPHONE_6P         (MH_IS_IPHONE && MH_SCREEN_MAX_LENGTH == 736.0)
+#define MH_IS_IPHONE_X          (MH_IS_IPHONE && MH_SCREEN_MAX_LENGTH == 812.0)
+
+
+/// 导航条高度
+#define MH_APPLICATION_TOP_BAR_HEIGHT (MH_IS_IPHONE_X?88.0f:64.0f)
+/// tabBar高度
+#define MH_APPLICATION_TAB_BAR_HEIGHT (MH_IS_IPHONE_X?83.0f:49.0f)
+/// 工具条高度 (常见的高度)
+#define MH_APPLICATION_TOOL_BAR_HEIGHT_44  44.0f
+#define MH_APPLICATION_TOOL_BAR_HEIGHT_49  49.0f
+/// 状态栏高度
+#define MH_APPLICATION_STATUS_BAR_HEIGHT (MH_IS_IPHONE_X?44:20.0f)
+
+
+// 适配AF
+#ifndef TARGET_OS_IOS
+
+#define TARGET_OS_IOS TARGET_OS_IPHONE
+
+#endif
+
+#ifndef TARGET_OS_WATCH
+
+#define TARGET_OS_WATCH 0
+
+#endif
+
+
+// 输出日志 (格式: [时间] [哪个方法] [哪行] [输出内容])
+#ifdef DEBUG
+#define NSLog(format, ...) printf("\n[%s] %s [第%d行] 💕 %s\n", __TIME__, __FUNCTION__, __LINE__, [[NSString stringWithFormat:format, ##__VA_ARGS__] UTF8String]);
+#else
+#define NSLog(format, ...)
+#endif
+
+// 日记输出宏
+#ifdef DEBUG // 调试状态, 打开LOG功能
+#define MHLog(...) NSLog(__VA_ARGS__)
+#else // 发布状态, 关闭LOG功能
+#define MHLog(...)
+#endif
+
+// 打印方法
+#define MHLogFunc MHLog(@"%s", __func__)
+
+
+// 打印请求错误信息
+#define MHLogErrorMessage  MHLog(@"错误请求日志-----【 %@ 】--【 %@ 】",[self class] , error.mh_message)
+
+
+// KVO获取监听对象的属性 有自动提示
+// 宏里面的#，会自动把后面的参数变成c语言的字符串
+#define MHKeyPath(objc,keyPath) @(((void)objc.keyPath ,#keyPath))
+
+
+// 颜色
+#define MHColor(r, g, b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1.0]
+
+// 颜色+透明度
+#define MHAlphaColor(r, g, b, a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:a]
+
+
+// 随机色
+#define MHRandomColor MHColor(arc4random_uniform(256), arc4random_uniform(256), arc4random_uniform(256))
+// 根据rgbValue获取值
+#define MHColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
+// 是否为iOS7+
+#define MHIOS7 ([[UIDevice currentDevice].systemVersion doubleValue] >= 7.0)
+
+// 是否为4inch
+#define MHFourInch ([UIScreen mainScreen].bounds.size.height == 568.0)
+
+// 屏幕总尺寸
+#define MHMainScreenBounds  [UIScreen mainScreen].bounds
+#define MHMainScreenHeight  [UIScreen mainScreen].bounds.size.height
+#define MHMainScreenWidth   [UIScreen mainScreen].bounds.size.width
+
+// IOS版本
+#define MHIOSVersion [[[UIDevice currentDevice] systemVersion] floatValue]
+#define MH_iOS7_VERSTION_LATER ([UIDevice currentDevice].systemVersion.floatValue >= 7.0)
+#define MH_iOS8_VERSTION_LATER ([UIDevice currentDevice].systemVersion.floatValue >= 8.0)
+#define MH_iOS9_VERSTION_LATER ([UIDevice currentDevice].systemVersion.floatValue >= 9.0)
+#define MH_iOS10_VERSTION_LATER ([UIDevice currentDevice].systemVersion.floatValue >= 10.0)
+
+
+
+// 销毁打印
+#define MHDealloc MHLog(@"\n =========+++ %@  销毁了 +++======== \n",[self class])
+
+// 是否为空对象
+#define MHObjectIsNil(__object)  ((nil == __object) || [__object isKindOfClass:[NSNull class]])
+
+// 字符串为空
+#define MHStringIsEmpty(__string) ((__string.length == 0) || MHObjectIsNil(__string))
+
+// 字符串不为空
+#define MHStringIsNotEmpty(__string)  (!MHStringIsEmpty(__string))
+
+// 数组为空
+#define MHArrayIsEmpty(__array) ((MHObjectIsNil(__array)) || (__array.count==0))
+
+// 取消ios7以后下移
+#define MHDisabledAutomaticallyAdjustsScrollViewInsets \
+if (MHIOSVersion>=7.0) {\
+self.automaticallyAdjustsScrollViewInsets = NO;\
+}
+
+// AppCaches 文件夹路径
+#define MHCachesDirectory [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject]
+
+// App DocumentDirectory 文件夹路径
+#define MHDocumentDirectory [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES) lastObject]
+
+// 系统放大倍数
+#define MHScale [[UIScreen mainScreen] scale]
+
+/**
+ *  Frame PX  ---> Pt 6的宽度 全部向下取整数
+ */
+#define MHPxConvertPt(__Px) floor((__Px) * MHMainScreenWidth/375.0f)
+/**
+ *  Frame PX  ---> Pt 6的宽度 返回一个合适的值 按钮手指触摸点 44
+ */
+#define MHFxConvertFitPt(__px) (MAX(MHPxConvertPt(__Px),44))
+
+
+// 设置图片
+#define MHImageNamed(__imageName) [UIImage imageNamed:__imageName]
+
+
+
+
+
+
+
+
+/// 适配iPhone X + iOS 11
+#define  MHAdjustsScrollViewInsets_Never(__scrollView)\
+do {\
+_Pragma("clang diagnostic push")\
+_Pragma("clang diagnostic ignored \"-Warc-performSelector-leaks\"")\
+if ([__scrollView respondsToSelector:NSSelectorFromString(@"setContentInsetAdjustmentBehavior:")]) {\
+NSMethodSignature *signature = [UIScrollView instanceMethodSignatureForSelector:@selector(setContentInsetAdjustmentBehavior:)];\
+NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];\
+NSInteger argument = 2;\
+invocation.target = __scrollView;\
+invocation.selector = @selector(setContentInsetAdjustmentBehavior:);\
+[invocation setArgument:&argument atIndex:2];\
+[invocation retainArguments];\
+[invocation invoke];\
+}\
+_Pragma("clang diagnostic pop")\
+} while (0)
+
+// 常用的
+#import "MHConstant.h"
+#import "CMHMacros.h"
+
+#endif
