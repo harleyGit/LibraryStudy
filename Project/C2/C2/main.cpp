@@ -19,21 +19,55 @@
 #include "Chapter6.hpp"
 
 
+
+void swapValue(int *a, int *b) {
+    int c = *a;
+    
+    *a = *b;
+    *b = c;
+}
+
 /**
  *快速排序
  */
-void quickSort(int array[], int length) {
-    int i = 0;
-    int j = length - 1;
+void quickSort(int *array[], int low, int high) {
     
-    int keyValue = array[i];
+    int keyValue = *array[low];
+    int i = low;
+    int j = high;
     
-    while (array) {
+    if (low >= high) {
+        return;
+    }
+    
+    while (low < high) {
+        if (keyValue >= *array[low]) {
+            ++low;
+        }else {
+            while (*array[low] < keyValue) {
+                //数值进行交换
+                swapValue(array[low], array[high]);
+            }
+        }
+        
+        if (keyValue <= *array[high]) {
+            --high;
+        }else {
+            while (*array[high] > keyValue) {
+                swapValue(array[high], array[low]);
+            }
+        }
         
     }
     
+    quickSort(array, i, low-1);
+    quickSort(array, low+1, j);
+    
     
 }
+
+
+
 
 void testMethod_1();
 
