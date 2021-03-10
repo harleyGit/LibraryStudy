@@ -19,8 +19,21 @@
 #include "Chapter6.hpp"
 
 
-
-
+/**
+ *快速排序
+ */
+void quickSort(int array[], int length) {
+    int i = 0;
+    int j = length - 1;
+    
+    int keyValue = array[i];
+    
+    while (array) {
+        
+    }
+    
+    
+}
 
 void testMethod_1();
 
