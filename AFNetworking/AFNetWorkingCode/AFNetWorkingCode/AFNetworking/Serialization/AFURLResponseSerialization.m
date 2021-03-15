@@ -50,10 +50,13 @@ static NSError * AFErrorWithUnderlyingError(NSError *error, NSError *underlyingE
     return [[NSError alloc] initWithDomain:error.domain code:error.code userInfo:mutableUserInfo];
 }
 
+//判断是不是我们自己之前生成的错误信息，是的话返回YES
 static BOOL AFErrorOrUnderlyingErrorHasCodeInDomain(NSError *error, NSInteger code, NSString *domain) {
+    //判断错误域名和传过来的域名是否一致，错误code是否一致
     if ([error.domain isEqualToString:domain] && error.code == code) {
         return YES;
-    } else if (error.userInfo[NSUnderlyingErrorKey]) {
+    } else if (error.userInfo[NSUnderlyingErrorKey]) {    //如果userInfo的NSUnderlyingErrorKey有值，则在判断一次。
+
         return AFErrorOrUnderlyingErrorHasCodeInDomain(error.userInfo[NSUnderlyingErrorKey], code, domain);
     }
 
@@ -61,18 +64,22 @@ static BOOL AFErrorOrUnderlyingErrorHasCodeInDomain(NSError *error, NSInteger co
 }
 
 id AFJSONObjectByRemovingKeysWithNullValues(id JSONObject, NSJSONReadingOptions readingOptions) {
+    //分数组和字典
     if ([JSONObject isKindOfClass:[NSArray class]]) {
         NSMutableArray *mutableArray = [NSMutableArray arrayWithCapacity:[(NSArray *)JSONObject count]];
         for (id value in (NSArray *)JSONObject) {
             if (![value isEqual:[NSNull null]]) {
+                //调用自己
                 [mutableArray addObject:AFJSONObjectByRemovingKeysWithNullValues(value, readingOptions)];
             }
         }
-
+        
+        //看我们解析类型是mutable还是非muatable,返回mutableArray或者array
         return (readingOptions & NSJSONReadingMutableContainers) ? mutableArray : [NSArray arrayWithArray:mutableArray];
     } else if ([JSONObject isKindOfClass:[NSDictionary class]]) {
         NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:JSONObject];
         for (id <NSCopying> key in [(NSDictionary *)JSONObject allKeys]) {
+            //value空则移除
             id value = (NSDictionary *)JSONObject[key];
             if (!value || [value isEqual:[NSNull null]]) {
                 [mutableDictionary removeObjectForKey:key];
@@ -247,14 +254,18 @@ id AFJSONObjectByRemovingKeysWithNullValues(id JSONObject, NSJSONReadingOptions 
                            data:(NSData *)data
                           error:(NSError *__autoreleasing *)error
 {
+    //先判断是不是可接受类型和可接受code
     if (![self validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
+        //error为空，或者有错误，去函数里判断
         if (!error || AFErrorOrUnderlyingErrorHasCodeInDomain(*error, NSURLErrorCannotDecodeContentData, AFURLResponseSerializationErrorDomain)) {
+            //返回空
             return nil;
         }
     }
 
     // Workaround for behavior of Rails to return a single space for `head :ok` (a workaround for a bug in Safari), which is not interpreted as valid input by NSJSONSerialization.
     // See https://github.com/rails/rails/issues/1742
+    //如果数据为空
     BOOL isSpace = [data isEqualToData:[NSData dataWithBytes:" " length:1]];
     
     if (data.length == 0 || isSpace) {
@@ -263,16 +274,19 @@ id AFJSONObjectByRemovingKeysWithNullValues(id JSONObject, NSJSONReadingOptions 
     
     NSError *serializationError = nil;
     
+    //不空则去json解析
     id responseObject = [NSJSONSerialization JSONObjectWithData:data options:self.readingOptions error:&serializationError];
 
     if (!responseObject)
     {
+        //拿着json解析的error去填充错误信息
         if (error) {
             *error = AFErrorWithUnderlyingError(serializationError, *error);
         }
         return nil;
     }
     
+    //判断是否需要移除Null值
     if (self.removesKeysWithNullValues) {
         return AFJSONObjectByRemovingKeysWithNullValues(responseObject, self.readingOptions);
     }
