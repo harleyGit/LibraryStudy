@@ -1,0 +1,704 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		094336C41FEB6AAC00EF74FF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 094336C31FEB6AAC00EF74FF /* AppDelegate.m */; };
+		094336C71FEB6AAD00EF74FF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 094336C61FEB6AAD00EF74FF /* ViewController.m */; };
+		094336CA1FEB6AAD00EF74FF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 094336C81FEB6AAD00EF74FF /* Main.storyboard */; };
+		094336CC1FEB6AAD00EF74FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 094336CB1FEB6AAD00EF74FF /* Assets.xcassets */; };
+		094336CF1FEB6AAD00EF74FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 094336CD1FEB6AAD00EF74FF /* LaunchScreen.storyboard */; };
+		094336D21FEB6AAD00EF74FF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 094336D11FEB6AAD00EF74FF /* main.m */; };
+		094336DC1FEB6AAD00EF74FF /* ______Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 094336DB1FEB6AAD00EF74FF /* ______Tests.m */; };
+		094336E71FEB6AAD00EF74FF /* ______UITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 094336E61FEB6AAD00EF74FF /* ______UITests.m */; };
+		094337011FEBC17100EF74FF /* ZYRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 094337001FEBC17100EF74FF /* ZYRequest.m */; };
+		094337041FEBC17E00EF74FF /* ZYRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 094337021FEBC17D00EF74FF /* ZYRequestManager.m */; };
+		09B539A91FF1E90D00FF08F5 /* ZYRequestRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 09B539A81FF1E90D00FF08F5 /* ZYRequestRealm.m */; };
+		09D238C21FF0E65E00F72E7A /* YQDStorageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 09D238C11FF0E65E00F72E7A /* YQDStorageUtils.m */; };
+		09D238C61FF0E83B00F72E7A /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 09D238C51FF0E83B00F72E7A /* NSString+MD5.m */; };
+		09D238C91FF0E91E00F72E7A /* ZYRequestCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 09D238C81FF0E91E00F72E7A /* ZYRequestCache.m */; };
+		09F1AE1B1FEC9F5700119511 /* YQDHttpClinetCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 09F1AE1A1FEC9F5700119511 /* YQDHttpClinetCore.m */; };
+		B84BACDE70601B7564AEF6EB /* Pods_RetryNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA87B257718407796A54DF7B /* Pods_RetryNetwork.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		094336D81FEB6AAD00EF74FF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 094336B71FEB6AAC00EF74FF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 094336BE1FEB6AAC00EF74FF;
+			remoteInfo = RetryNetwork;
+		};
+		094336E31FEB6AAD00EF74FF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 094336B71FEB6AAC00EF74FF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 094336BE1FEB6AAC00EF74FF;
+			remoteInfo = RetryNetwork;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		094336BF1FEB6AAC00EF74FF /* RetryNetwork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RetryNetwork.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		094336C21FEB6AAC00EF74FF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		094336C31FEB6AAC00EF74FF /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		094336C51FEB6AAC00EF74FF /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		094336C61FEB6AAD00EF74FF /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		094336C91FEB6AAD00EF74FF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		094336CB1FEB6AAD00EF74FF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		094336CE1FEB6AAD00EF74FF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		094336D01FEB6AAD00EF74FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		094336D11FEB6AAD00EF74FF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		094336D71FEB6AAD00EF74FF /* RetryNetworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RetryNetworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		094336DB1FEB6AAD00EF74FF /* ______Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ______Tests.m; sourceTree = "<group>"; };
+		094336DD1FEB6AAD00EF74FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		094336E21FEB6AAD00EF74FF /* RetryNetworkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RetryNetworkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		094336E61FEB6AAD00EF74FF /* ______UITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ______UITests.m; sourceTree = "<group>"; };
+		094336E81FEB6AAD00EF74FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		094336FF1FEBC17100EF74FF /* ZYRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZYRequest.h; sourceTree = "<group>"; };
+		094337001FEBC17100EF74FF /* ZYRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZYRequest.m; sourceTree = "<group>"; };
+		094337021FEBC17D00EF74FF /* ZYRequestManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZYRequestManager.m; sourceTree = "<group>"; };
+		094337031FEBC17D00EF74FF /* ZYRequestManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZYRequestManager.h; sourceTree = "<group>"; };
+		09B539A71FF1E90D00FF08F5 /* ZYRequestRealm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZYRequestRealm.h; sourceTree = "<group>"; };
+		09B539A81FF1E90D00FF08F5 /* ZYRequestRealm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZYRequestRealm.m; sourceTree = "<group>"; };
+		09D238C01FF0E65E00F72E7A /* YQDStorageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YQDStorageUtils.h; sourceTree = "<group>"; };
+		09D238C11FF0E65E00F72E7A /* YQDStorageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YQDStorageUtils.m; sourceTree = "<group>"; };
+		09D238C41FF0E83B00F72E7A /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
+		09D238C51FF0E83B00F72E7A /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
+		09D238C71FF0E91E00F72E7A /* ZYRequestCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZYRequestCache.h; sourceTree = "<group>"; };
+		09D238C81FF0E91E00F72E7A /* ZYRequestCache.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZYRequestCache.m; sourceTree = "<group>"; };
+		09F1AE191FEC9F5700119511 /* YQDHttpClinetCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YQDHttpClinetCore.h; sourceTree = "<group>"; };
+		09F1AE1A1FEC9F5700119511 /* YQDHttpClinetCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YQDHttpClinetCore.m; sourceTree = "<group>"; };
+		09F1AE1D1FECB9B500119511 /* ZYRequestMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZYRequestMacro.h; sourceTree = "<group>"; };
+		39D57784AE419F640C62ADB2 /* Pods-RetryNetwork.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RetryNetwork.release.xcconfig"; path = "Pods/Target Support Files/Pods-RetryNetwork/Pods-RetryNetwork.release.xcconfig"; sourceTree = "<group>"; };
+		804E154617E811741B154B47 /* Pods-RetryNetwork.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RetryNetwork.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RetryNetwork/Pods-RetryNetwork.debug.xcconfig"; sourceTree = "<group>"; };
+		DA87B257718407796A54DF7B /* Pods_RetryNetwork.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RetryNetwork.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		094336BC1FEB6AAC00EF74FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B84BACDE70601B7564AEF6EB /* Pods_RetryNetwork.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		094336D41FEB6AAD00EF74FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		094336DF1FEB6AAD00EF74FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		094336B61FEB6AAC00EF74FF = {
+			isa = PBXGroup;
+			children = (
+				094336C11FEB6AAC00EF74FF /* RetryNetwork */,
+				094336DA1FEB6AAD00EF74FF /* RetryNetworkTests */,
+				094336E51FEB6AAD00EF74FF /* RetryNetworkUITests */,
+				094336C01FEB6AAC00EF74FF /* Products */,
+				3D12E0247544ED7E07ABA4D4 /* Pods */,
+				53E99B7D197E97FECC1CDA0C /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		094336C01FEB6AAC00EF74FF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				094336BF1FEB6AAC00EF74FF /* RetryNetwork.app */,
+				094336D71FEB6AAD00EF74FF /* RetryNetworkTests.xctest */,
+				094336E21FEB6AAD00EF74FF /* RetryNetworkUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		094336C11FEB6AAC00EF74FF /* RetryNetwork */ = {
+			isa = PBXGroup;
+			children = (
+				094336F51FEB90CB00EF74FF /* NetworkManager */,
+				094336C21FEB6AAC00EF74FF /* AppDelegate.h */,
+				094336C31FEB6AAC00EF74FF /* AppDelegate.m */,
+				094336C51FEB6AAC00EF74FF /* ViewController.h */,
+				094336C61FEB6AAD00EF74FF /* ViewController.m */,
+				094336C81FEB6AAD00EF74FF /* Main.storyboard */,
+				094336CB1FEB6AAD00EF74FF /* Assets.xcassets */,
+				094336CD1FEB6AAD00EF74FF /* LaunchScreen.storyboard */,
+				094336D01FEB6AAD00EF74FF /* Info.plist */,
+				094336D11FEB6AAD00EF74FF /* main.m */,
+			);
+			path = RetryNetwork;
+			sourceTree = "<group>";
+		};
+		094336DA1FEB6AAD00EF74FF /* RetryNetworkTests */ = {
+			isa = PBXGroup;
+			children = (
+				094336DB1FEB6AAD00EF74FF /* ______Tests.m */,
+				094336DD1FEB6AAD00EF74FF /* Info.plist */,
+			);
+			path = RetryNetworkTests;
+			sourceTree = "<group>";
+		};
+		094336E51FEB6AAD00EF74FF /* RetryNetworkUITests */ = {
+			isa = PBXGroup;
+			children = (
+				094336E61FEB6AAD00EF74FF /* ______UITests.m */,
+				094336E81FEB6AAD00EF74FF /* Info.plist */,
+			);
+			path = RetryNetworkUITests;
+			sourceTree = "<group>";
+		};
+		094336F51FEB90CB00EF74FF /* NetworkManager */ = {
+			isa = PBXGroup;
+			children = (
+				09D238BF1FF0E65E00F72E7A /* Storage */,
+				09F1AE1D1FECB9B500119511 /* ZYRequestMacro.h */,
+				09F1AE191FEC9F5700119511 /* YQDHttpClinetCore.h */,
+				09F1AE1A1FEC9F5700119511 /* YQDHttpClinetCore.m */,
+				094336FF1FEBC17100EF74FF /* ZYRequest.h */,
+				094337001FEBC17100EF74FF /* ZYRequest.m */,
+				094337031FEBC17D00EF74FF /* ZYRequestManager.h */,
+				094337021FEBC17D00EF74FF /* ZYRequestManager.m */,
+				09D238C71FF0E91E00F72E7A /* ZYRequestCache.h */,
+				09D238C81FF0E91E00F72E7A /* ZYRequestCache.m */,
+				09B539A71FF1E90D00FF08F5 /* ZYRequestRealm.h */,
+				09B539A81FF1E90D00FF08F5 /* ZYRequestRealm.m */,
+			);
+			path = NetworkManager;
+			sourceTree = "<group>";
+		};
+		09D238BF1FF0E65E00F72E7A /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				09D238C41FF0E83B00F72E7A /* NSString+MD5.h */,
+				09D238C51FF0E83B00F72E7A /* NSString+MD5.m */,
+				09D238C01FF0E65E00F72E7A /* YQDStorageUtils.h */,
+				09D238C11FF0E65E00F72E7A /* YQDStorageUtils.m */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		3D12E0247544ED7E07ABA4D4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				804E154617E811741B154B47 /* Pods-RetryNetwork.debug.xcconfig */,
+				39D57784AE419F640C62ADB2 /* Pods-RetryNetwork.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		53E99B7D197E97FECC1CDA0C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DA87B257718407796A54DF7B /* Pods_RetryNetwork.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		094336BE1FEB6AAC00EF74FF /* RetryNetwork */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 094336EB1FEB6AAD00EF74FF /* Build configuration list for PBXNativeTarget "RetryNetwork" */;
+			buildPhases = (
+				0465C93B02B42B9F1D72E671 /* [CP] Check Pods Manifest.lock */,
+				094336BB1FEB6AAC00EF74FF /* Sources */,
+				094336BC1FEB6AAC00EF74FF /* Frameworks */,
+				094336BD1FEB6AAC00EF74FF /* Resources */,
+				8D2A9E4FB282AD9AEE902140 /* [CP] Embed Pods Frameworks */,
+				57117EB2E397E89D4916408E /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RetryNetwork;
+			productName = RetryNetwork;
+			productReference = 094336BF1FEB6AAC00EF74FF /* RetryNetwork.app */;
+			productType = "com.apple.product-type.application";
+		};
+		094336D61FEB6AAD00EF74FF /* RetryNetworkTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 094336EE1FEB6AAD00EF74FF /* Build configuration list for PBXNativeTarget "RetryNetworkTests" */;
+			buildPhases = (
+				094336D31FEB6AAD00EF74FF /* Sources */,
+				094336D41FEB6AAD00EF74FF /* Frameworks */,
+				094336D51FEB6AAD00EF74FF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				094336D91FEB6AAD00EF74FF /* PBXTargetDependency */,
+			);
+			name = RetryNetworkTests;
+			productName = RetryNetworkTests;
+			productReference = 094336D71FEB6AAD00EF74FF /* RetryNetworkTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		094336E11FEB6AAD00EF74FF /* RetryNetworkUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 094336F11FEB6AAD00EF74FF /* Build configuration list for PBXNativeTarget "RetryNetworkUITests" */;
+			buildPhases = (
+				094336DE1FEB6AAD00EF74FF /* Sources */,
+				094336DF1FEB6AAD00EF74FF /* Frameworks */,
+				094336E01FEB6AAD00EF74FF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				094336E41FEB6AAD00EF74FF /* PBXTargetDependency */,
+			);
+			name = RetryNetworkUITests;
+			productName = RetryNetworkUITests;
+			productReference = 094336E21FEB6AAD00EF74FF /* RetryNetworkUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		094336B71FEB6AAC00EF74FF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "王志盼";
+				TargetAttributes = {
+					094336BE1FEB6AAC00EF74FF = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+					094336D61FEB6AAD00EF74FF = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 094336BE1FEB6AAC00EF74FF;
+					};
+					094336E11FEB6AAD00EF74FF = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 094336BE1FEB6AAC00EF74FF;
+					};
+				};
+			};
+			buildConfigurationList = 094336BA1FEB6AAC00EF74FF /* Build configuration list for PBXProject "RetryNetwork" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 094336B61FEB6AAC00EF74FF;
+			productRefGroup = 094336C01FEB6AAC00EF74FF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				094336BE1FEB6AAC00EF74FF /* RetryNetwork */,
+				094336D61FEB6AAD00EF74FF /* RetryNetworkTests */,
+				094336E11FEB6AAD00EF74FF /* RetryNetworkUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		094336BD1FEB6AAC00EF74FF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				094336CF1FEB6AAD00EF74FF /* LaunchScreen.storyboard in Resources */,
+				094336CC1FEB6AAD00EF74FF /* Assets.xcassets in Resources */,
+				094336CA1FEB6AAD00EF74FF /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		094336D51FEB6AAD00EF74FF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		094336E01FEB6AAD00EF74FF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0465C93B02B42B9F1D72E671 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RetryNetwork-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		57117EB2E397E89D4916408E /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RetryNetwork/Pods-RetryNetwork-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8D2A9E4FB282AD9AEE902140 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-RetryNetwork/Pods-RetryNetwork-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
+				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RetryNetwork/Pods-RetryNetwork-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		094336BB1FEB6AAC00EF74FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09B539A91FF1E90D00FF08F5 /* ZYRequestRealm.m in Sources */,
+				09D238C91FF0E91E00F72E7A /* ZYRequestCache.m in Sources */,
+				094336C71FEB6AAD00EF74FF /* ViewController.m in Sources */,
+				094336D21FEB6AAD00EF74FF /* main.m in Sources */,
+				09D238C61FF0E83B00F72E7A /* NSString+MD5.m in Sources */,
+				094337011FEBC17100EF74FF /* ZYRequest.m in Sources */,
+				094336C41FEB6AAC00EF74FF /* AppDelegate.m in Sources */,
+				09F1AE1B1FEC9F5700119511 /* YQDHttpClinetCore.m in Sources */,
+				09D238C21FF0E65E00F72E7A /* YQDStorageUtils.m in Sources */,
+				094337041FEBC17E00EF74FF /* ZYRequestManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		094336D31FEB6AAD00EF74FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				094336DC1FEB6AAD00EF74FF /* ______Tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		094336DE1FEB6AAD00EF74FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				094336E71FEB6AAD00EF74FF /* ______UITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		094336D91FEB6AAD00EF74FF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 094336BE1FEB6AAC00EF74FF /* RetryNetwork */;
+			targetProxy = 094336D81FEB6AAD00EF74FF /* PBXContainerItemProxy */;
+		};
+		094336E41FEB6AAD00EF74FF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 094336BE1FEB6AAC00EF74FF /* RetryNetwork */;
+			targetProxy = 094336E31FEB6AAD00EF74FF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		094336C81FEB6AAD00EF74FF /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				094336C91FEB6AAD00EF74FF /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		094336CD1FEB6AAD00EF74FF /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				094336CE1FEB6AAD00EF74FF /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		094336E91FEB6AAD00EF74FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		094336EA1FEB6AAD00EF74FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		094336EC1FEB6AAD00EF74FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 804E154617E811741B154B47 /* Pods-RetryNetwork.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T6FCKHRT95;
+				INFOPLIST_FILE = RetryNetwork/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ppp.------";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		094336ED1FEB6AAD00EF74FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 39D57784AE419F640C62ADB2 /* Pods-RetryNetwork.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T6FCKHRT95;
+				INFOPLIST_FILE = RetryNetwork/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ppp.------";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		094336EF1FEB6AAD00EF74FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T6FCKHRT95;
+				INFOPLIST_FILE = RetryNetworkTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ppp.------Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RetryNetwork.app/RetryNetwork";
+			};
+			name = Debug;
+		};
+		094336F01FEB6AAD00EF74FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T6FCKHRT95;
+				INFOPLIST_FILE = RetryNetworkTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ppp.------Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RetryNetwork.app/RetryNetwork";
+			};
+			name = Release;
+		};
+		094336F21FEB6AAD00EF74FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T6FCKHRT95;
+				INFOPLIST_FILE = RetryNetworkUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ppp.------UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RetryNetwork;
+			};
+			name = Debug;
+		};
+		094336F31FEB6AAD00EF74FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T6FCKHRT95;
+				INFOPLIST_FILE = RetryNetworkUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ppp.------UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RetryNetwork;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		094336BA1FEB6AAC00EF74FF /* Build configuration list for PBXProject "RetryNetwork" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				094336E91FEB6AAD00EF74FF /* Debug */,
+				094336EA1FEB6AAD00EF74FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		094336EB1FEB6AAD00EF74FF /* Build configuration list for PBXNativeTarget "RetryNetwork" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				094336EC1FEB6AAD00EF74FF /* Debug */,
+				094336ED1FEB6AAD00EF74FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		094336EE1FEB6AAD00EF74FF /* Build configuration list for PBXNativeTarget "RetryNetworkTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				094336EF1FEB6AAD00EF74FF /* Debug */,
+				094336F01FEB6AAD00EF74FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		094336F11FEB6AAD00EF74FF /* Build configuration list for PBXNativeTarget "RetryNetworkUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				094336F21FEB6AAD00EF74FF /* Debug */,
+				094336F31FEB6AAD00EF74FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 094336B71FEB6AAC00EF74FF /* Project object */;
+}
