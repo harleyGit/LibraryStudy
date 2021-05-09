@@ -10,6 +10,7 @@
 		0150309526136DAE00FBCA2A /* Tree_2_3_4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0150309326136DAE00FBCA2A /* Tree_2_3_4.cpp */; };
 		19335B1425499DB100370811 /* Chapter6.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 19335B1225499DB100370811 /* Chapter6.cpp */; };
 		1990240925431E790055A986 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1990240825431E790055A986 /* main.cpp */; };
+		6EE7878F2646B87D00830642 /* DFSExercise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EE7878D2646B87D00830642 /* DFSExercise.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		19335B1325499DB100370811 /* Chapter6.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Chapter6.hpp; sourceTree = "<group>"; };
 		1990240525431E790055A986 /* C2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = C2; sourceTree = BUILT_PRODUCTS_DIR; };
 		1990240825431E790055A986 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		6EE7878D2646B87D00830642 /* DFSExercise.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DFSExercise.cpp; sourceTree = "<group>"; };
+		6EE7878E2646B87D00830642 /* DFSExercise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DFSExercise.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,12 +75,22 @@
 		1990240725431E790055A986 /* C2 */ = {
 			isa = PBXGroup;
 			children = (
+				6EE7878C2646B79200830642 /* LeetCode */,
 				0150309226136D3000FBCA2A /* Chapter2 */,
 				19335B1225499DB100370811 /* Chapter6.cpp */,
 				19335B1325499DB100370811 /* Chapter6.hpp */,
 				1990240825431E790055A986 /* main.cpp */,
 			);
 			path = C2;
+			sourceTree = "<group>";
+		};
+		6EE7878C2646B79200830642 /* LeetCode */ = {
+			isa = PBXGroup;
+			children = (
+				6EE7878D2646B87D00830642 /* DFSExercise.cpp */,
+				6EE7878E2646B87D00830642 /* DFSExercise.hpp */,
+			);
+			path = LeetCode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,6 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0150309526136DAE00FBCA2A /* Tree_2_3_4.cpp in Sources */,
+				6EE7878F2646B87D00830642 /* DFSExercise.cpp in Sources */,
 				19335B1425499DB100370811 /* Chapter6.cpp in Sources */,
 				1990240925431E790055A986 /* main.cpp in Sources */,
 			);
