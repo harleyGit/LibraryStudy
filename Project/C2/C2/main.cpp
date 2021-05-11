@@ -8,101 +8,70 @@
  *printf格式化输出：https://blog.csdn.net/xiexievv/article/details/6831194
  *
  */
-/**
- *  #include并不是什么申请指令，只是将指定文件的内容，原封不动的拷贝进来
- *  *.h文件做的是类的声明，包括类成员的定义和函数的声明
- *  *.cpp文件做的类成员函数的具体实现（定义）
- *  在*.cpp文件的第一行一般也是#include"*.h"文件，其实也相当于把*.h文件里的东西复制到*.cpp文件的开头
- */
+
 
 #include <iostream>
 #include "Chapter6.hpp"
-
-void swapValue(int *a, int *b);
-void quickSort(int array[], int low, int high);
-
+#include "SortExercise.hpp"
+#include "DFSExercise.hpp"
 
 void testMethod_1();
+void testQuickSort();
+void testDFSExerice();
 
 int main(int argc, const char * argv[]) {
     
-    //    int a[] = {900, 2, -58, 3, 34, 5, 76, 7, 32, 4, 43, 9, 1, 56, 8,-70, 635, -234, 532, 543, 2500};
-    int a[] = {100, 20, 60, -20, 200};
-    int length = sizeof(a) / sizeof(int);
-    quickSort(a, 0, length - 1);
-    
-    for (int i = 0; i < 21 ; i++) {
-        printf("%d ", a[i]);
-    }
-    
-    
-    
-    
-    
-    Chapter6 chapter6;
-    //chapter6.chapter6Run();
-    
     //testMethod_1();
     
-    printf("\n\n");
-    system("\n pause");
+    //快速排序
+    //testQuickSort();
+
+    testDFSExerice();
+    
+    printf("\n\n\n");
+    system("pause");
     
     return 0;
 }
 
-void swapValue(int *a, int *b) {
-    int c = *a;
+
+
+
+//使用 DFS 暴力搜索，过程中进行剪枝
+void testDFSExerice() {
+//    int jobs[] = {254,256,256,254,251,256,254,253,255,251,251,255};// n = 12
+//    int k = 10;
+//
+    int jobs[] = {1,2,4,7,8}; //n=5
+    int k = 2;//工作时间 11；
     
-    *a = *b;
-    *b = c;
+    
+//    int jobs[] = {3,2,3}; //n=3
+//    int k = 3;//工作时间 11；
+    
+    int length = sizeof(jobs)/sizeof(int);
+    //通过数组a的地址初始化，注意地址是从0到5（左闭右开区间）
+    vector<int> vecJobs(jobs, jobs+length);
+    DFSExercise testDFSExercise;
+    int a = testDFSExercise.minimumTimeRequired(vecJobs, k);
+    
+    PrintFormat2("完成所有工作的最短时间: %i", a);
 }
 
-/**
- *快速排序
- */
-void quickSort(int array[], int low, int high) {
+
+//快速排序
+void testQuickSort() {
+    //int a[] = {900, 2, -58, 3, 34, 5, 76, 7, 32, 4, 43, 9, 1, 56, 8,-70, 635, -234, 532, 543, 2500};
+    SortExercise testSortExercise;
+    int a[] = {100, 20, 60, -20, 200};
+    int length = sizeof(a) / sizeof(int);
+    testSortExercise.quickSort(a, 0, length - 1);
     
-    int keyValue = array[low];
-    int i = low;
-    int j = high;
-    
-    //如果low >= high说明排序结束了
-    if (low >= high) {
-        return;
+    for (int i = 0; i < length ; i++) {
+        printf("%d ", a[i]);
     }
-    
-    while (low < high) {//该while循环结束一次表示比较了一轮 {100, 20, 60, -20, 200}
-        
-        while (low < high && array[high] >= keyValue) {
-            --high;//往后查找
-        }
-        if (array[high] < keyValue) {
-            swapValue(&(array[low]), &(array[high]));
-            ++low;
-        }
-        
-        
-        while (array[low] <= keyValue && low < high) {
-            
-            ++low;
-        }
-        
-        if (array[low] > keyValue) {
-            //数值进行交换
-            swapValue(&(array[low]), &(array[high]));
-            --high;
-        }
-        
-        
-    }
-    
-    //用同样的方式对分出来的左边的部分进行同上的做法
-    quickSort(array, i, low-1);
-    //用同样的方式对分出来的右边的部分进行同上的做法
-    quickSort(array, low+1, j);
-    
-    
 }
+
 
 
 

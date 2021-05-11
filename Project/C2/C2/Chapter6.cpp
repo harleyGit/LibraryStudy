@@ -16,12 +16,6 @@
 Chapter6::BinaryTree *KthNodeCore(Chapter6::BinaryTree *pRoot, unsigned int& k);
 
 
-
-
-
-
-
-
 Chapter6::BinaryTree *KthNodeCore(Chapter6::BinaryTree *pRoot, unsigned int& k) {
     
     Chapter6::BinaryTree *target = nullptr;

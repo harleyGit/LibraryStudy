@@ -45,11 +45,6 @@ public:
     //起始变量值
     int number = 0;
     
-    
-    
-    
-    
-    
     /// 二叉树创建
     /// @param binaryTree 根结点指针
     void createBinaryTree(BinaryTreeNode *binaryTree, int index = 0);

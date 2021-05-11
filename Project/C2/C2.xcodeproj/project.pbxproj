@@ -11,6 +11,7 @@
 		19335B1425499DB100370811 /* Chapter6.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 19335B1225499DB100370811 /* Chapter6.cpp */; };
 		1990240925431E790055A986 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1990240825431E790055A986 /* main.cpp */; };
 		6EE7878F2646B87D00830642 /* DFSExercise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EE7878D2646B87D00830642 /* DFSExercise.cpp */; };
+		6EE7879A2648021F00830642 /* SortExercise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EE787982648021F00830642 /* SortExercise.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +35,8 @@
 		1990240825431E790055A986 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6EE7878D2646B87D00830642 /* DFSExercise.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DFSExercise.cpp; sourceTree = "<group>"; };
 		6EE7878E2646B87D00830642 /* DFSExercise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DFSExercise.hpp; sourceTree = "<group>"; };
+		6EE787982648021F00830642 /* SortExercise.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SortExercise.cpp; sourceTree = "<group>"; };
+		6EE787992648021F00830642 /* SortExercise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SortExercise.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +78,7 @@
 		1990240725431E790055A986 /* C2 */ = {
 			isa = PBXGroup;
 			children = (
+				6EE787912647EACE00830642 /* Sort */,
 				6EE7878C2646B79200830642 /* LeetCode */,
 				0150309226136D3000FBCA2A /* Chapter2 */,
 				19335B1225499DB100370811 /* Chapter6.cpp */,
@@ -91,6 +95,15 @@
 				6EE7878E2646B87D00830642 /* DFSExercise.hpp */,
 			);
 			path = LeetCode;
+			sourceTree = "<group>";
+		};
+		6EE787912647EACE00830642 /* Sort */ = {
+			isa = PBXGroup;
+			children = (
+				6EE787982648021F00830642 /* SortExercise.cpp */,
+				6EE787992648021F00830642 /* SortExercise.hpp */,
+			);
+			path = Sort;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,6 +162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6EE7879A2648021F00830642 /* SortExercise.cpp in Sources */,
 				0150309526136DAE00FBCA2A /* Tree_2_3_4.cpp in Sources */,
 				6EE7878F2646B87D00830642 /* DFSExercise.cpp in Sources */,
 				19335B1425499DB100370811 /* Chapter6.cpp in Sources */,

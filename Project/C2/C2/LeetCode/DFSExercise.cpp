@@ -6,40 +6,39 @@
 //
 
 #include "DFSExercise.hpp"
+#include <time.h>
 
 
 
-int goal_x = 9, goal_y = 9;     //目标的坐标，暂时设置为右下角
-int n = 10 , m = 10;               //地图的宽高，设置为10 * 10的表格
-int graph[n][m];        //地图
-int used[n][m];         //用来标记地图上那些点是走过的
-int px[] = {-1, 0, 1, 0};   //通过px 和 py数组来实现左下右上的移动顺序
-int py[] = {0, -1, 0, 1};
-int flag = 0;           //是否能达到终点的标志
+int DFSExercise::minimumTimeRequired(std::vector<int>& jobs, int k) {
+    int n = jobs.size();
+    // 不排序 88ms
+    sort(jobs.begin(), jobs.end()); // 40ms，从小到大
+    // sort(jobs.rbegin(), jobs.rend()); // 680ms
+    vector<int> time(k, 0);
+    dfs(jobs, time, k, 0);
+    return ans;
+}
 
-
-
-
-void DFS(int graph[10][10], int used[], int x, int y)
+void DFSExercise::dfs(vector<int>& jobs, vector<int>& time, int k, int idx)
 {
-    // 如果与目标坐标相同，则成功
-    if (graph[x][y] == graph[goal_x][goal_y]) {
-        printf("successful");
-        flag = 1;
-        return ;
+    if(idx == jobs.size())
+    {
+        int t = *max_element(time.begin(), time.end());
+        if(t < ans)// 最大的时间总和 更小
+            ans = t;
+        return;
     }
-    // 遍历四个方向
-    for (int i = 0; i != 4; ++i) {
-        //如果没有走过这个格子
-        int new_x = x + px[i], new_y = y + py[i];
-        if (new_x >= 0 && new_x < n && new_y >= 0
-            && new_y < m && used[new_x][new_y] == 0 && !flag) {
-            
-            used[new_x][new_y] = 1;     //将该格子设为走过
-
-            DFS(graph, used, new_x, new_y);      //递归下去
-
-            used[new_x][new_y] = 0;//状态回溯，退回来，将格子设置为未走过
-        }
+    for(int i = 0; i < k; ++i)
+    {
+        if(time[i]+jobs[idx] > ans)
+            //如果某人的时间超过答案，不可能是更优答案，剪枝
+            continue;
+        time[i] += jobs[idx];
+        dfs(jobs, time, k, idx+1);
+        time[i] -= jobs[idx];
+        if(time[i] == 0)
+            break;//搜完了，不加会超时
     }
 }
+
