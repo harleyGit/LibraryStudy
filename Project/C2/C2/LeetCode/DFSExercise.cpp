@@ -24,6 +24,7 @@ void DFSExercise::dfs(vector<int>& jobs, vector<int>& time, int k, int idx)
 {
     if(idx == jobs.size())
     {
+        //获取数组中最大值
         int t = *max_element(time.begin(), time.end());
         if(t < ans)// 最大的时间总和 更小
             ans = t;
