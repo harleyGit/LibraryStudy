@@ -1417,8 +1417,8 @@ public:
 struct objc_class : objc_object {
     // Class ISA;
     Class superclass;
-    cache_t cache;             // formerly cache pointer and vtable
-    class_data_bits_t bits;    // class_rw_t * plus custom rr/alloc flags
+    cache_t cache;             // 方法缓存
+    class_data_bits_t bits;    // 获取具体类信息
 
     class_rw_t *data() const {
         return bits.data();

@@ -11,6 +11,7 @@
 
 
 #include <iostream>
+#include <cstdlib>
 #include "Chapter6.hpp"
 #include "SortExercise.hpp"
 #include "DFSExercise.hpp"
@@ -19,14 +20,45 @@ void testMethod_1();
 void testQuickSort();
 void testDFSExerice();
 
+//十大排序算法
+int* bubbleSort(char methodName[],int array[], int length);
+int* selectSort(char methodName[], int array[], int length);
+int* insertionSort(char methodName[], int array[], int length);
+
 int main(int argc, const char * argv[]) {
     
-    //testMethod_1();
+    //    插入排序
+    int a[] = {9,0,6,5,8,2,1,7,4,3};
+    char methodName[] = "插入排序";
+    int *b = insertionSort(methodName,a, 10);
+    for (int i=0; i< 10; i++) {
+        printf("%i ", *(b+i));
+    }
     
-    //快速排序
-    //testQuickSort();
-
-    testDFSExerice();
+    
+    //    testMethod_1();
+    
+    //    快速排序
+    //    testQuickSort();
+    
+    //    冒泡排序
+    //    int a[] = {9,0,6,5,8,2,1,7,4,3};
+    //    char methodName[] = "冒泡排序";
+    //    int *b = bubbleSort(methodName,a, 10);
+    //    for (int i=0; i< 10; i++) {
+    //        printf("%i ", *(b+i));
+    //    }
+    
+    
+    //    选择排序
+    //    int a[] = { 3,  5,  2,  9,  7,  8,  4,  1,  6,  10 };//{9,0,6,5,8,2,1,7,4,3};
+    //    char methodName[] = "选择排序";
+    //    int *b = bubbleSort(methodName,a, 10);
+    //    for (int i=0; i< 10; i++) {
+    //        printf("%i ", *(b+i));
+    //    }
+    
+    //testDFSExerice();
     
     printf("\n\n\n");
     system("pause");
@@ -35,15 +67,85 @@ int main(int argc, const char * argv[]) {
 }
 
 
+//插入排序
+int* insertionSort(char methodName[], int array[], int length) {
+    printf("=================%s=================\n", methodName);
+
+    for (int i = 0, j, temp; i < length -1; i ++) {
+        
+        j = i;
+        temp = *(array+i+1);//{9,0,6,5,8,2,1,7,4,3}
+        
+        //作用：1.用来比较前后2个元素的大小，当后面的比前面的大时就调换位置；
+        //2.遇到最前面的元素小于temp时，跳出这个while循环
+        while (j >= 0 && array[j] > temp) {
+            array[j+1] = array[j]; //第一次时array[j+1]是最大的，但是随着j越来越小array[j+1]不是最大的了，如：j第一次为5，后来变成了4，3，2，1分别越来越对应最初的元素了{0,6,9
+            --j;
+        }
+        //把要插入的值插入进去，因为在上面j已经减去1了，所以这里面j要加1
+        array[j+1] = temp;
+    }
+    return  array;
+}
+
+//选择排序
+int* selectSort(char methodName[], int array[], int length){
+    
+    for (int i = 0; i < (length-1); i ++) {//需要循环的次数
+        for (int k = 0; k < (length - i); k++) {//按照从小往大的排，末尾的是排好的，所以前面还有（length-i）个没有排好
+            if (*(array+k)>*(array+k+1)) {
+                int a = *(array+k);
+                *(array+k) = *(array+k+1);
+                *(array+k+1) = a;
+            }
+        }
+    }
+    
+    return  array;
+}
+
+
+//冒泡排序
+int* bubbleSort(char methodName[],int array[], int length){
+    printf("=================%s=================\n", methodName);
+    
+    for (int i = 0; i < (length - 1); i ++) {
+        for (int k = 0; k < length - 1 - i; k ++) {
+            if (array[k] <= array[k+1]) {
+                continue;
+            }else {
+                int a = 0;
+                a = array[k];
+                array[k] = array[k+1];
+                array[k+1] = a;
+                /*
+                 swap((array+k), (array+k+1));
+                 
+                 void swap(int *a, int *b){
+                 int c = *a;
+                 *a = *b;
+                 *b = c;
+                 
+                 }
+                 */
+            }
+            
+        }
+    }
+    printf("\n");
+    
+    return array;
+}
+
 
 
 //使用 DFS 暴力搜索，过程中进行剪枝
 void testDFSExerice() {
-//    int jobs[] = {254,256,256,254,251,256,254,253,255,251,251,255};// n = 12
-//    int k = 10;
-//
-//    int jobs[] = {1,2,4,7,8}; //n=5
-//    int k = 2;//工作时间 11；
+    //    int jobs[] = {254,256,256,254,251,256,254,253,255,251,251,255};// n = 12
+    //    int k = 10;
+    //
+    //    int jobs[] = {1,2,4,7,8}; //n=5
+    //    int k = 2;//工作时间 11；
     
     
     int jobs[] = {3,2,3}; //n=3
