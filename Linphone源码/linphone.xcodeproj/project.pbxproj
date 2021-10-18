@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		036A26905D2E9DE8E644781E /* Pods_msgNotificationContent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D08ABCB6793479A6356D7F0F /* Pods_msgNotificationContent.framework */; };
 		152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -56,7 +57,6 @@
 		340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIVideoButton.m */; };
 		34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
-		369CCF81C921CD7C4E49A637 /* Pods_msgNotificationContent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82E9DEDA2A78C6DBBD1A54DB /* Pods_msgNotificationContent.framework */; };
 		570742581D5A0691004B9C84 /* ShopView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 570742561D5A0691004B9C84 /* ShopView.xib */; };
 		570742611D5A09B8004B9C84 /* ShopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5707425F1D5A09B8004B9C84 /* ShopView.m */; };
 		570742671D5A63DB004B9C84 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 570742661D5A63DB004B9C84 /* StoreKit.framework */; };
@@ -670,7 +670,7 @@
 		8CF25D961F9F336100BEA0C1 /* check_unselected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D941F9F336100BEA0C1 /* check_unselected.png */; };
 		8CF25D9D1F9F76BD00BEA0C1 /* chat_group_informations.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */; };
 		8CF25D9E1F9F76BD00BEA0C1 /* chat_group_informations@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */; };
-		93566413F75DA69D2811A716 /* Pods_msgNotificationService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F30EA7BEA39DA427CE0754E /* Pods_msgNotificationService.framework */; };
+		9887E00F257C7168A3EA3462 /* Pods_msgNotificationService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4DE8B9E11E66B3F4EA4AC5 /* Pods_msgNotificationService.framework */; };
 		A634ABAFCB39B6AAE4CA991D /* Pods_linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */; };
 		C61B1BF22667D075001A4E4A /* menu_security_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C61B1BF12667D075001A4E4A /* menu_security_default.png */; };
 		C61B1BF42667D202001A4E4A /* more_menu_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C61B1BF32667D202001A4E4A /* more_menu_default.png */; };
@@ -1621,14 +1621,12 @@
 		65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_linphone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		68D9EC27FCECD5DE2E19CD3C /* Pods-liblinphoneTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester.debug.xcconfig"; sourceTree = "<group>"; };
 		6E1BC45342F5201DABD7FE55 /* Pods_latestCallsWidget.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_latestCallsWidget.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F30EA7BEA39DA427CE0754E /* Pods_msgNotificationService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_msgNotificationService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		7513CBF7F2BA0A9F99977C2B /* Pods_richNotifications.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_richNotifications.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		791017662FE117B9B12E8938 /* Pods-messagesNotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-messagesNotification.debug.xcconfig"; path = "Pods/Target Support Files/Pods-messagesNotification/Pods-messagesNotification.debug.xcconfig"; sourceTree = "<group>"; };
 		799BA1104845EB01ACE764D8 /* Pods-linphone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphone.debug.xcconfig"; path = "Pods/Target Support Files/Pods-linphone/Pods-linphone.debug.xcconfig"; sourceTree = "<group>"; };
 		7D8CCFE176C634813E3A2593 /* Pods-liblinphoneTesterTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTesterTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTesterTests/Pods-liblinphoneTesterTests.debug.xcconfig"; sourceTree = "<group>"; };
-		82E9DEDA2A78C6DBBD1A54DB /* Pods_msgNotificationContent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_msgNotificationContent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85FB19B6A8124D942C8471F1 /* Pods-linphoneTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneTests.distribution.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneTests/Pods-linphoneTests.distribution.xcconfig"; sourceTree = "<group>"; };
 		8B488C393394746F9D630789 /* Pods_latestChatroomsWidget.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_latestChatroomsWidget.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B4C43A28E90775F6FCA2CEE /* Pods-msgNotificationContent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationContent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-msgNotificationContent/Pods-msgNotificationContent.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1643,7 +1641,6 @@
 		8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lime_ko@2x.png"; sourceTree = "<group>"; };
 		8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = linphonetester.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/linphonetester.framework"; sourceTree = "<group>"; };
 		8C435FC320BD41C6004CCA25 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "bctoolbox-tester.framework"; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework"; sourceTree = "<group>"; };
 		8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
 		8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
@@ -1774,6 +1771,7 @@
 		C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsView.m; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
 		CC6F924A8B1B1698914A3BB2 /* Pods-messagesNotification.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-messagesNotification.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-messagesNotification/Pods-messagesNotification.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
+		CD4DE8B9E11E66B3F4EA4AC5 /* Pods_msgNotificationService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_msgNotificationService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE119C214B6B8B2740622BBD /* Pods-linphoneTests.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneTests.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneTests/Pods-linphoneTests.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		CF15F21B20E4F9A3008B1DE6 /* UIImageViewDeletable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIImageViewDeletable.h; sourceTree = "<group>"; };
 		CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIImageViewDeletable.m; sourceTree = "<group>"; };
@@ -1793,6 +1791,7 @@
 		CF7602F3210898C600749F76 /* rec_off_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rec_off_default.png; sourceTree = "<group>"; };
 		CF7602F4210898C800749F76 /* rec_on_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rec_on_default.png; sourceTree = "<group>"; };
 		CFBD7A2320E504AD007C5286 /* delete_img.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = delete_img.png; sourceTree = "<group>"; };
+		D08ABCB6793479A6356D7F0F /* Pods_msgNotificationContent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_msgNotificationContent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D252FEC7DD06DD5695A320A1 /* Pods_liblinphoneTesterTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_liblinphoneTesterTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D306459C1611EC2900BB571E /* UILoadingImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILoadingImageView.h; sourceTree = "<group>"; };
 		D306459D1611EC2900BB571E /* UILoadingImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILoadingImageView.m; sourceTree = "<group>"; };
@@ -1992,7 +1991,7 @@
 			files = (
 				EA88F3AC241BD05200E66528 /* UserNotificationsUI.framework in Frameworks */,
 				EA88F3AB241BD05200E66528 /* UserNotifications.framework in Frameworks */,
-				369CCF81C921CD7C4E49A637 /* Pods_msgNotificationContent.framework in Frameworks */,
+				036A26905D2E9DE8E644781E /* Pods_msgNotificationContent.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2042,7 +2041,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				93566413F75DA69D2811A716 /* Pods_msgNotificationService.framework in Frameworks */,
+				9887E00F257C7168A3EA3462 /* Pods_msgNotificationService.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2381,7 +2380,6 @@
 				F0BB8C311936246600974404 /* AudioUnit.framework */,
 				224567C1107B968500F10948 /* AVFoundation.framework */,
 				61F1996E20C6B1D5006B069A /* AVKit.framework */,
-				8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */,
 				8C2595DE1DEDCC8E007A6424 /* CallKit.framework */,
 				228697C311AC29B800E9E0CA /* CFNetwork.framework */,
 				24E1C7B91F9A235500D3F981 /* Contacts.framework */,
@@ -2433,8 +2431,8 @@
 				65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */,
 				F325590DD6CD7F6CC8F60C03 /* Pods_linphoneTests.framework */,
 				7513CBF7F2BA0A9F99977C2B /* Pods_richNotifications.framework */,
-				82E9DEDA2A78C6DBBD1A54DB /* Pods_msgNotificationContent.framework */,
-				6F30EA7BEA39DA427CE0754E /* Pods_msgNotificationService.framework */,
+				D08ABCB6793479A6356D7F0F /* Pods_msgNotificationContent.framework */,
+				CD4DE8B9E11E66B3F4EA4AC5 /* Pods_msgNotificationService.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -4110,7 +4108,7 @@
 		};
 		4D22DCAAC0231865D78AC1E6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -5027,6 +5025,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5048,7 +5047,7 @@
 				IBC_MODULE = linphoneapp;
 				IBSC_MODULE = linphoneapp;
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
@@ -5171,7 +5170,7 @@
 				IBC_MODULE = linphoneapp;
 				IBSC_MODULE = linphoneapp;
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
@@ -5230,6 +5229,7 @@
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -5275,6 +5275,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
@@ -5293,7 +5294,7 @@
 				IBC_MODULE = linphoneapp;
 				IBSC_MODULE = linphoneapp;
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
@@ -5414,7 +5415,7 @@
 				IBC_MODULE = linphoneapp;
 				IBSC_MODULE = linphoneapp;
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
@@ -5638,6 +5639,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: jehan monnier (E8MYPN2NXL)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
