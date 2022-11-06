@@ -7,6 +7,8 @@
 //
 
 #import "ViewController.h"
+#import <objc/message.h>
+
 #import "MyKVOModel.h"
 #import "Test1.h"
 
@@ -33,6 +35,8 @@
     self.myObject2 = [[MyKVOModel alloc]init];
     self.myObject2.num = 2;
     
+    NSLog(@"%@", [self.myObject2 class]);
+    
 //    self.test1 = [[Test1 alloc] init];
 //
 //    
@@ -52,6 +56,12 @@
                           options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew
                           context:nil];
     
+    //[obj class]返回类对象本身
+    NSLog(@"---->>>2: %@", [self.myObject2 class]);
+
+    //object_getClass(obj)返回类对象中的isa指向的元类对象，即指向元类对象
+    NSLog(@"---->>>3: %s", object_getClassName(self.myObject2));
+    NSLog(@"---->>>4: %@", object_getClass(self.myObject2));
 }
 
 #pragma mark - KVO
