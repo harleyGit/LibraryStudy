@@ -10,6 +10,7 @@
 
 typedef void(^SDWebImageNoParamsBlock)(void);
 //NS_EXTENSIBLE_STRING_ENUM 修饰符，它的作用是在桥接到 Swift 中时可进行枚举扩展
+//用法: https://juejin.cn/post/6844903903960498184
 typedef NSString * SDWebImageContextOption NS_EXTENSIBLE_STRING_ENUM;
 //给 NSDictionary<SDWebImageContextOption, id> 起别名为 SDWebImageContext
 typedef NSDictionary<SDWebImageContextOption, id> SDWebImageContext;
@@ -231,6 +232,7 @@ typedef NS_OPTIONS(NSUInteger, SDWebImageOptions) {
 /**
  A String to be used as the operation key for view category to store the image load operation. This is used for view instance which supports different image loading process. If nil, will use the class name as operation key. (NSString *)
  */
+//FOUNDATION_EXPORT 使用:https://www.jianshu.com/p/dec2c4839cb9
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextSetImageOperationKey;
 
 /**
