@@ -12,9 +12,14 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <vector>//头文件一定要有
+#include <string.h>
 #include "Chapter6.hpp"
 #include "SortExercise.hpp"
 #include "DFSExercise.hpp"
+
+using namespace std;//其所在的命名空间
+
 
 void testMethod_1();
 void testQuickSort();
@@ -24,16 +29,32 @@ void testDFSExerice();
 int* bubbleSort(char methodName[],int array[], int length);
 int* selectSort(char methodName[], int array[], int length);
 int* insertionSort(char methodName[], int array[], int length);
+void quickSort(vector<int> &array, int left, int right);
+
+
+
+
 
 int main(int argc, const char * argv[]) {
     
-    //    插入排序
-    int a[] = {9,0,6,5,8,2,1,7,4,3};
-    char methodName[] = "插入排序";
-    int *b = insertionSort(methodName,a, 10);
-    for (int i=0; i< 10; i++) {
-        printf("%i ", *(b+i));
-    }
+    
+    
+    
+    //        快速排序
+    //    vector<int> vec1{9,0,6,5,8,2,1,7,4,3};
+    //    quickSort(vec1, 0, vec1.size()-1);
+    //    printf("=================快速排序=================\n");
+    //    for (int i = 0; i < vec1.size(); i++) {
+    //        printf("%i ", vec1[i]);
+    //    }
+    
+    //        插入排序
+    //    int a[] = {9,0,6,5,8,2,1,7,4,3};
+    //    char methodName[] = "插入排序";
+    //    int *b = insertionSort(methodName,a, 10);
+    //    for (int i=0; i< 10; i++) {
+    //        printf("%i ", *(b+i));
+    //    }
     
     
     //    testMethod_1();
@@ -67,10 +88,44 @@ int main(int argc, const char * argv[]) {
 }
 
 
+
+
+//快速排序
+void quickSort(vector<int> &array, int left, int right){
+    
+    //为了后来获取到的元素索引j比i小，所以减去1
+    int j = left -1;
+    for (int i = left; i < right; ++i) {//{9,0,6,5,8,2,1,7,4,3}
+        
+        //数组的最后一位总比数组元素的前面大时，对其前面的元素进行排序，小的在前面，大的在后面除了最后一个元素没有交换位置
+        if (array[i] <= array[right]) {
+            ++j;
+            
+            //比如：i= 0时,j=2，是a[0]和a[2]交换。这时最小值a[2]在最前面了
+            int a = array[i];
+            array[i] = array[j];
+            array[j] = a;
+        }
+    }
+    
+    //对array的j+1位和数组元素的最后right索引进行替换，因为array[j+1] >= array[right]
+    int c = array[j+1];
+    array[j+1] = array[right];
+    array[right] = c;
+    
+    
+    if (left < right) {
+        quickSort(array, left, j);
+        quickSort(array, j+1, right);
+    }
+    
+}
+
+
 //插入排序
 int* insertionSort(char methodName[], int array[], int length) {
     printf("=================%s=================\n", methodName);
-
+    
     for (int i = 0, j, temp; i < length -1; i ++) {
         
         j = i;
