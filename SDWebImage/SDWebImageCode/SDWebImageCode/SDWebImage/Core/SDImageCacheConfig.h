@@ -52,6 +52,7 @@ typedef NS_ENUM(NSUInteger, SDImageCacheConfigExpireType) {
  * @note When the memory cache is disabled, the weak memory cache will also be disabled.
  * Defaults to YES.
  */
+//是否使用内存做缓存，默认为YES
 @property (assign, nonatomic) BOOL shouldCacheImagesInMemory;
 
 /*
@@ -85,12 +86,19 @@ typedef NS_ENUM(NSUInteger, SDImageCacheConfigExpireType) {
  * Setting this to zero means that all cached files would be removed when do expiration check.
  * Defaults to 1 week.
  */
+
+/** 缓存图片的最长时间，单位是秒，默认是缓存一周
+ * 这个缓存图片最长时间是使用磁盘缓存才有意义
+ * 使用内存缓存在前文中讲解的几种情况下会自动删除缓存对象
+ * 超过最长时间后，会将磁盘中存储的图片自动删除
+ */
 @property (assign, nonatomic) NSTimeInterval maxDiskAge;
 
 /**
  * The maximum size of the disk cache, in bytes.
  * Defaults to 0. Which means there is no cache size limit.
  */
+//缓存占用最大的空间，单位是字节
 @property (assign, nonatomic) NSUInteger maxDiskSize;
 
 /**

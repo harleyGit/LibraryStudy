@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, SDImageCacheType) {
      * For query and contains op in response, means the image isn't available in the image cache
      * For op in request, this type is not available and take no effect.
      */
-    //从网络下载的图片在SDWebImage缓存中无效
+    //不是从缓存中拿到的，从网上下载的
     SDImageCacheTypeNone,
     /**
      * For query and contains op in response, means the image was obtained from the disk cache.
@@ -43,6 +43,7 @@ typedef void(^SDImageCacheCheckCompletionBlock)(BOOL isInCache);
 typedef void(^SDImageCacheQueryDataCompletionBlock)(NSData * _Nullable data);
 typedef void(^SDImageCacheCalculateSizeBlock)(NSUInteger fileCount, NSUInteger totalSize);
 typedef NSString * _Nullable (^SDImageCacheAdditionalCachePathBlock)(NSString * _Nonnull key);
+//计算磁盘缓存图片个数和占用内存大小的回调块
 typedef void(^SDImageCacheQueryCompletionBlock)(UIImage * _Nullable image, NSData * _Nullable data, SDImageCacheType cacheType);
 typedef void(^SDImageCacheContainsCompletionBlock)(SDImageCacheType containsCacheType);
 

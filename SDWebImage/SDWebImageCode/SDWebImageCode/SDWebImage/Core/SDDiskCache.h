@@ -99,6 +99,12 @@
  @param key A string identifying the value
  @return The cache path for key. Or nil if the key can not associate to a path
  */
+/*
+根据图片的key以及一个存储文件夹路径，构造一个在本地的图片的路径
+key 图片的唯一ID，一般使用URL
+inPath 本地存储图片的文件夹的路径
+比如:图片URL是http:www.baidu.com/test.png inPath是/usr/local/，那么图片存储到本地后的路径为:/usr/local/test.png
+*/
 - (nullable NSString *)cachePathForKey:(nonnull NSString *)key;
 
 /**

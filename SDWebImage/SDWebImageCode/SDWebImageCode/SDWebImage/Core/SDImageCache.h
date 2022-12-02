@@ -151,6 +151,13 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param key             The unique image cache key, usually it's image absolute URL
  * @param completionBlock A block executed after the operation is finished
  */
+/*
+根据给定的key异步存储图片
+image 要存储的图片
+key 一张图片的唯一ID，一般使用图片的URL
+completionBlock 完成异步存储后的回调块
+该方法并不执行任何实际的操作，而是直接调用下面的下面的那个方法
+*/
 - (void)storeImage:(nullable UIImage *)image
             forKey:(nullable NSString *)key
         completion:(nullable SDWebImageNoParamsBlock)completionBlock;
@@ -164,6 +171,14 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param completionBlock A block executed after the operation is finished
  * @note If no image data is provided and encode to disk, we will try to detect the image format (using either `sd_imageFormat` or `SDAnimatedImage` protocol method) and animation status, to choose the best matched format, including GIF, JPEG or PNG.
  */
+/*
+同上，该方法并不是真正的执行者，而是需要调用下面的那个方法
+根据给定的key异步存储图片
+image 要存储的图片
+key 唯一ID，一般使用URL
+toDisk 是否缓存到磁盘中
+completionBlock 缓存完成后的回调块
+*/
 - (void)storeImage:(nullable UIImage *)image
             forKey:(nullable NSString *)key
             toDisk:(BOOL)toDisk
@@ -181,6 +196,14 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param completionBlock A block executed after the operation is finished
  * @note If no image data is provided and encode to disk, we will try to detect the image format (using either `sd_imageFormat` or `SDAnimatedImage` protocol method) and animation status, to choose the best matched format, including GIF, JPEG or PNG.
  */
+/*
+根据给定的key异步存储图片，真正的缓存执行者
+image 要存储的图片
+imageData 要存储的图片的二进制数据即NSData数据
+key 唯一ID，一般使用URL
+toDisk 是否缓存到磁盘中
+completionBlock
+*/
 - (void)storeImage:(nullable UIImage *)image
          imageData:(nullable NSData *)imageData
             forKey:(nullable NSString *)key
@@ -202,6 +225,13 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param imageData  The image data to store
  * @param key        The unique image cache key, usually it's image absolute URL
  */
+
+/*
+根据指定key同步存储NSData类型的图片的数据到磁盘中
+这是一个同步的方法，需要放在指定的ioQueue中执行，指定的ioQueue在下面会讲
+imageData 图片的二进制数据即NSData类型的对象
+key 图片的唯一ID，一般使用URL
+*/
 - (void)storeImageDataToDisk:(nullable NSData *)imageData
                       forKey:(nullable NSString *)key;
 
@@ -215,6 +245,11 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  *  @param completionBlock the block to be executed when the check is done.
  *  @note the completion block will be always executed on the main queue
  */
+/*
+异步方式根据指定的key查询磁盘中是否缓存了这个图片
+key 图片的唯一ID，一般使用URL
+completionBlock 查询完成后的回调块，这个回调块默认会在主线程中执行
+*/
 - (void)diskImageExistsWithKey:(nullable NSString *)key completion:(nullable SDImageCacheCheckCompletionBlock)completionBlock;
 
 /**
@@ -295,6 +330,10 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param key The unique key used to store the image
  * @return The image for the given key, or nil if not found.
  */
+/*
+同步查询内存缓存中是否有ID为key的图片
+key 图片的唯一ID，一般使用URL
+*/
 - (nullable UIImage *)imageFromMemoryCacheForKey:(nullable NSString *)key;
 
 /**
@@ -303,6 +342,10 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param key The unique key used to store the image
  * @return The image for the given key, or nil if not found.
  */
+/*
+同步查询磁盘缓存中是否有ID为key的图片
+key 图片的唯一ID，一般使用URL
+*/
 - (nullable UIImage *)imageFromDiskCacheForKey:(nullable NSString *)key;
 
 /**
@@ -321,6 +364,10 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param key The unique key used to store the image
  * @return The image for the given key, or nil if not found.
  */
+/*
+同步查询内存缓存和磁盘缓存中是否有ID为key的图片
+key 图片的唯一ID，一般使用URL
+*/
 - (nullable UIImage *)imageFromCacheForKey:(nullable NSString *)key;
 
 /**
@@ -341,6 +388,11 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param key             The unique image cache key
  * @param completion      A block that should be executed after the image has been removed (optional)
  */
+/*
+根据给定key异步方式删除缓存
+key 图片的唯一ID，一般使用URL
+completion 操作完成后的回调块
+*/
 - (void)removeImageForKey:(nullable NSString *)key withCompletion:(nullable SDWebImageNoParamsBlock)completion;
 
 /**
@@ -350,6 +402,12 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * @param fromDisk        Also remove cache entry from disk if YES. If NO, the completion block is called synchronously
  * @param completion      A block that should be executed after the image has been removed (optional)
  */
+/*
+根据给定key异步方式删除内存中的缓存
+key 图片的唯一ID，一般使用URL
+fromDisk 是否删除磁盘中的缓存，如果为YES那也会删除磁盘中的缓存
+completion 操作完成后的回调块
+*/
 - (void)removeImageForKey:(nullable NSString *)key fromDisk:(BOOL)fromDisk withCompletion:(nullable SDWebImageNoParamsBlock)completion;
 
 /**
@@ -371,18 +429,27 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
 /**
  * Synchronously Clear all memory cached images
  */
+//删除所有的内存缓存，即NSCache中的removeAllObjects
 - (void)clearMemory;
 
 /**
  * Asynchronously clear all disk cached images. Non-blocking method - returns immediately.
  * @param completion    A block that should be executed after cache expiration completes (optional)
  */
+/*
+异步方式清空磁盘中的所有缓存
+completion 删除完成后的回调块
+*/
 - (void)clearDiskOnCompletion:(nullable SDWebImageNoParamsBlock)completion;
 
 /**
  * Asynchronously remove all expired cached image from disk. Non-blocking method - returns immediately.
  * @param completionBlock A block that should be executed after cache expiration completes (optional)
  */
+/*
+异步删除磁盘缓存中所有超过缓存最大时间的图片，即前面属性中的maxCacheAge
+completionBlock 删除完成后的回调块
+*/
 - (void)deleteOldFilesWithCompletionBlock:(nullable SDWebImageNoParamsBlock)completionBlock;
 
 #pragma mark - Cache Info

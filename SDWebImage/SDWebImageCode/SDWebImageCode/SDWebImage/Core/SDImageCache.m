@@ -51,12 +51,22 @@
     return [self initWithNamespace:@"default"];
 }
 
-//新建一个存储类，如果是用init方法创建，默认传入的是default
+//根据指定的namespace构造一个磁盘缓存的存储路径后调用initWithNamespace:diskCacheDirectory方法完成后续的初始化操作
 - (nonnull instancetype)initWithNamespace:(nonnull NSString *)ns {
+    /*
+    makeDiskCachePath的目的是为了创建一个磁盘缓存存储图片的文件夹
+    获取一个系统沙盒的cache目录下名称为ns的文件夹的路径
+    比如:/usr/local/cache/default
+    所以namespace的作用就是为了在沙盒的cache目录下创建一个文件夹时作为它的名称，以后去磁盘中查找时就有路径了
+    */
     return [self initWithNamespace:ns diskCacheDirectory:nil];
 }
 
-//全能初始化方法，比起上一个方法，额外指定了存储目录，默认目录是在Cache/default的文件夹下
+/*
+真正执行初始化操作的构造函数
+ns 即namespace
+directory 即磁盘缓存存储图片的文件夹路径
+*/
 - (nonnull instancetype)initWithNamespace:(nonnull NSString *)ns
                        diskCacheDirectory:(nullable NSString *)directory {
     return [self initWithNamespace:ns diskCacheDirectory:directory config:SDImageCacheConfig.defaultCacheConfig];
