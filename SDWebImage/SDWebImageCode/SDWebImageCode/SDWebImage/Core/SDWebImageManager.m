@@ -249,7 +249,7 @@ static id<SDImageLoader> _defaultImageLoader;
     //检查是否需要查询缓存
     //默认是检查缓存，设置“SDWebImageFromLoaderOnly”后，直接下载
     id<SDImageCache> imageCache;
-    if ([context[SDWebImageContextImageCache] conformsToProtocol:@protocol(SDImageCache)]) {
+    if ([context[SDWebImageContextImageCache] conformsToProtocol:@protocol(SDImageCache)]) {//用来检查对象是否遵守了指定协议，与是否有实现无关
         imageCache = context[SDWebImageContextImageCache];
     } else {
         imageCache = self.imageCache;

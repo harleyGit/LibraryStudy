@@ -265,16 +265,16 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     // But since our build-in coders use this bitmapInfo, this can have a little performance benefit
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
     bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
-    CGContextRef context = CGBitmapContextCreate(NULL, newWidth, newHeight, 8, 0, [self colorSpaceGetDeviceRGB], bitmapInfo);
+    CGContextRef context = CGBitmapContextCreate(NULL, newWidth, newHeight, 8, 0, [self colorSpaceGetDeviceRGB], bitmapInfo);//https://blog.csdn.net/hlllmr1314/article/details/8198543
     if (!context) {
         return NULL;
     }
     
-    // Apply transform
+    // Apply transform 矩阵转换: https://www.cnblogs.com/xiongwj0910/p/15421646.html
     CGAffineTransform transform = SDCGContextTransformFromOrientation(orientation, CGSizeMake(newWidth, newHeight));
-    CGContextConcatCTM(context, transform);
+    CGContextConcatCTM(context, transform);//使用 transform 变换矩阵对CGContextRef坐标系统进行变换,通过坐标矩阵可以对坐标系统任意变换
     CGContextDrawImage(context, CGRectMake(0, 0, width, height), cgImage); // The rect is bounding box of CGImage, don't swap width & height
-    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
+    CGImageRef newImageRef = CGBitmapContextCreateImage(context);//绘制图片
     CGContextRelease(context);
     
     return newImageRef;
@@ -619,7 +619,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     
     return shouldScaleDown;
 }
-
+///类联函数: https://juejin.cn/post/6844903847123484686
 static inline CGAffineTransform SDCGContextTransformFromOrientation(CGImagePropertyOrientation orientation, CGSize size) {
     // Inspiration from @libfeihu
     // We need to calculate the proper transformation to make the image upright.
@@ -629,8 +629,8 @@ static inline CGAffineTransform SDCGContextTransformFromOrientation(CGImagePrope
     switch (orientation) {
         case kCGImagePropertyOrientationDown:
         case kCGImagePropertyOrientationDownMirrored:
-            transform = CGAffineTransformTranslate(transform, size.width, size.height);
-            transform = CGAffineTransformRotate(transform, M_PI);
+            transform = CGAffineTransformTranslate(transform, size.width, size.height);//在已存在的矩阵中使用平移: https://blog.csdn.net/zx6268476/article/details/45173605
+            transform = CGAffineTransformRotate(transform, M_PI); //在已存在的矩阵中使用旋转
             break;
             
         case kCGImagePropertyOrientationLeft:

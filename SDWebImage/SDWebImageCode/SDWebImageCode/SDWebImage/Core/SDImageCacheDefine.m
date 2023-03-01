@@ -26,6 +26,7 @@ UIImage * _Nullable SDImageCacheDecodeImageData(NSData * _Nonnull imageData, NSS
     BOOL shouldScaleDown = SD_OPTIONS_CONTAINS(options, SDWebImageScaleDownLargeImages);
     if (shouldScaleDown) {
         CGFloat thumbnailPixels = SDImageCoderHelper.defaultScaleDownLimitBytes / 4;
+        //sqrt 平方根,ceil 返回浮点数整数部分（舍弃小数点部分，往个位数进1）
         CGFloat dimension = ceil(sqrt(thumbnailPixels));
         thumbnailSizeValue = @(CGSizeMake(dimension, dimension));
     }

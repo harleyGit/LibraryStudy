@@ -110,6 +110,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 
 + (NSUInteger)imageLoopCountWithSource:(CGImageSourceRef)source {
     NSUInteger loopCount = self.defaultLoopCount;
+    ///CGImageSourceCopyProperties 获取图片原信息,其返回一个字典,字典包含图片、相机等信息: https://developer.aliyun.com/article/800011
     NSDictionary *imageProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(source, nil);
     NSDictionary *containerProperties = imageProperties[self.dictionaryProperty];
     if (containerProperties) {
@@ -167,7 +168,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     if (!exifOrientation) {
         exifOrientation = kCGImagePropertyOrientationUp;
     }
-    
+    //图片类型:https://www.jianshu.com/p/0b52298bb2db
     CFStringRef uttype = CGImageSourceGetType(source);
     // Check vector format
     BOOL isVector = NO;
@@ -199,7 +200,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
             NSUInteger rasterizationDPI = maxPixelSize * DPIPerPixel;
             decodingOptions[kSDCGImageSourceRasterizationDPI] = @(rasterizationDPI);
         }
-        imageRef = CGImageSourceCreateImageAtIndex(source, index, (__bridge CFDictionaryRef)decodingOptions);
+        imageRef = CGImageSourceCreateImageAtIndex(source, index, (__bridge CFDictionaryRef)decodingOptions);//只能返回索引值的图片，丢失了其他的图片信息。因此，我们只获取到了其中的一帧图片 https://www.jianshu.com/p/5c870860c187
     } else {
         decodingOptions[(__bridge NSString *)kCGImageSourceCreateThumbnailWithTransform] = @(preserveAspectRatio);
         CGFloat maxPixelSize;
@@ -440,7 +441,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     
     // Create an image destination. Animated Image does not support EXIF image orientation TODO
     // The `CGImageDestinationCreateWithData` will log a warning when count is 0, use 1 instead.
-    CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageData, imageUTType, frames.count ?: 1, NULL);
+    CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageData, imageUTType, frames.count ?: 1, NULL);//创建转换者对象, 进行质量压缩和转换
     if (!imageDestination) {
         // Handle failure.
         return nil;
@@ -490,7 +491,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         if (finalPixelSize > 0) {
             properties[(__bridge NSString *)kCGImageDestinationImageMaxPixelSize] = @(finalPixelSize);
         }
-        CGImageDestinationAddImage(imageDestination, imageRef, (__bridge CFDictionaryRef)properties);
+        CGImageDestinationAddImage(imageDestination, imageRef, (__bridge CFDictionaryRef)properties);//向转换者对象添加图片数据和参数数据
     } else {
         // for animated images
         NSUInteger loopCount = image.sd_imageLoopCount;
@@ -528,6 +529,8 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     self = [super init];
     if (self) {
+        ///创建图像源
+        ///https://www.jianshu.com/p/e9843d5b70a2, https://www.cnblogs.com/feng9exe/p/8857506.html
         CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
         if (!imageSource) {
             return nil;
@@ -572,6 +575,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     if (!imageSource) {
         return NO;
     }
+    //获取图片帧数
     NSUInteger frameCount = CGImageSourceGetCount(imageSource);
     NSUInteger loopCount = [self.class imageLoopCountWithSource:imageSource];
     NSMutableArray<SDImageIOCoderFrame *> *frames = [NSMutableArray array];

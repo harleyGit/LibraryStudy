@@ -200,15 +200,15 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
                 self.cachedData = cachedResponse.data;
             }
         }
-        
+        //https://www.jianshu.com/p/8184e762872c
         self.dataTask = [session dataTaskWithRequest:self.request];
         self.executing = YES;
     }
 
     if (self.dataTask) {
-        if (self.options & SDWebImageDownloaderHighPriority) {
+        if (self.options & SDWebImageDownloaderHighPriority) {//task 有一个priority属性，接受0到1之间的浮点数，通过每一个 task 不同的 priority 值，可以提示系统 task 执行的优先级，1为最高，0为最低。默认值是NSURLSessionTaskPriorityDefault，即 0.5
             self.dataTask.priority = NSURLSessionTaskPriorityHigh;
-            self.coderQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+            self.coderQueue.qualityOfService = NSQualityOfServiceUserInteractive;//最高优先级用于处理UI相关的任务:https://blog.csdn.net/Margaret_MO/article/details/104044635
         } else if (self.options & SDWebImageDownloaderLowPriority) {
             self.dataTask.priority = NSURLSessionTaskPriorityLow;
             self.coderQueue.qualityOfService = NSQualityOfServiceBackground;
@@ -492,13 +492,13 @@ didReceiveResponse:(NSURLResponse *)response
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
-    
+    //忽略证书(默认的处理方式)
     NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
     __block NSURLCredential *credential = nil;
     
-    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {//NSURLAuthenticationMethodServerTrust//服务器端证书验证，客户端对服务器端的证书进行验证。HTTPS中的服务器端证书验证属于这一种
         if (!(self.options & SDWebImageDownloaderAllowInvalidSSLCertificates)) {
-            disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+            disposition = NSURLSessionAuthChallengePerformDefaultHandling;//忽略证书(默认的处理方式)
         } else {
             credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
             disposition = NSURLSessionAuthChallengeUseCredential;
@@ -520,7 +520,7 @@ didReceiveResponse:(NSURLResponse *)response
         completionHandler(disposition, credential);
     }
 }
-
+//NSURLSessionTaskMetrics: 对发送请求/DNS查询/TLS握手/请求响应等各种环节时间上的统计. 可用于分析App的请求缓慢到底是发生在哪个环节, 并对此优化APP性能
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0)) {
     self.metrics = metrics;
 }

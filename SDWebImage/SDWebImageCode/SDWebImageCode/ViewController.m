@@ -21,7 +21,7 @@
     
     
     UIImageView *pic = [[UIImageView alloc] initWithFrame:CGRectMake(100, 100, 300, 150)];
-    [pic sd_setImageWithURL:@"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1603690915065&di=76c1d4fdcd8ca41cd923466b539bed82&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2Ff5682f2b362a497ec3339369ccd08757491cd87823d47-QupZFW_fw658"];
+    [pic sd_setImageWithURL:@"https://img0.baidu.com/it/u=674920964,2902284025&fm=253&fmt=auto&app=138&f=JPEG?w=658&h=494"];
     [self.view addSubview:pic];
     
 }

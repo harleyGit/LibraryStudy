@@ -58,6 +58,7 @@ static void * SDMemoryCacheContext = &SDMemoryCacheContext;
     self.totalCostLimit = config.maxMemoryCost;
     self.countLimit = config.maxMemoryCount;
 
+    //context参数是为了区分不同对象的同名属性: https://juejin.cn/post/6889449564324298765
     [config addObserver:self forKeyPath:NSStringFromSelector(@selector(maxMemoryCost)) options:0 context:SDMemoryCacheContext];
     [config addObserver:self forKeyPath:NSStringFromSelector(@selector(maxMemoryCount)) options:0 context:SDMemoryCacheContext];
 

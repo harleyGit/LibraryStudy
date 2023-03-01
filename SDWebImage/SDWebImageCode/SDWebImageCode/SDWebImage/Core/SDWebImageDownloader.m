@@ -102,6 +102,7 @@ static void * SDWebImageDownloaderContext = &SDWebImageDownloaderContext;
         NSString *userAgent = nil;
 #if SD_UIKIT
         // User-Agent Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43
+        //__bridge 可以将 OC 对象 与 C 指针相互转换:https://veryitman.com/2018/03/07/C-%E6%8C%87%E9%92%88%E4%B8%8E-OC-%E5%AF%B9%E8%B1%A1%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/
         userAgent = [NSString stringWithFormat:@"%@/%@ (%@; iOS %@; Scale/%0.2f)", [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleExecutableKey] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleIdentifierKey], [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleVersionKey], [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], [[UIScreen mainScreen] scale]];
 #elif SD_WATCH
         // User-Agent Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43
@@ -268,7 +269,7 @@ static void * SDWebImageDownloaderContext = &SDWebImageDownloaderContext;
     
     // In order to prevent from potential duplicate caching (NSURLCache + SDImageCache) we disable the cache for image requests if told otherwise
     NSURLRequestCachePolicy cachePolicy = options & SDWebImageDownloaderUseNSURLCache ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData;
-    NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:cachePolicy timeoutInterval:timeoutInterval];
+    NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:cachePolicy timeoutInterval:timeoutInterval];    //可变请求对象: https://www.cnblogs.com/qingzZ/p/9291132.html
     mutableRequest.HTTPShouldHandleCookies = SD_OPTIONS_CONTAINS(options, SDWebImageDownloaderHandleCookies);
     mutableRequest.HTTPShouldUsePipelining = YES;
     SD_LOCK(self.HTTPHeadersLock);
@@ -420,7 +421,7 @@ static void * SDWebImageDownloaderContext = &SDWebImageDownloaderContext;
 }
 
 #pragma mark NSURLSessionDataDelegate
-
+//接收到服务器的响应 它默认会取消该请求
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)dataTask
 didReceiveResponse:(NSURLResponse *)response
@@ -463,7 +464,7 @@ didReceiveResponse:(NSURLResponse *)response
 }
 
 #pragma mark NSURLSessionTaskDelegate
-
+//当任务完成时会回到这个方法。要注意的是这里的error只有客户端的错误，比如无法解析主机名或连接到主机。服务端的错误是不会通过这个error传过来的
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     
     // Identify the operation that runs this task and pass it the delegate method
@@ -485,7 +486,7 @@ didReceiveResponse:(NSURLResponse *)response
         }
     }
 }
-
+// HTTPS证书验证: https://juejin.cn/post/7086488227602759693 茜茜百宝箱
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
 
     // Identify the operation that runs this task and pass it the delegate method
@@ -498,7 +499,7 @@ didReceiveResponse:(NSURLResponse *)response
         }
     }
 }
-
+// 当任务执行完成后，可以通过这个方法知道任务的执行情况，比如任务执行的时长、重定向次数等信息放在NSURLSessionTaskMetrics对象里面
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0)) {
     
     // Identify the operation that runs this task and pass it the delegate method

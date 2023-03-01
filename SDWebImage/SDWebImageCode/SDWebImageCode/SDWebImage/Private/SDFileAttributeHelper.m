@@ -92,6 +92,7 @@
 
 + (BOOL)setExtendedAttribute:(NSString *)name value:(NSData *)value atPath:(NSString *)path traverseLink:(BOOL)follow overwrite:(BOOL)overwrite error:(NSError **)err {
     int flags = (follow? 0 : XATTR_NOFOLLOW) | (overwrite? 0 : XATTR_CREATE);
+    //设置扩展属性: https://www.cnblogs.com/fanjing/p/4551589.html
     if (0 == setxattr([path fileSystemRepresentation], [name UTF8String], [value bytes], [value length], 0, flags)) return YES;
     // error
     if (err) *err = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:

@@ -61,6 +61,7 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
     [self sd_cancelImageLoadOperationWithKey:validOperationKey];
     self.sd_imageURL = url;
     
+    //按位与 & : https://www.jianshu.com/p/1c3f65332a37
     if (!(options & SDWebImageDelayPlaceholder)) {
         dispatch_main_async_safe(^{
             [self sd_setImage:placeholder imageData:nil basedOnClassOrViaCustomSetImageBlock:setImageBlock cacheType:SDImageCacheTypeNone imageURL:url];
@@ -106,7 +107,7 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
                 progressBlock(receivedSize, expectedSize, targetURL);
             }
         };
-        @weakify(self);
+        @weakify(self);//https://xie.infoq.cn/article/903068956d7c2a5952059b16c
         id <SDWebImageOperation> operation = [manager loadImageWithURL:url options:options context:context progress:combinedProgressBlock completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
             @strongify(self);
             if (!self) { return; }
@@ -167,7 +168,7 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
 #if SD_UIKIT || SD_MAC
                 [self sd_setImage:targetImage imageData:targetData basedOnClassOrViaCustomSetImageBlock:setImageBlock transition:transition cacheType:cacheType imageURL:imageURL];
 #else
-                [self sd_setImage:targetImage imageData:targetData basedOnClassOrViaCustomSetImageBlock:setImageBlock cacheType:cacheType imageURL:imageURL];
+                [self  sd_setImage:targetImage imageData:targetData basedOnClassOrViaCustomSetImageBlock:setImageBlock cacheType:cacheType imageURL:imageURL];
 #endif
                 callCompletedBlockClojure();
             });
@@ -191,6 +192,7 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
 }
 
 - (void)sd_setImage:(UIImage *)image imageData:(NSData *)imageData basedOnClassOrViaCustomSetImageBlock:(SDSetImageBlock)setImageBlock cacheType:(SDImageCacheType)cacheType imageURL:(NSURL *)imageURL {
+    //https://www.jianshu.com/p/1d2e4d822732
 #if SD_UIKIT || SD_MAC
     [self sd_setImage:image imageData:imageData basedOnClassOrViaCustomSetImageBlock:setImageBlock transition:nil cacheType:cacheType imageURL:imageURL];
 #else

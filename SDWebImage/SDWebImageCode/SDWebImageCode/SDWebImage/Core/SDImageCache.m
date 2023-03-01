@@ -26,7 +26,10 @@
 @property (nonatomic, copy, readwrite, nonnull) SDImageCacheConfig *config;
 //磁盘缓存路径
 @property (nonatomic, copy, readwrite, nonnull) NSString *diskCachePath;
-//执行处理输入输出的队列
+/*
+专门用来执行IO操作的队列，这是一个串行队列
+使用串行队列就解决了很多问题，串行队列依次执行就不需要加锁释放锁操作来防止多线程下的异常问题
+*/
 @property (nonatomic, strong, nullable) dispatch_queue_t ioQueue;
 
 @end
@@ -95,8 +98,10 @@ directory 即磁盘缓存存储图片的文件夹路径
         // Init the disk cache
          //初始化存储目录
         if (directory != nil) {
+            //在文件夹路径后面再创建一个文件夹，名称为全限定名名称
             _diskCachePath = [directory stringByAppendingPathComponent:ns];
         } else {
+            //如果传入的磁盘缓存文件夹路径是空的就根据传入的ns获取一个沙盒cache目录下名称为ns的文件夹路径
             NSString *path = [[[self userCacheDirectory] stringByAppendingPathComponent:@"com.hackemist.SDImageCache"] stringByAppendingPathComponent:ns];
             _diskCachePath = path;
         }
@@ -109,12 +114,13 @@ directory 即磁盘缓存存储图片的文件夹路径
 
 #if SD_UIKIT
         // Subscribe to app events
-        //注册通知，大意就是在程序进后台和退出的时候，清理一下磁盘
+        //注册通知，大意就是在程序进后台和退出的时候，清理一下磁盘 / 监听程序即将终止的通知，收到后执行deleteOldFiles方法
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationWillTerminate:)
                                                      name:UIApplicationWillTerminateNotification
                                                    object:nil];
-
+        
+        //监听程序进入后台的通知，收到后执行backgroundDeleteOldFiles方法
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidEnterBackground:)
                                                      name:UIApplicationDidEnterBackgroundNotification
@@ -132,6 +138,7 @@ directory 即磁盘缓存存储图片的文件夹路径
 }
 
 - (void)dealloc {
+    //移除所有通知的监听器
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -165,17 +172,20 @@ directory 即磁盘缓存存储图片的文件夹路径
 }
 
 #pragma mark - Store Ops
-
+//存储图片到缓存，直接调用下面的下面的方法
 - (void)storeImage:(nullable UIImage *)image
             forKey:(nullable NSString *)key
         completion:(nullable SDWebImageNoParamsBlock)completionBlock {
+    //使用该方法默认会缓存到磁盘中
     [self storeImage:image imageData:nil forKey:key toDisk:YES completion:completionBlock];
 }
 
+//存储图片到缓存，直接调用下面的方法
 - (void)storeImage:(nullable UIImage *)image
             forKey:(nullable NSString *)key
             toDisk:(BOOL)toDisk
         completion:(nullable SDWebImageNoParamsBlock)completionBlock {
+    //该方法是否缓存到磁盘由用户指定
     [self storeImage:image imageData:nil forKey:key toDisk:toDisk completion:completionBlock];
 }
 
@@ -187,34 +197,45 @@ directory 即磁盘缓存存储图片的文件夹路径
     return [self storeImage:image imageData:imageData forKey:key toMemory:YES toDisk:toDisk completion:completionBlock];
 }
 
+/*
+真正执行存储操作的方法
+*/
 - (void)storeImage:(nullable UIImage *)image
          imageData:(nullable NSData *)imageData
             forKey:(nullable NSString *)key
           toMemory:(BOOL)toMemory
             toDisk:(BOOL)toDisk
         completion:(nullable SDWebImageNoParamsBlock)completionBlock {
+    //如果image为nil或image的URL为空直接返回即不执行保存操作
     if (!image || !key) {
+        //如果回调块存在就执行完成回调块
         if (completionBlock) {
             completionBlock();
         }
         return;
     }
     // if memory cache is enabled
-    //缓存到内存
+    //如果缓存策略指明要进行内存缓存
     if (toMemory && self.config.shouldCacheImagesInMemory) {
+        //根据前面的内联函数计算图片的大小作为cost
         NSUInteger cost = image.sd_memoryCost;
+        //向memCache中添加图片对象，key即图片的URL，cost为上面计算的
         [self.memoryCache setObject:image forKey:key cost:cost];
     }
     
+    //如果要保存到磁盘中
     if (toDisk) {
-        //异步操作，缓存到磁盘
+        //异步操作，缓存到磁盘(异步提交任务到串行的ioQueue中执行)
         dispatch_async(self.ioQueue, ^{
+            //进行磁盘存储的具体的操作，使用@autoreleasepool包围，执行完成后自动释放相关对象
+            //我猜测这么做是为了尽快释放产生的局部变量，释放内存
             @autoreleasepool {
                 NSData *data = imageData;
                 if (!data && [image conformsToProtocol:@protocol(SDAnimatedImage)]) {
                     // If image is custom animated image class, prefer its original animated data
                     data = [((id<SDAnimatedImage>)image) animatedImageData];
                 }
+                //如果传入的imageData为空，图片不为空
                 if (!data && image) {
                     // Check image's associated image format, may return .undefined
                     //如果我们没有任何数据来检测图像格式，请检查它是否包含使用PNG或JPEG格式的Alpha通道
@@ -234,6 +255,8 @@ directory 即磁盘缓存存储图片的文件夹路径
                             }
                         }
                     }
+                    //调用编码方法，获取NSData对象
+                    //图片编码为NSData不在本文的讲述范围，可自行查阅
                     data = [[SDImageCodersManager sharedManager] encodedDataWithImage:image format:format options:nil];
                 }
                 //将图片存储到磁盘
@@ -266,13 +289,16 @@ directory 即磁盘缓存存储图片的文件夹路径
                 }
             }
             
+            //存储完成后检查是否存在回调块
             if (completionBlock) {
+                //异步提交在主线程中执行回调块
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completionBlock();
                 });
             }
         });
     } else {
+        //如果不需要保存到磁盘中判断后执行回调块
         if (completionBlock) {
             completionBlock();
         }
@@ -310,10 +336,16 @@ directory 即磁盘缓存存储图片的文件夹路径
 }
 
 #pragma mark - Query and Retrieve Ops
-//异步检查图片是否缓存在磁盘中
+//异步方式根据key判断磁盘缓存中是否存储了这个图片，查询完成后执行回调块
 - (void)diskImageExistsWithKey:(nullable NSString *)key completion:(nullable SDImageCacheCheckCompletionBlock)completionBlock {
+    //查询操作是异步，也放在指定的串行ioQueue中查询
     dispatch_async(self.ioQueue, ^{
+        /*
+        调用defualtCachePathForKey:方法获取图片如果在本地存储时的绝对路径
+        使用NSFileManager查询这个绝对路径的文件是否存在
+        */
         BOOL exists = [self _diskImageDataExistsWithKey:key];
+        //查询完成后，如果存在回调块，就在主线程执行回调块并传入exists
         if (completionBlock) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 completionBlock(exists);
@@ -362,6 +394,7 @@ directory 即磁盘缓存存储图片的文件夹路径
     }
     __block NSData *imageData = nil;
     dispatch_sync(self.ioQueue, ^{
+        //调用上面的方法查找所有路径下是否存在对应key的图片数据
         imageData = [self diskImageDataBySearchingAllPathsForKey:key];
     });
     
@@ -370,6 +403,7 @@ directory 即磁盘缓存存储图片的文件夹路径
 
 //根据key返回缓存中image
 - (nullable UIImage *)imageFromMemoryCacheForKey:(nullable NSString *)key {
+    //直接调用NSCache的objectForKey:方法查询
     return [self.memoryCache objectForKey:key];
 }
 
@@ -379,10 +413,17 @@ directory 即磁盘缓存存储图片的文件夹路径
 }
 
 - (nullable UIImage *)imageFromDiskCacheForKey:(nullable NSString *)key options:(SDImageCacheOptions)options context:(nullable SDWebImageContext *)context {
+    //调用diskImageForKey:方法查询，这个方法下面会讲
     NSData *data = [self diskImageDataForKey:key];
     UIImage *diskImage = [self diskImageForKey:key data:data options:options context:context];
+    //如果找到了，并且缓存策略使用了内存缓存
     if (diskImage && self.config.shouldCacheImagesInMemory) {
+        //计算cost并且将磁盘中获取的图片放入到内存缓存中
         NSUInteger cost = diskImage.sd_memoryCost;
+        //调用NSCache的setObject:forKey:cost方法设置要缓存的对象
+        //之所以要设置是因为如果是第一次从磁盘中拿出此时内存缓存中还没有
+        //还有可能是内存缓存中的对象被删除了，然后在磁盘中找到了，此时也需要设置一下
+        //setObject:forKey:cost方法的时间复杂度是常量的，所以哪怕内存中有也无所谓
         [self.memoryCache setObject:diskImage forKey:key cost:cost];
     }
 
@@ -395,16 +436,20 @@ directory 即磁盘缓存存储图片的文件夹路径
 
 - (nullable UIImage *)imageFromCacheForKey:(nullable NSString *)key options:(SDImageCacheOptions)options context:(nullable SDWebImageContext *)context {
     // First check the in-memory cache...
+    //首先检查内存缓存中是否有，有就返回，调用了上面的那个方法
+    //实际就是执行了NSCache的 objectForKey:方法
     UIImage *image = [self imageFromMemoryCacheForKey:key];
     if (image) {
         return image;
     }
     
     // Second check the disk cache...
+    //如果内存缓存中没有再去磁盘中查找
     image = [self imageFromDiskCacheForKey:key options:options context:context];
     return image;
 }
 
+//在磁盘中所有的保存路径，包括用户添加的路径中搜索key对应的图片数据
 - (nullable NSData *)diskImageDataBySearchingAllPathsForKey:(nullable NSString *)key {
     if (!key) {
         return nil;
@@ -416,6 +461,7 @@ directory 即磁盘缓存存储图片的文件夹路径
     }
     
     // Addtional cache path for custom pre-load cache
+    //在默认路径中没有找到，则在用户添加的路径中查找，找到就返回
     if (self.additionalCachePathBlock) {
         NSString *filePath = self.additionalCachePathBlock(key);
         if (filePath) {
@@ -426,6 +472,7 @@ directory 即磁盘缓存存储图片的文件夹路径
     return data;
 }
 
+//在磁盘中查找指定key的图片数据，然后转换为UIImage对象返回
 - (nullable UIImage *)diskImageForKey:(nullable NSString *)key {
     NSData *data = [self diskImageDataForKey:key];
     return [self diskImageForKey:key data:data];
@@ -470,6 +517,12 @@ directory 即磁盘缓存存储图片的文件夹路径
     }
 }
 
+/*
+在缓存中查找指定key的图片是否存在，完成后执行回调块
+返回一个NSOperation，调用者可以随时取消查询
+提供这个功能主要是因为在磁盘中查找真的很耗时，调用者可能在一段时间后就不查询了
+这个NSOperation更像是一个标记对象，标记调用者是否取消了查询操作，完美的利用了NSOperation的cancel方法
+*/
 - (nullable NSOperation *)queryCacheOperationForKey:(NSString *)key done:(SDImageCacheQueryCompletionBlock)doneBlock {
     return [self queryCacheOperationForKey:key options:0 done:doneBlock];
 }
@@ -485,6 +538,7 @@ directory 即磁盘缓存存储图片的文件夹路径
 - (nullable NSOperation *)queryCacheOperationForKey:(nullable NSString *)key options:(SDImageCacheOptions)options context:(nullable SDWebImageContext *)context cacheType:(SDImageCacheType)queryCacheType done:(nullable SDImageCacheQueryCompletionBlock)doneBlock {
     if (!key) {
         if (doneBlock) {
+            //SDImageCacheTypeNone表示没有缓存数据
             doneBlock(nil, nil, SDImageCacheTypeNone);
         }
         return nil;
@@ -500,9 +554,11 @@ directory 即磁盘缓存存储图片的文件夹路径
     // First check the in-memory cache...
     UIImage *image;
     if (queryCacheType != SDImageCacheTypeDisk) {
+        //查找内存缓存中是否存在，调用了前面的方法
         image = [self imageFromMemoryCacheForKey:key];
     }
     
+    //如果存在，就在磁盘中查找对应的二进制数据，然后执行回调块
     if (image) {
         if (options & SDImageCacheDecodeFirstFrameOnly) {
             // Ensure static image
@@ -527,12 +583,15 @@ directory 即磁盘缓存存储图片的文件夹路径
     BOOL shouldQueryMemoryOnly = (queryCacheType == SDImageCacheTypeMemory) || (image && !(options & SDImageCacheQueryMemoryData));
     if (shouldQueryMemoryOnly) {
         if (doneBlock) {
+            //SDImageCacheTypeMemory表示图片在内存缓存中查找到
             doneBlock(image, nil, SDImageCacheTypeMemory);
         }
         return nil;
     }
     
     // Second check the disk cache...
+    //接下来就需要在磁盘中查找了，由于耗时构造一个NSOperation对象
+    //下面是异步方式在ioQueue上进行查询操作，所以直接就返回了NSOperation对象
     NSOperation *operation = [NSOperation new];
     // Check whether we need to synchronously query disk
     // 1. in-memory cache hit & memoryDataSync
@@ -540,14 +599,18 @@ directory 即磁盘缓存存储图片的文件夹路径
     BOOL shouldQueryDiskSync = ((image && options & SDImageCacheQueryMemoryDataSync) ||
                                 (!image && options & SDImageCacheQueryDiskDataSync));
     void(^queryDiskBlock)(void) =  ^{
+        //ioQueue是串行的，而且磁盘操作很慢，有可能还没开始查询调用者就取消查询
+        //如果在开始查询后调用者再取消就没有用了，只有在查询前取消才有用
         if (operation.isCancelled) {
             if (doneBlock) {
                 doneBlock(nil, nil, SDImageCacheTypeNone);
             }
+            //如果是调用者取消查询不执行回调块
             return;
         }
         
         @autoreleasepool {
+            //在磁盘中查找图片二进制数据，和UIImage对象
             NSData *diskData = [self diskImageDataBySearchingAllPathsForKey:key];
             UIImage *diskImage;
             SDImageCacheType cacheType = SDImageCacheTypeNone;
@@ -559,6 +622,7 @@ directory 即磁盘缓存存储图片的文件夹路径
                 cacheType = SDImageCacheTypeDisk;
                 // decode image data only if in-memory cache missed
                 diskImage = [self diskImageForKey:key data:diskData options:options context:context];
+                //找到并且需要内存缓存就设置一下
                 if (diskImage && self.config.shouldCacheImagesInMemory) {
                     NSUInteger cost = diskImage.sd_memoryCost;
                     [self.memoryCache setObject:diskImage forKey:key cost:cost];
@@ -569,7 +633,9 @@ directory 即磁盘缓存存储图片的文件夹路径
                 if (shouldQueryDiskSync) {
                     doneBlock(diskImage, diskData, cacheType);
                 } else {
+                    //在主线程中执行回调块
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        //SDImageCacheTypeDisk表示在磁盘中找到
                         doneBlock(diskImage, diskData, cacheType);
                     });
                 }
@@ -588,7 +654,8 @@ directory 即磁盘缓存存储图片的文件夹路径
 }
 
 #pragma mark - Remove Ops
-
+//删除缓存总指定key的图片，删除完成后的回调块completion
+//该方法也直接调用了下面的方法，默认也删除磁盘的数据
 - (void)removeImageForKey:(nullable NSString *)key withCompletion:(nullable SDWebImageNoParamsBlock)completion {
     [self removeImageForKey:key fromDisk:YES withCompletion:completion];
 }
@@ -597,25 +664,33 @@ directory 即磁盘缓存存储图片的文件夹路径
     [self removeImageForKey:key fromMemory:YES fromDisk:fromDisk withCompletion:completion];
 }
 
+//根据指定key删除图片数据
 - (void)removeImageForKey:(nullable NSString *)key fromMemory:(BOOL)fromMemory fromDisk:(BOOL)fromDisk withCompletion:(nullable SDWebImageNoParamsBlock)completion {
+    //图片key为nil直接返回
     if (key == nil) {
         return;
     }
 
+    //先判断缓存策略是否有内存缓存，有就删除内存缓存
     if (fromMemory && self.config.shouldCacheImagesInMemory) {
         [self.memoryCache removeObjectForKey:key];
     }
 
+    //如果要删除磁盘数据
     if (fromDisk) {
         dispatch_async(self.ioQueue, ^{
+            //使用key构造一个默认路径下的文件存储的绝对路径
+            //调用NSFileManager删除该路径的文件
             [self.diskCache removeDataForKey:key];
             
+            //有回调块就在主线程中执行
             if (completion) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completion();
                 });
             }
         });
+    //不需要删除磁盘数据并且有回调块就直接执行
     } else if (completion) {
         completion();
     }
@@ -648,14 +723,19 @@ directory 即磁盘缓存存储图片的文件夹路径
 }
 
 #pragma mark - Cache clean Ops
-
+//清除缓存的操作，在收到系统内存警告通知时执行
 - (void)clearMemory {
+    //调用NSCache方法删除所有缓存对象
     [self.memoryCache removeAllObjects];
 }
 
+//清空磁盘的缓存，完成后的回调块completion
 - (void)clearDiskOnCompletion:(nullable SDWebImageNoParamsBlock)completion {
+    //使用异步提交在ioQueue中执行
     dispatch_async(self.ioQueue, ^{
         [self.diskCache removeAllData];
+        
+        //完成后有回调块就在主线程中执行
         if (completion) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 completion();
@@ -664,7 +744,9 @@ directory 即磁盘缓存存储图片的文件夹路径
     });
 }
 
+//删除磁盘中老的即超过缓存最长时限maxCacheAge的图片，完成后回调块completionBlock
 - (void)deleteOldFilesWithCompletionBlock:(nullable SDWebImageNoParamsBlock)completionBlock {
+    //异步方式在ioQueue上执行
     dispatch_async(self.ioQueue, ^{
         [self.diskCache removeExpiredData];
         if (completionBlock) {
@@ -686,6 +768,8 @@ directory 即磁盘缓存存储图片的文件夹路径
 #pragma mark - UIApplicationDidEnterBackgroundNotification
 
 #if SD_UIKIT
+//在ios下才会有的函数
+//写不动了，就是在后台删除。。。自己看看吧。。。唉
 - (void)applicationDidEnterBackground:(NSNotification *)notification {
     if (!self.config.shouldRemoveExpiredDataWhenEnterBackground) {
         return;
@@ -728,6 +812,7 @@ directory 即磁盘缓存存储图片的文件夹路径
     return count;
 }
 
+//同时计算磁盘缓存图片占用空间大小和缓存图片的个数，然后调用回调块，传入相关参数
 - (void)calculateSizeWithCompletionBlock:(nullable SDImageCacheCalculateSizeBlock)completionBlock {
     dispatch_async(self.ioQueue, ^{
         NSUInteger fileCount = [self.diskCache totalCount];
