@@ -417,11 +417,13 @@ objc_object::rootIsDeallocating()
 inline void 
 objc_object::clearDeallocating()
 {
+    //先判断obj是否采用了优化isa引用计数:https://blog.csdn.net/u013378438/article/details/82767947
     if (slowpath(!isa.nonpointer)) {
+        //没有，则要清理obj存储在sideTable中的引用计数等信息，这个分支在当前64位设备中应该不会进入，不必关系。
         // Slow path for raw pointer isa.
         sidetable_clearDeallocating();
     }
-    else if (slowpath(isa.weakly_referenced  ||  isa.has_sidetable_rc)) {
+    else if (slowpath(isa.weakly_referenced  ||  isa.has_sidetable_rc)) {//如果启用了isa优化，则判断是否使用了sideTable，使用的原因是因为做了weak引用（isa.weakly_referenced ） 或 使用了sideTable的辅助引用计数（isa.has_sidetable_rc）。符合这两种情况之一，则进入慢析构路径
         // Slow path for non-pointer isa with weak refs and/or side table data.
         clearDeallocating_slow();
     }
@@ -435,6 +437,13 @@ objc_object::rootDealloc()
 {
     if (isTaggedPointer()) return;  // fixme necessary?
 
+    //fastpath(x) 表示x为1的概率很大， slowpath(x) 表示x为0的概率很大。 它和if一起时候用， if(fastpath(x)) 表示执行if语句的可能性大， if(slowpath(x))表示执行if语句的可能性小
+    //https://www.jianshu.com/p/4d9fb7792b71
+    //判断对象是否采用了优化的isa计数方式（isa.nonpointer）
+    //对象没有被weak引用!isa.weakly_referenced
+    //没有关联对象!isa.has_assoc
+    //没有自定义的C++析构方法!isa.has_cxx_dtor
+    //没有用到sideTable来做引用计数 !isa.has_sidetable_rc。
     if (fastpath(isa.nonpointer  &&  
                  !isa.weakly_referenced  &&  
                  !isa.has_assoc  &&  
@@ -444,7 +453,7 @@ objc_object::rootDealloc()
         assert(!sidetable_present());
         free(this);
     } 
-    else {
+    else {//如果obj被weak引用,进行如下方法调用
         object_dispose((id)this);
     }
 }

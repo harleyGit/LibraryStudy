@@ -439,17 +439,20 @@ static void object_cxxDestructFromClass(id obj, Class cls)
     void (*dtor)(id);
 
     // Call cls's dtor first, then superclasses's dtors.
-
+    // 从本类开始按照继承链依次遍历父类
     for ( ; cls; cls = cls->superclass) {
-        if (!cls->hasCxxDtor()) return; 
+        // 如果没有实现c++/OC析构方法,则结束
+        if (!cls->hasCxxDtor()) return;
+        // 在本类中找到析构方法并且记载到缓存中 , 方法实现在objc-class-old.mm line 578 此处不展开
         dtor = (void(*)(id))
             lookupMethodInClassAndLoadCache(cls, SEL_cxx_destruct);
+        // 因为lookupMethodInClassAndLoadCache只会在本类中寻找方法(不会去父类),找不到则会返回objc_msgForward, _objc_msgForward_impcache是编译器的消息转发标记,代表此方法要走消息转发,如果析构方法在本类中被找到了,则此一定为true,进入代码块,执行代码
         if (dtor != (void(*)(id))_objc_msgForward_impcache) {
             if (PrintCxxCtors) {
                 _objc_inform("CXX: calling C++ destructors for class %s", 
                              cls->nameForLogging());
             }
-            (*dtor)(obj);
+            (*dtor)(obj);//猜测: 这个dtor可能是析构方法,这里是函数指针所以可以执行
         }
     }
 }

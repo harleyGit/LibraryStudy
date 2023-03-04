@@ -856,6 +856,7 @@ enum { CacheLineSize = 64 };
 // for cache-friendly lock striping. 
 // For example, this may be used as StripedMap<spinlock_t>
 // or as StripedMap<SomeStruct> where SomeStruct stores a spin lock.
+/// StripedMap 是一个以void *为hash key， T为vaule的hash 表
 template<typename T>
 class StripedMap {
 #if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR
@@ -864,17 +865,21 @@ class StripedMap {
     enum { StripeCount = 64 };
 #endif
 
+    //StripedMap的所有T类型数据都被封装到PaddedT中
+    //而在SideTables中，T即为SideTable类型，我们稍后会看到SideTable是如何符合StripedMap的数据类型要求的
     struct PaddedT {
-        T value alignas(CacheLineSize);
+        T value alignas(CacheLineSize);// T value 64字节对齐
     };
 
-    PaddedT array[StripeCount];
+    PaddedT array[StripeCount];// 所有PaddedT struct 类型数据被存储在array数组中。iOS 设备 StripeCount == 64
 
-    static unsigned int indexForPointer(const void *p) {
+    //苹果为array数组写了一些公共的存取数据的方法，主要是调用indexForPointer方法，使得外部传入的对象地址指针直接hash到对应的array节点
+    static unsigned int indexForPointer(const void *p) {// 该方法以void *作为key 来获取void *对应在StripedMap 中的位置
         uintptr_t addr = reinterpret_cast<uintptr_t>(p);
-        return ((addr >> 4) ^ (addr >> 9)) % StripeCount;
+        return ((addr >> 4) ^ (addr >> 9)) % StripeCount;// % StripeCount 防止index越界
     }
 
+    // 取值方法 [p]
  public:
     T& operator[] (const void *p) { 
         return array[indexForPointer(p)].value; 

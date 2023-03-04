@@ -751,6 +751,7 @@ template <typename KeyT, typename ValueT,
           typename ValueInfoT = DenseMapValueInfo<ValueT>,
           typename KeyInfoT = DenseMapInfo<KeyT>,
           typename BucketT = detail::DenseMapPair<KeyT, ValueT>>
+///DenseMap这个模板类型又继承与另一个Base 模板类型DenseMapBase
 class DenseMap : public DenseMapBase<DenseMap<KeyT, ValueT, ValueInfoT, KeyInfoT, BucketT>,
                                      KeyT, ValueT, ValueInfoT, KeyInfoT, BucketT> {
   friend class DenseMapBase<DenseMap, KeyT, ValueT, ValueInfoT, KeyInfoT, BucketT>;

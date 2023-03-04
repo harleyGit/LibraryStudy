@@ -7740,8 +7740,13 @@ void *objc_destructInstance(id obj)
         bool assoc = obj->hasAssociatedObjects();
 
         // This order is important.
+        //// 调用C++析构函数
         if (cxx) object_cxxDestruct(obj);
+        //如果当前实例有关联对象，则移除关联对象(也就是说对象的关联对象是在objc_destructInstance函数中释放的)
         if (assoc) _object_remove_assocations(obj);
+        //执行clearDeallocating，其内部所做的工作为从weak列表中移除（如果被弱引用）以及销毁引用计数的存储指针（如果引用计数很大不能内联存储）
+        //这里的weak列表和引用计数都保存在一个叫SideTable的全局结构体中，此结构体在runtime运行期内不会被析构
+        //清空引用计数表和弱引用表，并将所有的weak引用置为nil（也就是我们的weak引用在dealloc后能够自动置为nil是因为在这里执行了置为nil的操作）
         obj->clearDeallocating();
     }
 
@@ -7759,8 +7764,8 @@ object_dispose(id obj)
 {
     if (!obj) return nil;
 
-    objc_destructInstance(obj);    
-    free(obj);
+    objc_destructInstance(obj);   //调用objc_destructInstance(obj)来析构obj
+    free(obj);// 释放内存
 
     return nil;
 }
