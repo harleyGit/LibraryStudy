@@ -270,7 +270,7 @@ public:
                makeIterator(TheBucket, getBucketsEnd(), true),
                false); // Already in map.
 
-    // Otherwise, insert the new element.
+    // Otherwise, insert the new element.如果发现没有这个 key 就插入一个 空的 BucketT进去并返回true
     TheBucket = InsertIntoBucket(TheBucket, Key, std::forward<Ts>(Args)...);
     return std::make_pair(
              makeIterator(TheBucket, getBucketsEnd(), true),

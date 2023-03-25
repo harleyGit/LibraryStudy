@@ -116,12 +116,12 @@ struct SideTable {
      *用来存储OC对象的引用计数。它实质上是一个以objc_object为key的hash表，其vaule就是OC对象的引用计数。
      *同时，当OC对象的引用计数变为0时，会自动将相关的信息从hash表中剔除
      */
-    RefcountMap refcnts; // 对象引用计数相关 map
+    RefcountMap refcnts; // 对象引用计数相关 map, 以DisguisedPtr<objc_object>为key的hash表，用来存储OC对象的引用计数(仅在未开启isa优化 或 在isa优化情况下isa_t的引用计数溢出时才会用到)。其key是obj的地址，而value，则是obj对象的引用计数
     
     /**weak_table_t weak_table:
      *用来存储OC对象弱引用的相关信息
      */
-    weak_table_t weak_table;// 对象弱引用相关 table, 存储对象弱引用指针的hash表。是OC weak功能实现的核心数据结构
+    weak_table_t weak_table;// 存储了弱引用obj的指针的地址，其本质是一个以obj地址为key，弱引用obj的指针的地址作为value的hash表。hash表的节点类型是weak_entry_t。是OC weak功能实现的核心数据结构
 
     SideTable() {
         memset(&weak_table, 0, sizeof(weak_table));
@@ -187,7 +187,7 @@ void SideTable::unlockTwo<DontHaveOld, DoHaveNew>
     lock2->unlock();
 }
 
-///SideTabls 实质类型为模板类型StripedMap 。StripedMap直译过来是“有条纹的Map”
+///SideTables 实质类型为模板类型StripedMap 。StripedMap直译过来是“有条纹的Map”
 static objc::ExplicitInit<StripedMap<SideTable>> SideTablesMap;
 
 static StripedMap<SideTable>& SideTables() {
@@ -1853,7 +1853,7 @@ objc_opt_respondsToSelector(id obj, SEL sel)
 
 void
 _objc_rootDealloc(id obj)
-{
+{//主要是对对象进行析构 
     ASSERT(obj);
 
     obj->rootDealloc();
@@ -2380,6 +2380,7 @@ __attribute__((objc_nonlazy_class))
 
 // Replaced by NSZombies
 - (void)dealloc {
+    //https://juejin.cn/post/6949585271692197925#heading-1 (Runtime Asssociate方法关联的对象，需要在dealloc中释放?)
     _objc_rootDealloc(self);
 }
 

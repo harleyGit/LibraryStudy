@@ -1349,6 +1349,7 @@ class_rw_t::extAlloc(const class_ro_t *ro, bool deepCopy)
 // Attach method lists and properties and protocols from categories to a class.
 // Assumes the categories in cats are all loaded and sorted by load order, 
 // oldest categories first.
+// 把分类的内容动态拼接
 static void
 attachCategories(Class cls, const locstamped_category_t *cats_list, uint32_t cats_count,
                  int flags)
@@ -6164,6 +6165,7 @@ IMP lookUpImpOrForward(id inst, SEL sel, Class cls, int behavior)
     IMP imp = nil;
     Class curClass;
 
+    //runtimeLock在查找方法的时候加锁，是为了保持method-lookup（查找方法）和 cache-fill（缓存填充）这两种方法的原子性
     runtimeLock.assertUnlocked();
 
     // Optimistic cache lookup

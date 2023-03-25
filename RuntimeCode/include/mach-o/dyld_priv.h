@@ -382,6 +382,7 @@ extern int dyld_shared_cache_find_iterate_text(const uuid_t cacheUuid, const cha
 //
 // Exists in Mac OS X 10.12 and later
 //           iOS 10.0 and later
+//翻译的意思是:意思就是如果在给定的地址指向的内存空间中拥有可以继续使用的内存，那么直接返回改地址，而且这个内存映射是只读永远不会被释放
 extern bool _dyld_is_memory_immutable(const void* addr, size_t length);
 
 

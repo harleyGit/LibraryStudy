@@ -60,8 +60,8 @@ struct objc_class {
     const char * _Nonnull name                               OBJC2_UNAVAILABLE; // 类的名字
     long version                                             OBJC2_UNAVAILABLE; // 类的版本信息，默认为 0
     long info                                                OBJC2_UNAVAILABLE; // 类的信息，供运行期使用的一些位标识
-    long instance_size                                       OBJC2_UNAVAILABLE; // 该类的实例变量大小;
-    struct objc_ivar_list * _Nullable ivars                  OBJC2_UNAVAILABLE; // 该类的实例变量列表
+    long instance_size                                       OBJC2_UNAVAILABLE; // 该类的实例变量大小(实例变量的内存大小);
+    struct objc_ivar_list * _Nullable ivars                  OBJC2_UNAVAILABLE; // 该类的实例变量列表(实际上是一个链表)
     struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;  // 方法定义的列表
     struct objc_cache * _Nonnull cache                       OBJC2_UNAVAILABLE; // 方法缓存
     struct objc_protocol_list * _Nullable protocols          OBJC2_UNAVAILABLE; // 遵守的协议列表

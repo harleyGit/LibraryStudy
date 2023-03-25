@@ -1821,12 +1821,12 @@ struct swift_class_t : objc_class {
 
 
 struct category_t {
-    const char *name;
-    classref_t cls;
-    WrappedPtr<method_list_t, PtrauthStrip> instanceMethods;
-    WrappedPtr<method_list_t, PtrauthStrip> classMethods;
-    struct protocol_list_t *protocols;
-    struct property_list_t *instanceProperties;
+    const char *name;   // 分类名
+    classref_t cls;     // 原类对象
+    WrappedPtr<method_list_t, PtrauthStrip> instanceMethods;    // 实例方法列表
+    WrappedPtr<method_list_t, PtrauthStrip> classMethods;       // 类方法列表
+    struct protocol_list_t *protocols;                          // 协议方法列表
+    struct property_list_t *instanceProperties;                 // property属性列表
     // Fields below this point are not always present on disk.
     struct property_list_t *_classProperties;
 

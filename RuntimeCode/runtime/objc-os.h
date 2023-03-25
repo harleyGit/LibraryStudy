@@ -980,19 +980,27 @@ extern int secure_open(const char *filename, int flags, uid_t euid);
 static inline void *
 memdup(const void *mem, size_t len)
 {
+    // 根据需要的大小开辟新的内存空间，获取地址
     void *dup = malloc(len);
+    // 将旧地址mem指向的内存空间的起始位置开始拷贝指定大小字节到目标地址dup指向的空间中
     memcpy(dup, mem, len);
+    // 返回新的内存地址
     return dup;
 }
 
 // strdup that doesn't copy read-only memory
+// Strdup不复制只读内存
 static inline char *
 strdupIfMutable(const char *str)
 {
+    // 在原有内存的大小基础上进行添加
     size_t size = strlen(str) + 1;
+    // 判断是否需要开辟新的内存空间去存储
+    //也就是说只要内存足够继续返回这块内存空间地址。
     if (_dyld_is_memory_immutable(str, size)) {
         return (char *)str;
     } else {
+        // 开辟内存
         return (char *)memdup(str, size);
     }
 }

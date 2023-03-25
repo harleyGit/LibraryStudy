@@ -155,6 +155,7 @@ _object_get_associative_reference(id object, const void *key)
     return association.autoreleaseReturnedValue();
 }
 
+//https://juejin.cn/post/6949585629168533517
 void
 _object_set_associative_reference(id object, const void *key, id value, uintptr_t policy)
 {
@@ -166,30 +167,35 @@ _object_set_associative_reference(id object, const void *key, id value, uintptr_
     if (object->getIsa()->forbidsAssociatedObjects())
         _objc_fatal("objc_setAssociatedObject called on instance (%p) of class %s which does not allow associated objects", object, object_getClassName(object));
 
-    DisguisedPtr<objc_object> disguised{(objc_object *)object};
-    ObjcAssociation association{policy, value};
+    //object封装成一个数组结构类型，类型为DisguisedPtr
+    DisguisedPtr<objc_object> disguised{(objc_object *)object};//相当于包装了一下 对象object,便于使用
+    ObjcAssociation association{policy, value};// 包装一下 policy - value
 
     // retain the new value (if any) outside the lock.
-    association.acquireValue();
+    association.acquireValue();//根据策略类型进行处理
 
+    //局部作用域空间
     {
-        AssociationsManager manager;
-        AssociationsHashMap &associations(manager.get());
+        // 管理类: 初始化manager变量，相当于自动调用AssociationsManager的析构函数进行初始化
+        AssociationsManager manager;//并不是全场唯一，构造函数中加锁只是为了避免重复创建，在这里是可以初始化多个AssociationsManager变量的
+        
+        AssociationsHashMap &associations(manager.get());//获取唯一的全局静态哈希: AssociationsHashMap 全场唯一
 
-        if (value) {
-            auto refs_result = associations.try_emplace(disguised, ObjectAssociationMap{});
-            if (refs_result.second) {
-                /* it's the first association we make */
-                object->setHasAssociatedObjects();
+        if (value) {//判断是否插入的关联值value是否存在
+            auto refs_result = associations.try_emplace(disguised, ObjectAssociationMap{});//返回的结果是一个类对
+            if (refs_result.second) {//判断第二个存不存在，即bool值是否为true
+                /* it's the first association we make 第一次建立关联*/
+                object->setHasAssociatedObjects();//nonpointerIsa ，标记位true
             }
 
-            /* establish or replace the association */
-            auto &refs = refs_result.first->second;
-            auto result = refs.try_emplace(key, std::move(association));
-            if (!result.second) {
+            /* establish or replace the association 建立或者替换关联*/
+            auto &refs = refs_result.first->second; //得到一个空的桶子，找到引用对象类型,即第一个元素的second值
+            //通过try_emplace方法，并创建一个空的 ObjectAssociationMap 去取查询的键值对
+            auto result = refs.try_emplace(key, std::move(association));//查找当前的key是否有association关联对象
+            if (!result.second) {//如果结果不存在
                 association.swap(result.first->second);
             }
-        } else {
+        } else {//如果传的是空值，则移除关联，相当于移除
             auto refs_it = associations.find(disguised);
             if (refs_it != associations.end()) {
                 auto &refs = refs_it->second;
@@ -207,7 +213,7 @@ _object_set_associative_reference(id object, const void *key, id value, uintptr_
     }
 
     // release the old value (outside of the lock).
-    association.releaseHeldValue();
+    association.releaseHeldValue();//释放
 }
 
 // Unlike setting/getting an associated reference,
@@ -216,13 +222,15 @@ _object_set_associative_reference(id object, const void *key, id value, uintptr_
 // whether they have associated objects.
 void
 _object_remove_assocations(id object)
-{
+{//关联属性的移除，主要是从全局哈希map中找到相关对象的迭代器，然后将迭代器中关联属性，从头到尾的移除
     ObjectAssociationMap refs{};
 
     {
         AssociationsManager manager;
         AssociationsHashMap &associations(manager.get());
+        //从全局哈希表中找到对应 对象的迭代器
         AssociationsHashMap::iterator i = associations.find((objc_object *)object);
+        //从头到位删除
         if (i != associations.end()) {
             refs.swap(i->second);
             associations.erase(i);

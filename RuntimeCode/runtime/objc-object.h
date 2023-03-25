@@ -454,7 +454,7 @@ objc_object::rootDealloc()
         free(this);
     } 
     else {//如果obj被weak引用,进行如下方法调用
-        object_dispose((id)this);
+        object_dispose((id)this);//主要是销毁实例对象 
     }
 }
 
