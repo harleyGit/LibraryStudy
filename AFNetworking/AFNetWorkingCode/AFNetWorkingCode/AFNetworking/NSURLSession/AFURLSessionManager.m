@@ -783,7 +783,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
      //第一件事，创建NSURLSessionDataTask，里面适配了Ios8以下taskIdentifiers，函数创建task对象。
      //其实现应该是因为iOS 8.0以下版本中会并发地创建多个task对象，而同步有没有做好，导致taskIdentifiers 不唯一…这边做了一个串行处理
      url_session_manager_create_task_safely(^{
-     dataTask = [self.session dataTaskWithRequest:request];
+        dataTask = [self.session dataTaskWithRequest:request];
      });
      */
     NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:request];
