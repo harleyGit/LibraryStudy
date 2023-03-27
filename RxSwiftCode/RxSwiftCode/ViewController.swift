@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ViewController: UIViewController {
     
@@ -24,23 +26,25 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.addSubview(self.btn)
         // Do any additional setup after loading the view.
     }
     
     
     @objc func tapped(sender: UIButton)  {
-//        let disposeBag = DisposeBag()
-//        let subject = AsyncSubject<String>()
-//
-//        subject.subscribe{
-//            print("subscription: 1 Event:", $0)
-//        }.disposed(by: disposeBag)
-//
-//        subject.onNext("🐩")
-//        subject.onNext("🐶")
-//        subject.onNext("🐱")
-//        subject.onNext("🥜")
-//        subject.onCompleted()
+        let disposeBag = DisposeBag()
+        let subject = AsyncSubject<String>()
+
+        subject.subscribe{
+            print("subscription: 1 Event:", $0)
+        }.disposed(by: disposeBag)
+
+        subject.onNext("🐩")
+        subject.onNext("🐶")
+        subject.onNext("🐱")
+        subject.onNext("🥜")
+        subject.onCompleted()
     }
 
 
