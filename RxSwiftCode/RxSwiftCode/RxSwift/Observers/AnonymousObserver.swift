@@ -5,7 +5,7 @@
 //  Created by Krunoslav Zaher on 2/8/15.
 //  Copyright © 2015 Krunoslav Zaher. All rights reserved.
 //
-
+//AnonymousObserver是匿名观察者,用于存储和处理事件的闭包
 final class AnonymousObserver<Element>: ObserverBase<Element> {
     typealias EventHandler = (Event<Element>) -> Void
     

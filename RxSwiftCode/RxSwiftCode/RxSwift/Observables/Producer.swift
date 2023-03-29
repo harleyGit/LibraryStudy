@@ -15,6 +15,7 @@ class Producer<Element>: Observable<Element> {
         if !CurrentThreadScheduler.isScheduleRequired {
             // The returned disposable needs to release all references once it was disposed.
             let disposer = SinkDisposer()
+            //run 方法是AnonymousObservable.run的方法
             let sinkAndSubscription = self.run(observer, cancel: disposer)
             disposer.setSinkAndSubscription(sink: sinkAndSubscription.sink, subscription: sinkAndSubscription.subscription)
 
@@ -23,7 +24,7 @@ class Producer<Element>: Observable<Element> {
         else {
             return CurrentThreadScheduler.instance.schedule(()) { _ in
                 let disposer = SinkDisposer()
-                let sinkAndSubscription = self.run(observer, cancel: disposer)
+                let sinkAndSubscription = self.run(observer, cancel: disposer)//这里run方法，也就是AnonymousObservable这个类里面的run方法，把observer作为参数传过来。
                 disposer.setSinkAndSubscription(sink: sinkAndSubscription.sink, subscription: sinkAndSubscription.subscription)
 
                 return disposer

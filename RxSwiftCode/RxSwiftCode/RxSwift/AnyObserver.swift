@@ -26,6 +26,8 @@ public struct AnyObserver<Element> : ObserverType {
     ///
     /// - parameter observer: Observer that receives sequence events.
     public init<Observer: ObserverType>(_ observer: Observer) where Observer.Element == Element {
+        //self.observer = observer.on，AnonymousObservableSink类的on函数赋值给AnyObserver类的observer变量
+        //从这里就可以明白为什么这行代码observer.onNext("发送信号") 最终会触发AnonymousObservableSink.on事件
         self.observer = observer.on
     }
     

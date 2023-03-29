@@ -8,7 +8,6 @@
 
 extension ObservableType {
     // MARK: create
-
     /**
      Creates an observable sequence from a specified subscribe method implementation.
 
@@ -17,8 +16,10 @@ extension ObservableType {
      - parameter subscribe: Implementation of the resulting observable sequence's `subscribe` method.
      - returns: The observable sequence with the specified implementation for the `subscribe` method.
      */
+    //create 方法的时候创建了一个内部对象 AnonymousObservable
     public static func create(_ subscribe: @escaping (AnyObserver<Element>) -> Disposable) -> Observable<Element> {
-        AnonymousObservable(subscribe)
+        //AnonymousObservable是匿名可观察者,用来存储产生事件的闭包（self._subscribeHandler = subscribeHandler）和激活处理事件闭包的入口（run方法）
+        AnonymousObservable(subscribe)//AnonymousObservable（匿名可观察序列）
     }
 }
 
@@ -57,10 +58,12 @@ final private class AnonymousObservableSink<Observer: ObserverType>: Sink<Observ
     }
 
     func run(_ parent: Parent) -> Disposable {
+        //parent 就是上面传过来的AnonymousObservable对象 //_subscribeHandler就是之前create函数的闭包 //在这个方法中把self转换成AnyObserver对象，也就是把AnonymousObservableSink对象转换成AnyObserver对象
         parent.subscribeHandler(AnyObserver(self))
     }
 }
 
+// AnonymousObservable继承了 Producer 具有非常重要的方法 subscribe
 final private class AnonymousObservable<Element>: Producer<Element> {
     typealias SubscribeHandler = (AnyObserver<Element>) -> Disposable
 
@@ -71,7 +74,7 @@ final private class AnonymousObservable<Element>: Producer<Element> {
     }
 
     override func run<Observer: ObserverType>(_ observer: Observer, cancel: Cancelable) -> (sink: Disposable, subscription: Disposable) where Observer.Element == Element {
-        let sink = AnonymousObservableSink(observer: observer, cancel: cancel)
+        let sink = AnonymousObservableSink(observer: observer, cancel: cancel)//AnonymousObservableSink这个类将可观察者Observable和观察者Observer链接起来,实现事件的传递，起到一个桥梁的作用
         let subscription = sink.run(self)
         return (sink: sink, subscription: subscription)
     }

@@ -30,7 +30,7 @@ class Sink<Observer: ObserverType>: Disposable {
         #endif
         if isFlagSet(self.disposed, 1) {
             return
-        }
+        }//_observer就是第二步调用subscribe函数里面创建的observer对象。 会先进入到父类的ObserverBase的on方法
         self.observer.on(event)
     }
 

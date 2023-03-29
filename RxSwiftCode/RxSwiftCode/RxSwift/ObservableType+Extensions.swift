@@ -75,7 +75,7 @@ extension ObservableType {
      - parameter onDisposed: Action to invoke upon any type of termination of sequence (if the sequence has
      gracefully completed, errored, or if the generation is canceled by disposing subscription).
      - returns: Subscription object used to unsubscribe from the observable sequence.
-     */
+     *///Element 这里的意思是 Swift 的关联类型
     public func subscribe(
         onNext: ((Element) -> Void)? = nil,
         onError: ((Swift.Error) -> Void)? = nil,
@@ -96,7 +96,7 @@ extension ObservableType {
             #endif
             
             let callStack = Hooks.recordCallStackOnError ? Hooks.customCaptureSubscriptionCallstack() : []
-            
+            //创建了一个 AnonymousObserver (匿名内部观察者),它这里的初始化是闭包参数，保存了外界的 onNext, onError , onCompleted , onDisposed 的处理回调闭包的调用
             let observer = AnonymousObserver<Element> { event in
                 
                 #if DEBUG
@@ -121,6 +121,9 @@ extension ObservableType {
                 }
             }
             return Disposables.create(
+                //asObservable返回的是对象本身，然后调用sbscribe这个函数并且把创建的AnonymousObserver对象传递过去，
+                //会来到AnonymousObservable这个类里面，但是发现这个类里面没有subscribe方法，我们往父类Producer里面找到这个方法
+                //这个subscribe 是类Producer里的订阅方法
                 self.asObservable().subscribe(observer),
                 disposable
             )
