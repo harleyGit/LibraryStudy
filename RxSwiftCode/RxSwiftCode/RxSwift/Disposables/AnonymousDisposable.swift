@@ -38,7 +38,9 @@ private final class AnonymousDisposable : DisposeBase, Cancelable {
     ///
     /// After invoking disposal action, disposal action will be dereferenced.
     fileprivate func dispose() {
+        //fetchOr(self._isDisposed, 1) == 0这行代码是控制if语句里面只会进去一次
         if fetchOr(self.disposed, 1) == 0 {
+            //下面这样做的原因是是如果_disposeAction闭包是一个耗时操作，也能够保证_disposeAction能够立即释放
             if let action = self.disposeAction {
                 self.disposeAction = nil
                 action()

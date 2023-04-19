@@ -120,6 +120,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 - (instancetype)initIncrementalWithOptions:(nullable SDImageCoderOptions *)options {
     self = [super init];
     if (self) {
+        //创建一个空的图片源
         _imageSource = CGImageSourceCreateIncremental(NULL);
         CGFloat scale = 1;
         NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];
@@ -160,6 +161,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     // Thanks to the author @Nyx0uf
     
     // Update the data source, we must pass ALL the data, not just the new bytes
+    //获得新数据时调用 CGImageSourceUpdateData(data, false) 来更新图片源
     CGImageSourceUpdateData(_imageSource, (__bridge CFDataRef)data, finished);
     
     if (_width + _height == 0) {

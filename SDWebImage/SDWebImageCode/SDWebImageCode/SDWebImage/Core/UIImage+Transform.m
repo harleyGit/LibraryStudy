@@ -59,6 +59,7 @@ static inline CGRect SDCGRectFitWithScaleMode(CGRect rect, CGSize size, SDImageS
 
 static inline UIColor * SDGetColorFromPixel(Pixel_8888 pixel, CGBitmapInfo bitmapInfo) {
     // Get alpha info, byteOrder info
+    //alpha 的信息由枚举值 CGImageAlphaInfo 来表示:https://www.cnblogs.com/dins/p/ios-tu-pian.html
     CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
     CGBitmapInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
     CGFloat r = 0, g = 0, b = 0, a = 1;
@@ -454,11 +455,13 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     }
     
     // Get pixels
+    //获取这个图片的数据源
     CGDataProviderRef provider = CGImageGetDataProvider(imageRef);
     if (!provider) {
         CGImageRelease(imageRef);
         return nil;
     }
+    //从数据源获取直接解码的数据
     CFDataRef data = CGDataProviderCopyData(provider);
     if (!data) {
         CGImageRelease(imageRef);
@@ -509,11 +512,13 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     }
     
     // Get pixels
+    //获取这个图片的数据源
     CGDataProviderRef provider = CGImageGetDataProvider(imageRef);
     if (!provider) {
         CGImageRelease(imageRef);
         return nil;
     }
+    //从数据源获取直接解码的数据
     CFDataRef data = CGDataProviderCopyData(provider);
     if (!data) {
         CGImageRelease(imageRef);

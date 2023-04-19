@@ -40,6 +40,7 @@ public typealias Driver<Element> = SharedSequence<DriverSharingStrategy, Element
 public struct DriverSharingStrategy: SharingStrategyProtocol {
     public static var scheduler: SchedulerType { SharingScheduler.make() }
     public static func share<Element>(_ source: Observable<Element>) -> Observable<Element> {
+        //share方法的功能就是共享状态，防止重复发送请求
         source.share(replay: 1, scope: .whileConnected)
     }
 }

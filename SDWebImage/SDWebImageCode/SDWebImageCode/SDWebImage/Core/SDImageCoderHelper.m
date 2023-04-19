@@ -222,6 +222,8 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     if (!cgImage) {
         return NO;
     }
+    //获取image的alpha通道。通过通道获取图片数据
+    //https://www.jianshu.com/p/133a0cb40913, 
     CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
     BOOL hasAlpha = !(alphaInfo == kCGImageAlphaNone ||
                       alphaInfo == kCGImageAlphaNoneSkipFirst ||
@@ -265,7 +267,11 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     // But since our build-in coders use this bitmapInfo, this can have a little performance benefit
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
     bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
-    CGContextRef context = CGBitmapContextCreate(NULL, newWidth, newHeight, 8, 0, [self colorSpaceGetDeviceRGB], bitmapInfo);//https://blog.csdn.net/hlllmr1314/article/details/8198543
+    
+    ////强制解压缩的原理就是对图片进行重新绘制，得到一张新的解压缩后的位图。其中，用到的最核心的函数是CGBitmapContextCreate() 方法，
+    ///这个方法生成一个空白的图片绘制上下文，我们传入了上述的一些参数，指定了图片的大小、颜色空间、像素排列等等属性
+    ///https://blog.csdn.net/hlllmr1314/article/details/8198543
+    CGContextRef context = CGBitmapContextCreate(NULL, newWidth, newHeight, 8, 0, [self colorSpaceGetDeviceRGB], bitmapInfo);
     if (!context) {
         return NULL;
     }
@@ -274,6 +280,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     CGAffineTransform transform = SDCGContextTransformFromOrientation(orientation, CGSizeMake(newWidth, newHeight));
     CGContextConcatCTM(context, transform);//使用 transform 变换矩阵对CGContextRef坐标系统进行变换,通过坐标矩阵可以对坐标系统任意变换
     CGContextDrawImage(context, CGRectMake(0, 0, width, height), cgImage); // The rect is bounding box of CGImage, don't swap width & height
+    //从 context 上下文中创建一个新的 imageRef，这是解码后的图片了
     CGImageRef newImageRef = CGBitmapContextCreateImage(context);//绘制图片
     CGContextRelease(context);
     

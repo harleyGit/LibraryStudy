@@ -66,6 +66,7 @@ public class CurrentThreadScheduler : ImmediateSchedulerType {
     }
 
     /// Gets a value that indicates whether the caller must call a `schedule` method.
+    ///表示是否必须调用schedule方法,利用对 queue的set,get方法的观察，绑定我们的当前队列与静态字符串，实现同一线程数据共享
     public static private(set) var isScheduleRequired: Bool {
         get {
             return pthread_getspecific(CurrentThreadScheduler.isScheduleRequiredKey) == nil

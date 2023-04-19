@@ -19,6 +19,8 @@ import RxSwift
 
     To find out more about units and how to use them, please visit `Documentation/Traits.md`.
 */
+//在Driver.swift中有定义 public typealias Driver<Element> = SharedSequence<DriverSharingStrategy, Element>
+// 所以SharingStrategy其实就是 DriverSharingStrategy
 public struct SharedSequence<SharingStrategy: SharingStrategyProtocol, Element> : SharedSequenceConvertibleType, ObservableConvertibleType {
     let source: Observable<Element>
 

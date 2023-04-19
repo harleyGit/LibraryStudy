@@ -200,7 +200,9 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
             NSUInteger rasterizationDPI = maxPixelSize * DPIPerPixel;
             decodingOptions[kSDCGImageSourceRasterizationDPI] = @(rasterizationDPI);
         }
-        imageRef = CGImageSourceCreateImageAtIndex(source, index, (__bridge CFDictionaryRef)decodingOptions);//只能返回索引值的图片，丢失了其他的图片信息。因此，我们只获取到了其中的一帧图片 https://www.jianshu.com/p/5c870860c187
+        //创建一个未解码的 CGImage
+        //只能返回索引值的图片，丢失了其他的图片信息。因此，我们只获取到了其中的一帧图片 https://www.jianshu.com/p/5c870860c187
+        imageRef = CGImageSourceCreateImageAtIndex(source, index, (__bridge CFDictionaryRef)decodingOptions);
     } else {
         decodingOptions[(__bridge NSString *)kCGImageSourceCreateThumbnailWithTransform] = @(preserveAspectRatio);
         CGFloat maxPixelSize;
@@ -529,8 +531,10 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     self = [super init];
     if (self) {
-        ///创建图像源
-        ///https://www.jianshu.com/p/e9843d5b70a2, https://www.cnblogs.com/feng9exe/p/8857506.html
+        ///创建图像源(創建CGImageSource對象)
+        ///https://www.cnblogs.com/feng9exe/p/8857506.html
+        ///ImageIO框架应用与分析: https://developer.aliyun.com/article/800012,
+        ///https://www.itread01.com/articles/1487115508.html, https://www.itread01.com/articles/1487115508.html
         CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
         if (!imageSource) {
             return nil;
