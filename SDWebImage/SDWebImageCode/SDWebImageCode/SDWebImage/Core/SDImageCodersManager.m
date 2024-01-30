@@ -103,7 +103,7 @@
     return NO;
 }
 
-/// 图像解码方法
+/// 图像解码原始二进制数据生成图片UIImage对象
 - (UIImage *)decodedImageWithData:(NSData *)data options:(nullable SDImageCoderOptions *)options {
     if (!data) {
         return nil;

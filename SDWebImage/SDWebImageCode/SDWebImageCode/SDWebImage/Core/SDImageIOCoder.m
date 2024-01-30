@@ -70,6 +70,10 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
 }
 
+
+/// 根据压缩图片原始二进制数据生成图片
+/// @param data 压缩图片的二进制数据·
+/// @param options 可选配置项
 - (UIImage *)decodedImageWithData:(NSData *)data options:(nullable SDImageCoderOptions *)options {
     if (!data) {
         return nil;
@@ -96,6 +100,9 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         preserveAspectRatio = preserveAspectRatioValue.boolValue;
     }
     
+    //CGImageSourceCreateWithData 是 Core Graphics 框架中的函数，用于创建一个 CGImageSource 对象，该对象包含了从指定的 NSData 中读取的图像数据。
+    //这个函数通常用于从内存中的二进制数据创建图像源，进而进行图像的解码和处理。
+    //这个data是原始图片信息的数据,在图片文件中，文件头的作用是标识文件的类型和格式，以便解码器能够正确解释和处理图像数据。文件头包含特定的标识符或者签名，用来表示文件的格式，例如 JPEG、PNG、GIF 等。
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
     if (!source) {
         return nil;

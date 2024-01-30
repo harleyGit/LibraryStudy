@@ -26,6 +26,10 @@ inline CGFloat SDImageScaleFactorForKey(NSString * _Nullable key) {
 #if SD_WATCH
     if ([[WKInterfaceDevice currentDevice] respondsToSelector:@selector(screenScale)])
 #elif SD_UIKIT
+    //返回当前设备屏幕的缩放因子，通常用于在不同屏幕密度的设备上提供高质量的图像显示
+    //屏幕缩放因子是指设备上一个逻辑点对应的物理像素数。
+    //例如，如果设备的缩放因子是 2.0，那么每个逻辑点将对应 2x2 个物理像素，这通常称为 Retina 显示。
+    //在 Retina 显示屏上，由于有更多的物理像素，图像显示更加清晰
     if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)])
 #elif SD_MAC
     if ([[NSScreen mainScreen] respondsToSelector:@selector(backingScaleFactor)])

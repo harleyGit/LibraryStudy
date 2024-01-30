@@ -39,6 +39,8 @@
     if (@available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)) {
         // Xcode 11 supports symbol image, keep Xcode 10 compatible currently
         SEL SymbolSelector = NSSelectorFromString(@"isSymbolImage");
+        //respondsToSelector和performSelector都是Objective-C中的方法，用于在运行时检查和调用对象的方法
+        //
         if ([self respondsToSelector:SymbolSelector] && [self performSelector:SymbolSelector]) {
             return YES;
         }

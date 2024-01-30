@@ -53,7 +53,7 @@ typedef struct objc_category *Category;
 typedef struct objc_property *objc_property_t;
 
 struct objc_class {
-    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;  // objc_class 结构体的实例指针
+    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;  // objc_class 结构体的实例指针, Class在objc-private.h中有定义 typedef struct objc_class *Class;
 
 #if !__OBJC2__
     Class _Nullable super_class                              OBJC2_UNAVAILABLE; // 指向父类的指针

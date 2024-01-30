@@ -26,7 +26,13 @@ NSString * _Nullable SDTransformedKeyForKey(NSString * _Nullable key, NSString *
         // For non-file URL
         if (keyURL && !keyURL.isFileURL) {
             // keep anything except path (like URL query)
+            //将给定的 URL (keyURL) 解析成各个组成部分，而且不会将其与基础 URL 结合起来,获取各个URL的各个组成部分
             NSURLComponents *component = [NSURLComponents componentsWithURL:keyURL resolvingAgainstBaseURL:NO];
+            //component.path：获取 NSURLComponents 中的路径部分
+            //.stringByDeletingPathExtension：调用这个方法会删除路径中的文件扩展名部分，返回不包含扩展名的字符串
+            //stringByAppendingString:SDImageTransformerKeySeparator：将转换器键的分隔符（SDImageTransformerKeySeparator）追加到上一步的字符串后面。这个分隔符是用于在字符串中区分路径和转换器键的标记
+            //stringByAppendingString:transformerKey：将转换器键追加到前面的字符串后面。这个转换器键是用于标识应用于图像的转换器的键。
+            //stringByAppendingPathExtension:ext：将文件扩展名（ext）追加到上一步的字符串后面。这是为了确保最终的字符串包含正确的文件扩展名
             component.path = [[[component.path.stringByDeletingPathExtension stringByAppendingString:SDImageTransformerKeySeparator] stringByAppendingString:transformerKey] stringByAppendingPathExtension:ext];
             return component.URL.absoluteString;
         } else {

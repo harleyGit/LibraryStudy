@@ -70,7 +70,11 @@
 @end
 
 /**
- A memory cache which auto purge the cache on memory warning and support weak cache.
+ * A memory cache which auto purge the cache on memory warning and support weak cache.
+ * 这个声明表示 SDMemoryCache 类继承自 NSCache 类，同时拥有两个泛型参数 KeyType 和 ObjectType。
+ * 此外，它还遵循了一个名为 SDMemoryCache 的协议。在实际使用时，你可以在创建 SDMemoryCache 类的实例时指定具体的类型参数，以适应不同的键值类型
+ * 举例: SDMemoryCache<NSString *, UIImage *> *imageCache = [[SDMemoryCache alloc] init];
+ * 上述举例,解释: KeyType 被指定为 NSString *，而 ObjectType 被指定为 UIImage *。这样，在使用 imageCache 对象时，键的类型为字符串，值的类型为图像。
  */
 @interface SDMemoryCache <KeyType, ObjectType> : NSCache <KeyType, ObjectType> <SDMemoryCache>
 

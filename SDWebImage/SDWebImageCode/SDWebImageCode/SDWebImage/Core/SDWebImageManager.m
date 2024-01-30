@@ -71,7 +71,7 @@ static id<SDImageLoader> _defaultImageLoader;
     return instance;
 }
 
-- (nonnull instancetype)init {
+- (nonnull instancetype)init {//id<SDImageCache> 是 Objective-C 中的一种类型表示法，它表示一个对象，该对象的类实现了 SDImageCache 协议;id 是一种通用的对象类型，可以指向任何对象。而 <SDImageCache> 表示对象遵循了 SDImageCache 协议。这种语法允许我们使用动态类型（id）同时指定对象必须符合某个特定的协议。
     id<SDImageCache> cache = [[self class] defaultImageCache];
     if (!cache) {
         cache = [SDImageCache sharedImageCache];
@@ -131,7 +131,7 @@ static id<SDImageLoader> _defaultImageLoader;
         key = url.absoluteString;
     }
     
-    // Thumbnail Key Appending
+    // Thumbnail Key Appending SDWebImageContextImageThumbnailPixelSize:是 SDWebImage 框架中用于配置图像缩略图大小的键
     NSValue *thumbnailSizeValue = context[SDWebImageContextImageThumbnailPixelSize];
     if (thumbnailSizeValue != nil) {
         CGSize thumbnailSize = CGSizeZero;
@@ -141,15 +141,23 @@ static id<SDImageLoader> _defaultImageLoader;
         thumbnailSize = thumbnailSizeValue.CGSizeValue;
 #endif
         BOOL preserveAspectRatio = YES;
+        //SDWebImageContextImagePreserveAspectRatio 是 SDWebImage 框架中用于配置图像加载时是否保持宽高比的键。这个键的值是一个 NSNumber 对象，表示一个布尔值，用于指示是否要保持图像的宽高比
         NSNumber *preserveAspectRatioValue = context[SDWebImageContextImagePreserveAspectRatio];
         if (preserveAspectRatioValue != nil) {
             preserveAspectRatio = preserveAspectRatioValue.boolValue;
         }
+        
+        //SDThumbnailedKeyForKey 函数是 SDWebImage 框架中的一个用于生成缩略图键（thumbnail key）的辅助函数。
+        //这个函数的目的是根据给定的键（原始图像的键）、缩略图大小和是否保持宽高比，生成一个新的键，用于标识缩略图
+        //如: exampleImage.jpg$100x100.jpg
         key = SDThumbnailedKeyForKey(key, thumbnailSize, preserveAspectRatio);
     }
     
     // Transformer Key Appending
     id<SDImageTransformer> transformer = self.transformer;
+    
+    //SDWebImageContextImageTransformer 是 SDWebImage 框架中用于配置图像转换器的键。
+    //这个键的值是一个 SDImageTransformer 对象，该对象用于对图像进行自定义转换
     if (context[SDWebImageContextImageTransformer]) {
         transformer = context[SDWebImageContextImageTransformer];
         if (![transformer conformsToProtocol:@protocol(SDImageTransformer)]) {
@@ -157,6 +165,10 @@ static id<SDImageLoader> _defaultImageLoader;
         }
     }
     if (transformer) {
+        //SDTransformedKeyForKey 是 SDWebImage 框架中的一个辅助函数，用于生成一个基于原始键（key）和图像转换器键（transformerKey）的新键，用于标识转换后的图像。
+        //key：原始图像的键，通常是图像的 URL 或文件路径。
+        //transformerKey：图像转换器的键，通常是由图像转换器生成的唯一标识符
+        //如:exampleImage.jpg$rotate90
         key = SDTransformedKeyForKey(key, transformer.transformerKey);
     }
     
@@ -263,10 +275,11 @@ static id<SDImageLoader> _defaultImageLoader;
     if (context[SDWebImageContextQueryCacheType]) {
         queryCacheType = [context[SDWebImageContextQueryCacheType] integerValue];
     }
-    if (shouldQueryCache) {
+    if (shouldQueryCache) {//是否先在缓存中查询是否存在图片
+        //根据url和上下文字典生成一个键,如:根据尺寸的:exampleImage.jpg$100x100.jpg, 转换器的:exampleImage.jpg$rotate90
         NSString *key = [self cacheKeyForURL:url context:context];
         @weakify(operation);
-        //开启一个线程，执行通过key从缓存和磁盘中获取图片的任务
+        //开启一个线程，执行通过key从缓存和磁盘中获取图片的任务,imageCache类型是SDImageCache
         operation.cacheOperation = [imageCache queryImageForKey:key options:options context:context cacheType:queryCacheType completion:^(UIImage * _Nullable cachedImage, NSData * _Nullable cachedData, SDImageCacheType cacheType) {
             @strongify(operation);
             //如果线程已经取消或operation==nil，说明已经从缓存和磁盘中获取到图片，return
@@ -585,6 +598,8 @@ static id<SDImageLoader> _defaultImageLoader;
     SDWebImageMutableContext *mutableContext = [SDWebImageMutableContext dictionary];
     
     // Image Transformer from manager
+    //SDWebImageContextImageTransformer 用于配置图像转换器，允许你在图像加载完成后对其进行自定义的转换。
+    //这个键的值通常是一个 SDImageTransformer 对象，它是一个用于图像转换的协议
     if (!context[SDWebImageContextImageTransformer]) {
         id<SDImageTransformer> transformer = self.transformer;
         [mutableContext setValue:transformer forKey:SDWebImageContextImageTransformer];

@@ -128,12 +128,14 @@
     return UTType;
 }
 
+///用于将 Uniform Type Identifier（UTI）字符串转换为 SDImageFormat 枚举值。
+///UTI 是一种用于唯一标识文件类型的字符串标识符，通常与文件扩展名关联。
 + (SDImageFormat)sd_imageFormatFromUTType:(CFStringRef)uttype {
     if (!uttype) {
         return SDImageFormatUndefined;
     }
     SDImageFormat imageFormat;
-    if (CFStringCompare(uttype, kUTTypeJPEG, 0) == kCFCompareEqualTo) {
+    if (CFStringCompare(uttype, kUTTypeJPEG, 0) == kCFCompareEqualTo) {//CFStringCompare用于比较两个字符串的内容
         imageFormat = SDImageFormatJPEG;
     } else if (CFStringCompare(uttype, kUTTypePNG, 0) == kCFCompareEqualTo) {
         imageFormat = SDImageFormatPNG;

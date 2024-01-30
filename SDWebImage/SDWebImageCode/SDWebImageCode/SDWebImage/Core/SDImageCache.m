@@ -88,9 +88,9 @@ directory 即磁盘缓存存储图片的文件夹路径
         if (!config) {
             config = SDImageCacheConfig.defaultCacheConfig;
         }
-        _config = [config copy];
+        _config = [config copy];//因为重写了- (id)copyWithZone:(NSZone *)zone,所以这里是深拷贝,默认是浅拷贝
         
-        // Init the memory cache
+        // Init the memory cache 断言触发，输出错误信息并暂停程序执行
         NSAssert([config.memoryCacheClass conformsToProtocol:@protocol(SDMemoryCache)], @"Custom memory cache class must conform to `SDMemoryCache` protocol");
         //初始化内存空间
         _memoryCache = [[config.memoryCacheClass alloc] initWithConfig:_config];
@@ -109,7 +109,7 @@ directory 即磁盘缓存存储图片的文件夹路径
         NSAssert([config.diskCacheClass conformsToProtocol:@protocol(SDDiskCache)], @"Custom disk cache class must conform to `SDDiskCache` protocol");
         _diskCache = [[config.diskCacheClass alloc] initWithCachePath:_diskCachePath config:_config];
         
-        // Check and migrate disk cache directory if need
+        // Check and migrate disk cache directory if need 若是需要迁移磁盘缓存文件夹,从一个文件移动到另一个文件
         [self migrateDiskCacheDirectory];
 
 #if SD_UIKIT
@@ -403,7 +403,7 @@ directory 即磁盘缓存存储图片的文件夹路径
 
 //根据key返回缓存中image
 - (nullable UIImage *)imageFromMemoryCacheForKey:(nullable NSString *)key {
-    //直接调用NSCache的objectForKey:方法查询
+    //直接调用NSCache的objectForKey:方法查询 self.memoryCache类型是SDMemoryCache
     return [self.memoryCache objectForKey:key];
 }
 
@@ -455,6 +455,7 @@ directory 即磁盘缓存存储图片的文件夹路径
         return nil;
     }
     
+    //self.diskCache的类型是SDDiskCache
     NSData *data = [self.diskCache dataForKey:key];
     if (data) {
         return data;
@@ -462,9 +463,11 @@ directory 即磁盘缓存存储图片的文件夹路径
     
     // Addtional cache path for custom pre-load cache
     //在默认路径中没有找到，则在用户添加的路径中查找，找到就返回
+    // ?? 怎么根据additionalCachePathBlock 返回一个字符串的?
     if (self.additionalCachePathBlock) {
         NSString *filePath = self.additionalCachePathBlock(key);
         if (filePath) {
+            //获取图片文件的原始二进制数据，即未经过解压或处理的数据
             data = [NSData dataWithContentsOfFile:filePath options:self.config.diskCacheReadingOptions error:nil];
         }
     }
@@ -482,27 +485,42 @@ directory 即磁盘缓存存储图片的文件夹路径
     return [self diskImageForKey:key data:data options:0 context:nil];
 }
 
+
+/// 获取解码后的图片
+/// @param key <#key description#>
+/// @param data <#data description#>
+/// @param options <#options description#>
+/// @param context <#context description#>
 - (nullable UIImage *)diskImageForKey:(nullable NSString *)key data:(nullable NSData *)data options:(SDImageCacheOptions)options context:(SDWebImageContext *)context {
     if (data) {
         UIImage *image = SDImageCacheDecodeImageData(data, key, [[self class] imageOptionsFromCacheOptions:options], context);
         if (image) {
-            // Check extended data
+            // Check extended data 获取扩展属性值
             NSData *extendedData = [self.diskCache extendedDataForKey:key];
             if (extendedData) {
                 id extendedObject;
                 if (@available(iOS 11, tvOS 11, macOS 10.13, watchOS 4, *)) {
                     NSError *error;
+                    
+                    //使用 NSKeyedArchiver 归档的数据创建一个 NSKeyedUnarchiver 对象，以便后续可以通过该对象解档（反序列化）数据。
+                    //创建了一个 NSKeyedUnarchiver 对象，该对象可以用于从二进制数据中还原对象。通常，这种操作用于读取先前通过 NSKeyedArchiver 对象归档的数据。
                     NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:extendedData error:&error];
                     unarchiver.requiresSecureCoding = NO;
+                    
+                    //从归档的数据中解码（反序列化）顶层对象。这个方法通常用于读取先前通过 NSKeyedArchiver 对象归档的数据的根对象。
                     extendedObject = [unarchiver decodeTopLevelObjectForKey:NSKeyedArchiveRootObjectKey error:&error];
                     if (error) {
                         NSLog(@"NSKeyedUnarchiver unarchive failed with error: %@", error);
                     }
                 } else {
                     @try {
+//这行代码表示将当前的编译器警告状态推入堆栈，以保存当前状态
 #pragma clang diagnostic push
+//这行代码表示忽略指定的警告。-Wdeprecated-declarations 是一个警告标志，用于在代码中使用已被标记为不推荐使用的 API 时发出警告。这里的指令告诉编译器忽略这个具体的警告。
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                        //使用 NSKeyedUnarchiver 对象解码（反序列化）归档的数据，并将结果赋值给 extendedObject。在这个上下文中，可能是为了处理一些先前版本的归档数据，而这些数据使用了已被标记为不推荐使用的 API。
                         extendedObject = [NSKeyedUnarchiver unarchiveObjectWithData:extendedData];
+//这行代码表示从先前保存的状态中弹出（恢复）编译器警告状态。这样可以确保之后的代码不受到前面忽略的警告的影响。
 #pragma clang diagnostic pop
                     } @catch (NSException *exception) {
                         NSLog(@"NSKeyedUnarchiver unarchive failed with exception: %@", exception);
@@ -567,6 +585,7 @@ directory 即磁盘缓存存储图片的文件夹路径
 #if SD_MAC
                 image = [[NSImage alloc] initWithCGImage:image.CGImage scale:image.scale orientation:kCGImagePropertyOrientationUp];
 #else
+                //// 使用原始图像的 CGImage、缩放因子和方向创建新的 UIImage 对象
                 image = [[UIImage alloc] initWithCGImage:image.CGImage scale:image.scale orientation:image.imageOrientation];
 #endif
             }
@@ -581,7 +600,7 @@ directory 即磁盘缓存存储图片的文件夹路径
     }
 
     BOOL shouldQueryMemoryOnly = (queryCacheType == SDImageCacheTypeMemory) || (image && !(options & SDImageCacheQueryMemoryData));
-    if (shouldQueryMemoryOnly) {
+    if (shouldQueryMemoryOnly) {//缓存中是否有图片,若是有,就返回缓存中的图片
         if (doneBlock) {
             //SDImageCacheTypeMemory表示图片在内存缓存中查找到
             doneBlock(image, nil, SDImageCacheTypeMemory);
@@ -610,7 +629,7 @@ directory 即磁盘缓存存储图片的文件夹路径
         }
         
         @autoreleasepool {
-            //在磁盘中查找图片二进制数据，和UIImage对象
+            //在磁盘中查找图片原始二进制数据
             NSData *diskData = [self diskImageDataBySearchingAllPathsForKey:key];
             UIImage *diskImage;
             SDImageCacheType cacheType = SDImageCacheTypeNone;
@@ -779,9 +798,12 @@ directory 即磁盘缓存存储图片的文件夹路径
         return;
     }
     UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
-    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{// 在需要执行后台任务的地方调用
         // Clean up any unfinished task business by marking where you
         // stopped or ending the task outright.
+        // 当任务即将过期时执行的代码
+        // 在这里应该尽快完成任务，因为系统可能会随时终止应用程序
+        // 也可以在这里清理资源，保存数据等
         [application endBackgroundTask:bgTask];
         bgTask = UIBackgroundTaskInvalid;
     }];

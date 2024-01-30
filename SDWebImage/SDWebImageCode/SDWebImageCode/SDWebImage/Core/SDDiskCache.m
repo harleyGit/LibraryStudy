@@ -72,6 +72,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     
     // fallback because of https://github.com/rs/SDWebImage/pull/976 that added the extension to the disk file name
     // checking the key with and without the extension
+    //从指定路径的文件中读取数据并返回一个 NSData 对象
     data = [NSData dataWithContentsOfFile:filePath.stringByDeletingPathExtension options:self.config.diskCacheReadingOptions error:nil];
     if (data) {
         return data;
@@ -102,12 +103,17 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     }
 }
 
+/// 获取拓展属性数据
+/// 对于 SDWebImage 这样的图像加载库，使用扩展属性可以存储一些额外的元数据，例如缓存的过期时间、图片格式等。这样，可以在读取缓存时，通过读取这些额外信息来判断缓存是否过期，或者获取其他与缓存相关的信息。
+/// 具体来说，SDDiskCacheExtendedAttributeName 可能用于存储 SDWebImage 在缓存中保存的一些额外信息，这些信息对于缓存的管理和优化可能很有用。例如，缓存的过期时间可以帮助库在读取缓存时判断是否需要重新下载图片，以确保使用的是最新的数据。
+/// @param key 图片url(或者路径)
 - (NSData *)extendedDataForKey:(NSString *)key {
     NSParameterAssert(key);
     
     // get cache Path for image key
     NSString *cachePathForKey = [self cachePathForKey:key];
     
+    //获取指定路径下的指定扩展属性（Extended Attribute）的值
     NSData *extendedData = [SDFileAttributeHelper extendedAttribute:SDDiskCacheExtendedAttributeName atPath:cachePathForKey traverseLink:NO error:nil];
     
     return extendedData;
@@ -147,29 +153,34 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     //获取磁盘缓存存储图片的路径构造为NSURL对象
     NSURL *diskCacheURL = [NSURL fileURLWithPath:self.diskCachePath isDirectory:YES];
     
-    // Compute content date key to be used for tests
+    // Compute content date key to be used for tests NSURLContentModificationDateKey 是一个用于在文件系统中获取文件或目录属性的键。它对应的是文件或目录的最后修改日期
     NSURLResourceKey cacheContentDateKey = NSURLContentModificationDateKey;
     switch (self.config.diskCacheExpireType) {
-        case SDImageCacheConfigExpireTypeAccessDate:
+        case SDImageCacheConfigExpireTypeAccessDate://表示图像在最后一次访问之后一定时间内未被使用时将被标记为过期并被删除。
             cacheContentDateKey = NSURLContentAccessDateKey;
             break;
-        case SDImageCacheConfigExpireTypeModificationDate:
+        case SDImageCacheConfigExpireTypeModificationDate://表示图像在被添加到缓存之后一定时间内过期
             cacheContentDateKey = NSURLContentModificationDateKey;
             break;
-        case SDImageCacheConfigExpireTypeCreationDate:
+        case SDImageCacheConfigExpireTypeCreationDate://表示图像在创建时指定的一定时间内过期。
             cacheContentDateKey = NSURLCreationDateKey;
             break;
-        case SDImageCacheConfigExpireTypeChangeDate:
+        case SDImageCacheConfigExpireTypeChangeDate://文件或目录的最后修改日期
             cacheContentDateKey = NSURLAttributeModificationDateKey;
             break;
         default:
             break;
     }
-    //后面会用到，查询文件的属性
+    //后面会用到，查询文件的属性;
+    //NSURLIsDirectoryKey 是一个属性键，用于在文件系统中获取文件或目录的属性。这个键对应的值是一个布尔值，表示文件是否是一个目录（文件夹）
+    //NSURLTotalFileAllocatedSizeKey 是一个属性键，用于在文件系统中获取文件或目录的属性。这个键对应的值是文件或目录所占用的总分配大小，即文件占用的磁盘空间大小。
     NSArray<NSString *> *resourceKeys = @[NSURLIsDirectoryKey, cacheContentDateKey, NSURLTotalFileAllocatedSizeKey];
     
     // This enumerator prefetches useful properties for our cache files.
-    //构造一个存储图片目录的迭代器，使用了上面的文件属性
+    //用于获取目录中文件和子目录的枚举器（enumerator）的方法。
+    //这个方法可以遍历指定 URL（目录）下的所有文件和子目录，包括它们的属性。
+    //includingPropertiesForKeys：一个数组，包含了你希望在枚举过程中获取的文件或子目录的属性键
+    //NSDirectoryEnumerationSkipsHiddenFiles 枚举的作用是在枚举文件和子目录时跳过隐藏文件。隐藏文件通常以.开头
     NSDirectoryEnumerator *fileEnumerator = [self.fileManager enumeratorAtURL:diskCacheURL
                                                includingPropertiesForKeys:resourceKeys
                                                                   options:NSDirectoryEnumerationSkipsHiddenFiles
@@ -192,6 +203,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     for (NSURL *fileURL in fileEnumerator) {
         NSError *error;
         //根据resourcesKeys获取文件的相关属性
+        //resourceValuesForKeys:error: 方法获取了指定文件或目录的三个属性值：是否是目录 (NSURLIsDirectoryKey)，创建日期 (NSURLCreationDateKey)，和内容修改日期 (NSURLContentModificationDateKey)。得到的结果是一个字典 resourceValues，其中包含了这些属性的值
         NSDictionary<NSString *, id> *resourceValues = [fileURL resourceValuesForKeys:resourceKeys error:&error];
         
         // Skip directories and errors.
@@ -203,7 +215,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
         // Remove files that are older than the expiration date;
         //获取文件的上次修改日期，即创建日期
         NSDate *modifiedDate = resourceValues[cacheContentDateKey];
-        //如果过期就加进要删除的集合中
+        //如果过期就加进要删除的集合中, laterDate: 返回较晚的那个日期，即两者中的最大日期。
         if (expirationDate && [[modifiedDate laterDate:expirationDate] isEqualToDate:expirationDate]) {
             [urlsToDelete addObject:fileURL];
             continue;
@@ -292,7 +304,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
 }
 
 - (void)moveCacheDirectoryFromPath:(nonnull NSString *)srcPath toPath:(nonnull NSString *)dstPath {
-    NSParameterAssert(srcPath);
+    NSParameterAssert(srcPath);//NSParameterAssert 是 Foundation 框架中的一个宏，用于在运行时对方法的参数进行断言检查。这个宏通常用于验证方法的输入参数是否满足预期条件，如果不满足，则触发断言。
     NSParameterAssert(dstPath);
     // Check if old path is equal to new path
     if ([srcPath isEqualToString:dstPath]) {
@@ -303,24 +315,24 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     if (![self.fileManager fileExistsAtPath:srcPath isDirectory:&isDirectory] || !isDirectory) {
         return;
     }
-    // Check if new path is directory
+    // Check if new path is directory fileExistsAtPath:isDirectory: 方法是 NSFileManager 类的一个方法，用于判断指定路径是否存在，并且返回路径是否为目录的信息; 之所以传&isDirectory是因为要求传一个变量地址过去,用于存储返回的路径是否为目录的信息
     if (![self.fileManager fileExistsAtPath:dstPath isDirectory:&isDirectory] || !isDirectory) {
         if (!isDirectory) {
             // New path is not directory, remove file
-            [self.fileManager removeItemAtPath:dstPath error:nil];
+            [self.fileManager removeItemAtPath:dstPath error:nil];//removeItemAtPath:error: 方法用于删除指定路径下的文件或目录。如果路径指向一个目录，该方法会递归删除该目录下的所有内容，包括其子目录和文件。
         }
-        NSString *dstParentPath = [dstPath stringByDeletingLastPathComponent];
+        NSString *dstParentPath = [dstPath stringByDeletingLastPathComponent];//stringByDeletingLastPathComponent 是 NSString 类的一个方法，用于获取去除路径中最后一个文件名（或目录名）后的新路径。
         // Creates any non-existent parent directories as part of creating the directory in path
         if (![self.fileManager fileExistsAtPath:dstParentPath]) {
-            [self.fileManager createDirectoryAtPath:dstParentPath withIntermediateDirectories:YES attributes:nil error:NULL];
+            [self.fileManager createDirectoryAtPath:dstParentPath withIntermediateDirectories:YES attributes:nil error:NULL];//创建目录,
         }
-        // New directory does not exist, rename directory
+        // New directory does not exist, rename directory 用于将文件或目录从一个路径移动到另一个路径。这个方法会将源路径下的文件（或目录）移动到目标路径，并且它是原子的，即要么移动成功，要么不做任何改变。
         [self.fileManager moveItemAtPath:srcPath toPath:dstPath error:nil];
     } else {
-        // New directory exist, merge the files
+        // New directory exist, merge the files 用于获取指定路径下文件和子目录的枚举器（enumerator）。该枚举器可以用来遍历指定路径下的文件和子目录。
         NSDirectoryEnumerator *dirEnumerator = [self.fileManager enumeratorAtPath:srcPath];
         NSString *file;
-        while ((file = [dirEnumerator nextObject])) {
+        while ((file = [dirEnumerator nextObject])) {//  nextObjec 获取下一个文件或子目录的名称，直到枚举器遍历完整个目录
             [self.fileManager moveItemAtPath:[srcPath stringByAppendingPathComponent:file] toPath:[dstPath stringByAppendingPathComponent:file] error:nil];
         }
         // Remove the old path
@@ -335,6 +347,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 static inline NSString * _Nonnull SDDiskCacheFileNameForKey(NSString * _Nullable key) {
+    //字符串 key 转换为 UTF-8 编码的 C 字符串（char array）的操作
     const char *str = key.UTF8String;
     if (str == NULL) {
         str = "";

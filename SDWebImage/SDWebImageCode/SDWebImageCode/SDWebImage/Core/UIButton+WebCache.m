@@ -19,6 +19,8 @@ static char imageURLStorageKey;
 
 typedef NSMutableDictionary<NSString *, NSURL *> SDStateImageURLDictionary;
 
+///static inline表示该函数在当前源文件中可见，并且建议编译器对其进行内联展开。
+///这样可以在当前源文件中使用内联展开优化，而对其他源文件则隐藏了该函数，避免了重复定义
 static inline NSString * imageURLKeyForState(UIControlState state) {
     return [NSString stringWithFormat:@"image_%lu", (unsigned long)state];
 }

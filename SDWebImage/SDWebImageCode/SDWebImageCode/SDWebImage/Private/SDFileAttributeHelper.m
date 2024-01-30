@@ -67,9 +67,16 @@
     return NO;
 }
 
+///获取扩展属性的值
 + (NSData *)extendedAttribute:(NSString *)name atPath:(NSString *)path traverseLink:(BOOL)follow error:(NSError **)err {
+    
+    //XATTR_NOFOLLOW 主要与符号链接有关。如果你希望在设置或获取文件的 Extended Attributes 时不要跟随符号链接，就可以使用这个标记。
+    //如果符号链接指向一个目录，XATTR_NOFOLLOW 将确保 Extended Attributes 不会应用于符号链接所指向的目录，而是应用于符号链接本身。
     int flags = follow? 0 : XATTR_NOFOLLOW;
+    
     // get length
+    //fileSystemRepresentation 方法返回了文件路径的 C 字符串表示形式
+    //该函数返回读取的 Extended Attribute 的字节数，或者如果出错，则返回 -1。如果传递的缓冲区大小 size 小于 Extended Attribute 的实际大小，那么只会读取部分数据，并返回实际读取的字节数
     ssize_t attrLen = getxattr([path fileSystemRepresentation], [name UTF8String], NULL, 0, 0, flags);
     if (attrLen == -1) {
         if (err) *err = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:

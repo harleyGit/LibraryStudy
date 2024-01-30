@@ -108,10 +108,16 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 
 #pragma mark - Utils
 
+/// 返回图片循环次数
+/// @param source 图片源
 + (NSUInteger)imageLoopCountWithSource:(CGImageSourceRef)source {
     NSUInteger loopCount = self.defaultLoopCount;
+    
     ///CGImageSourceCopyProperties 获取图片原信息,其返回一个字典,字典包含图片、相机等信息: https://developer.aliyun.com/article/800011
+    //CGImageSourceCopyProperties 函数是 Core Graphics 框架中用于获取图像属性的函数。具体来说，它返回一个包含图像属性的不可变字典（CFDictionary），该字典包含有关图像的各种信息，例如尺寸、颜色空间、方向、压缩格式等
     NSDictionary *imageProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(source, nil);
+    
+    //self.dictionaryProperty 是什么?
     NSDictionary *containerProperties = imageProperties[self.dictionaryProperty];
     if (containerProperties) {
         NSNumber *containerLoopCount = containerProperties[self.loopCountProperty];
@@ -158,12 +164,17 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     return frameDuration;
 }
 
+//创建一个指定索引的图像帧，并可选地对其进行缩放和裁剪，同时保持纵横比
 + (UIImage *)createFrameAtIndex:(NSUInteger)index source:(CGImageSourceRef)source scale:(CGFloat)scale preserveAspectRatio:(BOOL)preserveAspectRatio thumbnailSize:(CGSize)thumbnailSize options:(NSDictionary *)options {
     // Some options need to pass to `CGImageSourceCopyPropertiesAtIndex` before `CGImageSourceCreateImageAtIndex`, or ImageIO will ignore them because they parse once :)
     // Parse the image properties
+    //用于获取指定索引处图像源中图像帧的属性信息。这个函数通常用于获取图像的一些基本信息，例如宽度、高度、颜色空间等
     NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, index, (__bridge CFDictionaryRef)options);
+    
+    //// 在这里使用 properties 中的属性信息，例如获取图像的宽度和高度
     NSUInteger pixelWidth = [properties[(__bridge NSString *)kCGImagePropertyPixelWidth] unsignedIntegerValue];
     NSUInteger pixelHeight = [properties[(__bridge NSString *)kCGImagePropertyPixelHeight] unsignedIntegerValue];
+    
     CGImagePropertyOrientation exifOrientation = (CGImagePropertyOrientation)[properties[(__bridge NSString *)kCGImagePropertyOrientation] unsignedIntegerValue];
     if (!exifOrientation) {
         exifOrientation = kCGImagePropertyOrientationUp;
@@ -172,6 +183,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     CFStringRef uttype = CGImageSourceGetType(source);
     // Check vector format
     BOOL isVector = NO;
+    //sd_imageFormatFromUTType 返回图片类型
     if ([NSData sd_imageFormatFromUTType:uttype] == SDImageFormatPDF) {
         isVector = YES;
     }
@@ -202,8 +214,11 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         }
         //创建一个未解码的 CGImage
         //只能返回索引值的图片，丢失了其他的图片信息。因此，我们只获取到了其中的一帧图片 https://www.jianshu.com/p/5c870860c187
+        //CGImageSourceCreateImageAtIndex用于在给定的图像源 (CGImageSourceRef) 中获取指定索引处的图像帧并创建 CGImageRef 对象。
+        //该函数通常用于解码图像帧，以便在应用程序中进行显示或进一步处理
         imageRef = CGImageSourceCreateImageAtIndex(source, index, (__bridge CFDictionaryRef)decodingOptions);
     } else {
+        //kCGImageSourceCreateThumbnailWithTransform 是 Core Graphics 框架中用于创建缩略图的选项键
         decodingOptions[(__bridge NSString *)kCGImageSourceCreateThumbnailWithTransform] = @(preserveAspectRatio);
         CGFloat maxPixelSize;
         if (preserveAspectRatio) {
@@ -217,8 +232,15 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         } else {
             maxPixelSize = MAX(thumbnailSize.width, thumbnailSize.height);
         }
+        
+        //使用 kCGImageSourceThumbnailMaxPixelSize 选项键的主要目的是控制生成的缩略图的尺寸，限制其在宽度和高度上的最大像素数。
         decodingOptions[(__bridge NSString *)kCGImageSourceThumbnailMaxPixelSize] = @(maxPixelSize);
+        
+        //kCGImageSourceCreateThumbnailFromImageIfAbsent 是一个常量字符串，表示在创建缩略图时是否尝试从原始图像创建缩略图
         decodingOptions[(__bridge NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent] = @(YES);
+        
+        //CGImageSourceCreateThumbnailAtIndex 是 Core Graphics 框架中的一个函数，用于在给定的图像源 (CGImageSourceRef) 中获取指定索引处的图像帧并创建缩略图 (CGImageRef)。
+        //这个函数通常用于生成缩略图，以减小内存占用或加快加载速度。
         imageRef = CGImageSourceCreateThumbnailAtIndex(source, index, (__bridge CFDictionaryRef)decodingOptions);
     }
     if (!imageRef) {
@@ -231,6 +253,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
             exifOrientation = kCGImagePropertyOrientationUp;
         } else {
             // `CGImageSourceCreateThumbnailAtIndex` take only pixel dimension, if not `preserveAspectRatio`, we should manual scale to the target size
+            //生成对应尺寸的图片数据对象
             CGImageRef scaledImageRef = [SDImageCoderHelper CGImageCreateScaled:imageRef size:thumbnailSize];
             CGImageRelease(imageRef);
             imageRef = scaledImageRef;
@@ -239,6 +262,8 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     
 #if SD_UIKIT || SD_WATCH
     UIImageOrientation imageOrientation = [SDImageCoderHelper imageOrientationFromEXIFOrientation:exifOrientation];
+    
+    //imageRef实例对象是CGImageRef 类型的，它包含了图像的像素数据、颜色空间等信息。
     UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:imageOrientation];
 #else
     UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:exifOrientation];
@@ -252,6 +277,10 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     return ([NSData sd_imageFormatForImageData:data] == self.class.imageFormat);
 }
 
+
+/// 解码图片二进制压缩数据生成图片
+/// @param data 压缩图片二进制数据
+/// @param options 可选配置
 - (UIImage *)decodedImageWithData:(NSData *)data options:(nullable SDImageCoderOptions *)options {
     if (!data) {
         return nil;
@@ -272,6 +301,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 #endif
     }
     
+    //保持纵横比
     BOOL preserveAspectRatio = YES;
     NSNumber *preserveAspectRatioValue = options[SDImageCoderDecodePreserveAspectRatio];
     if (preserveAspectRatioValue != nil) {
@@ -291,15 +321,20 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
 #endif
     
+    //用于创建一个图像源对象 (CGImageSourceRef)，该对象可以用于读取图像数据。
+    //这个函数通常用于在不将整个图像加载到内存中的情况下获取图像的信息或进行部分图像的解码
+    //如获取图像的:宽度、高度、帧数等
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
     if (!source) {
         return nil;
     }
+    //用于获取图像源中包含的图像帧
     size_t count = CGImageSourceGetCount(source);
     UIImage *animatedImage;
     
     BOOL decodeFirstFrame = [options[SDImageCoderDecodeFirstFrameOnly] boolValue];
     if (decodeFirstFrame || count <= 1) {
+        //根据图像源信息、比例、尺寸获取图片
         animatedImage = [self.class createFrameAtIndex:0 source:source scale:scale preserveAspectRatio:preserveAspectRatio thumbnailSize:thumbnailSize options:nil];
     } else {
         NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
@@ -318,6 +353,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         
         NSUInteger loopCount = [self.class imageLoopCountWithSource:source];
         
+        //根据帧数生成一个动画图片
         animatedImage = [SDImageCoderHelper animatedImageWithFrames:frames];
         animatedImage.sd_imageLoopCount = loopCount;
     }

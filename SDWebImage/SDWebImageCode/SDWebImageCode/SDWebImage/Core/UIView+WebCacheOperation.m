@@ -23,6 +23,10 @@ typedef NSMapTable<NSString *, id<SDWebImageOperation>> SDOperationsDictionary;
         if (operations) {
             return operations;
         }
+        //当在多线程环境中操作集合时，NSMapTable 可以提供更好的线程安全性。
+        //通过使用弱引用键和值，可以避免在移除对象时引起的引用计数问题。
+        //这是因为弱引用不会影响对象的引用计数，当没有其他强引用时，这些对象可以被自动释放或垃圾回收。
+        //NSPointerFunctionsStrongMemory 来表示对键或值使用强引用（strong reference
         operations = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsWeakMemory capacity:0];
         objc_setAssociatedObject(self, &loadOperationKey, operations, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         return operations;
@@ -58,6 +62,8 @@ typedef NSMapTable<NSString *, id<SDWebImageOperation>> SDOperationsDictionary;
         SDOperationsDictionary *operationDictionary = [self sd_operationDictionary];
         id<SDWebImageOperation> operation;
         
+        //@synchronized (self)通常使用 self，因为它是一个常用的唯一对象，可以确保在整个程序中是唯一的。
+        //然而，你也可以使用其他对象，只要它在所有需要同步的地方都是相同的。
         @synchronized (self) {
             operation = [operationDictionary objectForKey:key];
         }

@@ -95,10 +95,12 @@ static void * SDWebImageDownloaderContext = &SDWebImageDownloaderContext;
         _config = [config copy];
         [_config addObserver:self forKeyPath:NSStringFromSelector(@selector(maxConcurrentDownloads)) options:0 context:SDWebImageDownloaderContext];
         _downloadQueue = [NSOperationQueue new];
-        _downloadQueue.maxConcurrentOperationCount = _config.maxConcurrentDownloads;
+        _downloadQueue.maxConcurrentOperationCount = _config.maxConcurrentDownloads;//默认最大下载数是6个
         _downloadQueue.name = @"com.hackemist.SDWebImageDownloader";
         _URLOperations = [NSMutableDictionary new];
         NSMutableDictionary<NSString *, NSString *> *headerDictionary = [NSMutableDictionary dictionary];
+        
+        //构建一个用户代理字符串: userAgent 是一个字符串变量，它包含了用户代理信息，通常是一个标识浏览器或客户端应用的字符串
         NSString *userAgent = nil;
 #if SD_UIKIT
         // User-Agent Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43
@@ -111,9 +113,12 @@ static void * SDWebImageDownloaderContext = &SDWebImageDownloaderContext;
         userAgent = [NSString stringWithFormat:@"%@/%@ (Mac OS X %@)", [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleExecutableKey] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleIdentifierKey], [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleVersionKey], [[NSProcessInfo processInfo] operatingSystemVersionString]];
 #endif
         if (userAgent) {
-            if (![userAgent canBeConvertedToEncoding:NSASCIIStringEncoding]) {
+            if (![userAgent canBeConvertedToEncoding:NSASCIIStringEncoding]) {//检查字符串 userAgent 是否可以被转换为ASCII编码
                 NSMutableString *mutableUserAgent = [userAgent mutableCopy];
-                if (CFStringTransform((__bridge CFMutableStringRef)(mutableUserAgent), NULL, (__bridge CFStringRef)@"Any-Latin; Latin-ASCII; [:^ASCII:] Remove", false)) {
+                
+                //CFStringTransform是Core Foundation 的字符串转换函数,它用于将字符串进行一系列的转换操作，从 "Any-Latin" 转换到 "Latin-ASCII"，并删除所有非ASCII字符;
+                //这个函数的第一个参数是可变字符串，第二个参数是上下文（在此为 NULL），第三个参数是转换规则，最后一个参数是一个标志，这里设置为 false 表示只进行一次转换。
+                if (CFStringTransform((__bridge CFMutableStringRef)(mutableUserAgent), NULL, (__bridge CFStringRef)@"Any-Latin; Latin-ASCII; [:^ASCII:] Remove", false)) {//确保用户代理字符串中只包含ASCII字符，以避免在网络请求中可能引起问题的非ASCII字符
                     userAgent = mutableUserAgent;
                 }
             }

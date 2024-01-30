@@ -85,6 +85,12 @@
 #define NS_OPTIONS(_type, _name) enum _name : _type _name; enum _name : _type
 #endif
 
+/**
+ *#ifndef dispatch_main_async_safe 表示一个条件编译预处理指令。它检查在之前是否已经定义了 dispatch_main_async_safe 这个宏，如果没有定义，那么就进入条件编译的代码块。
+ *使用 dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL) 获取当前执行代码的队列标签。
+ *使用 dispatch_queue_get_label(dispatch_get_main_queue()) 获取主队列的队列标签
+ *如果这两者相等，说明当前代码已经在主队列上运行，直接执行传入的代码块（block()）
+ */
 #ifndef dispatch_main_async_safe
 #define dispatch_main_async_safe(block)\
     if (dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL) == dispatch_queue_get_label(dispatch_get_main_queue())) {\
@@ -93,3 +99,4 @@
         dispatch_async(dispatch_get_main_queue(), block);\
     }
 #endif
+

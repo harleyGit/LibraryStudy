@@ -55,7 +55,7 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
     context = [context copy]; // copy to avoid mutable object
     NSString *validOperationKey = context[SDWebImageContextSetImageOperationKey];
     if (!validOperationKey) {
-        validOperationKey = NSStringFromClass([self class]);
+        validOperationKey = NSStringFromClass([self class]);//获取类对应的字符串
     }
     self.sd_latestOperationKey = validOperationKey;
     [self sd_cancelImageLoadOperationWithKey:validOperationKey];
@@ -70,13 +70,15 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
     
     if (url) {
         // reset the progress
+        //NSProgress 是 Foundation 框架中的一个类，用于表示操作的进度。
+        //它提供了一种标准化的方式来跟踪和报告操作的进度，使得应用程序可以更容易地显示和管理长时间运行的任务的进度信息。
         NSProgress *imageProgress = objc_getAssociatedObject(self, @selector(sd_imageProgress));
         if (imageProgress) {
             imageProgress.totalUnitCount = 0;
             imageProgress.completedUnitCount = 0;
         }
-        
-#if SD_UIKIT || SD_MAC
+//SD_UIKIT 表示 UIKit 框架是否可用。通常，这个宏会在 iOS 或 tvOS 环境下被定义，表示正在编译一个 UIKit 相关的代码。
+#if SD_UIKIT || SD_MAC //SD_MAC 表示 macOS（或 OS X）框架是否可用。这个宏会在 macOS 环境下被定义，表示正在编译一个 macOS 相关的代码。
         // check and start image indicator
         [self sd_startImageIndicator];
         id<SDWebImageIndicator> imageIndicator = self.sd_imageIndicator;

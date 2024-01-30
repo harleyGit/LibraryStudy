@@ -18,29 +18,42 @@
 typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
     /**
      * By default, we do not query image data when the image is already cached in memory. This mask can force to query image data at the same time. However, this query is asynchronously unless you specify `SDImageCacheQueryMemoryDataSync`
+     * 当查询内存缓存时也同时查询图像数据
+     * 如果这个选项被设置，当你从内存缓存中查询图像时，它将不仅返回图像对象本身，还会包含图像的原始二进制数据。
+     * 这可以用于获取图像的原始数据而不必重新解码
      */
     SDImageCacheQueryMemoryData = 1 << 0,
     /**
      * By default, when you only specify `SDImageCacheQueryMemoryData`, we query the memory image data asynchronously. Combined this mask as well to query the memory image data synchronously.
+     * 它用于在同步模式下从内存缓存中查询图像并获取图像的原始二进制数据。
+     * 使用这个选项时，查询将会在当前线程同步执行，而不是异步执行。
      */
     SDImageCacheQueryMemoryDataSync = 1 << 1,
     /**
      * By default, when the memory cache miss, we query the disk cache asynchronously. This mask can force to query disk cache (when memory cache miss) synchronously.
      @note These 3 query options can be combined together. For the full list about these masks combination, see wiki page.
+     * 在同步模式下查询磁盘缓存
+     * 通常，查询磁盘缓存是异步进行的，因为磁盘操作可能比较慢。
+     * 但是，如果你需要在主线程同步查询磁盘缓存，可以使用这个选项
      */
     SDImageCacheQueryDiskDataSync = 1 << 2,
     /**
      * By default, images are decoded respecting their original size. On iOS, this flag will scale down the
      * images to a size compatible with the constrained memory of devices.
+     * ，用于配置图像缓存时是否对大尺寸的图像进行缩小处理。
+     * 当这个选项被设置时，SDWebImage 在将图像存储到磁盘缓存时，会对大尺寸的图像进行缩小以减少占用的磁盘空间
      */
     SDImageCacheScaleDownLargeImages = 1 << 3,
     /**
      * By default, we will decode the image in the background during cache query and download from the network. This can help to improve performance because when rendering image on the screen, it need to be firstly decoded. But this happen on the main queue by Core Animation.
      * However, this process may increase the memory usage as well. If you are experiencing a issue due to excessive memory consumption, This flag can prevent decode the image.
+     * 用于配置图像缓存时是否避免对图像进行解码。当这个选项被设置时，SDWebImage 在将图像从磁盘缓存加载到内存时，会尽量避免对图像进行解码操作。
      */
     SDImageCacheAvoidDecodeImage = 1 << 4,
     /**
      * By default, we decode the animated image. This flag can force decode the first frame only and produece the static image.
+     * 用于配置图像缓存时是否只解码 GIF 图像的第一帧。
+     * 当这个选项被设置时，SDWebImage 在加载 GIF 图像并将其存储到内存缓存时，仅会解码并缓存第一帧，而不是整个 GIF 动画
      */
     SDImageCacheDecodeFirstFrameOnly = 1 << 5,
     /**
