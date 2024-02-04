@@ -138,7 +138,7 @@
     NSUInteger count = caches.count;
     if (count == 0) {
         return;
-    } else if (count == 1) {
+    } else if (count == 1) {//存储图片
         [caches.firstObject storeImage:image imageData:imageData forKey:key cacheType:cacheType completion:completionBlock];
         return;
     }

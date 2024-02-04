@@ -459,6 +459,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     return (format == self.class.imageFormat);
 }
 
+//添加图片配置到数据中,生成二进制数据
 - (NSData *)encodedDataWithImage:(UIImage *)image format:(SDImageFormat)format options:(nullable SDImageCoderOptions *)options {
     if (!image) {
         return nil;
@@ -473,12 +474,16 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         return nil;
     }
     
+    //NSMutableData 是 Foundation 框架中的一个类，用于表示可变长度的二进制数据（字节序列）。它是 NSData 的可变版本，允许动态修改数据内容的长度和内容
     NSMutableData *imageData = [NSMutableData data];
+    
+    //图片类型, CFStringRef 表示 Core Foundation 框架中的字符串引用，是一种用于管理字符串数据的引用类型
     CFStringRef imageUTType = [NSData sd_UTTypeFromImageFormat:format];
     NSArray<SDImageFrame *> *frames = [SDImageCoderHelper framesFromAnimatedImage:image];
     
     // Create an image destination. Animated Image does not support EXIF image orientation TODO
     // The `CGImageDestinationCreateWithData` will log a warning when count is 0, use 1 instead.
+    //// 创建一个图像目标对象，将图像写入到imageData容器中
     CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageData, imageUTType, frames.count ?: 1, NULL);//创建转换者对象, 进行质量压缩和转换
     if (!imageDestination) {
         // Handle failure.
@@ -529,7 +534,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         if (finalPixelSize > 0) {
             properties[(__bridge NSString *)kCGImageDestinationImageMaxPixelSize] = @(finalPixelSize);
         }
-        CGImageDestinationAddImage(imageDestination, imageRef, (__bridge CFDictionaryRef)properties);//向转换者对象添加图片数据和参数数据
+        CGImageDestinationAddImage(imageDestination, imageRef, (__bridge CFDictionaryRef)properties);//向图像目标对象中添加图像数据(向转换者对象添加图片数据和参数数据)
     } else {
         // for animated images
         NSUInteger loopCount = image.sd_imageLoopCount;
@@ -546,10 +551,13 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
             if (finalPixelSize > 0) {
                 frameProperties[(__bridge NSString *)kCGImageDestinationImageMaxPixelSize] = @(finalPixelSize);
             }
+            // 向图像目标对象添加图像数据（这里假设有一个 CGImageRef 对象）
             CGImageDestinationAddImage(imageDestination, frameImageRef, (__bridge CFDictionaryRef)frameProperties);
         }
     }
     // Finalize the destination.
+    //CGImageDestinationFinalize用于完成图像目标对象的配置，并将图像数据写入到指定的数据容器中
+    //使用这个函数，你告诉图像目标对象已经添加完所有的图像数据，并且可以生成最终的图像数据。这个函数返回一个布尔值，表示操作是否成功。
     if (CGImageDestinationFinalize(imageDestination) == NO) {
         // Handle failure.
         imageData = nil;

@@ -99,6 +99,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     // disable iCloud backup
     if (self.config.shouldDisableiCloud) {
         // ignore iCloud backup resource value error 防止文件被iCloud同步备份; 从iOS 5.1开始，应用程序可以使用文件系统中的NSURLIsExcludedFromBackupKey或者kCFURLIsExcludedFromBackupKey来避免同步文件和目录。
+        //设置文件或目录资源的特定属性值。这个方法允许你修改文件或目录的元数据信息
         [fileURL setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:nil];
     }
 }

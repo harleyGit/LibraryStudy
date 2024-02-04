@@ -251,8 +251,14 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
 }
 
 - (nullable UIImage *)sd_roundedCornerImageWithRadius:(CGFloat)cornerRadius corners:(SDRectCorner)corners borderWidth:(CGFloat)borderWidth borderColor:(nullable UIColor *)borderColor {
+    //SDGraphicsImageRendererFormat 是 SDWebImage 中的一个类，用于配置 SDGraphicsImageRenderer 的渲染格式。
+    //SDGraphicsImageRenderer 用于在指定大小和配置的上下文中渲染图像
     SDGraphicsImageRendererFormat *format = [[SDGraphicsImageRendererFormat alloc] init];
+    //scale 属性表示图像渲染的缩放因子。缩放因子用于指定上下文的缩放级别，从而影响渲染的图像质量和精度。
     format.scale = self.scale;
+    
+    //SDGraphicsImageRenderer 是 SDWebImage 中的一个类，用于在指定的上下文中执行图像渲染操作。
+    //它提供了一个简单的接口，使开发者能够方便地创建和执行图形绘制操作，生成最终的图像
     SDGraphicsImageRenderer *renderer = [[SDGraphicsImageRenderer alloc] initWithSize:self.size format:format];
     UIImage *image = [renderer imageWithActions:^(CGContextRef  _Nonnull context) {
         CGRect rect = CGRectMake(0, 0, self.size.width, self.size.height);

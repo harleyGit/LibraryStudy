@@ -199,6 +199,8 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     return frames;
 }
 
+
+/// 获取颜色空间对象
 + (CGColorSpaceRef)colorSpaceGetDeviceRGB {
 #if SD_MAC
     CGColorSpaceRef screenColorSpace = NSScreen.mainScreen.colorSpace.CGColorSpace;
@@ -211,6 +213,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     dispatch_once(&onceToken, ^{
 #if SD_UIKIT
         if (@available(iOS 9.0, tvOS 9.0, *)) {
+            //创建颜色空间对象的函数调用，用于创建一个sRGB颜色空间对象。在图形编程和图像处理中，颜色空间定义了颜色的表示方式和范围。
             colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
         } else {
             colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -244,6 +247,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
 }
 
 + (CGImageRef)CGImageCreateDecoded:(CGImageRef)cgImage {
+    //kCGImagePropertyOrientationUp：图像的方向是正常的，不需要进行额外的旋转或翻转
     return [self CGImageCreateDecoded:cgImage orientation:kCGImagePropertyOrientationUp];
 }
 
@@ -273,6 +277,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
             break;
     }
     
+    //是否有alpha通道
     BOOL hasAlpha = [self CGImageContainsAlpha:cgImage];
     // iOS prefer BGRA8888 (premultiplied) or BGRX8888 bitmapInfo for screen rendering, which is same as `UIGraphicsBeginImageContext()` or `- [CALayer drawInContext:]`
     // Though you can use any supported bitmapInfo (see: https://developer.apple.com/library/content/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/dq_context/dq_context.html#//apple_ref/doc/uid/TP30001066-CH203-BCIBHHBB ) and let Core Graphics reorder it when you call `CGContextDrawImage`
@@ -280,8 +285,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
     bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
     
-    ////强制解压缩的原理就是对图片进行重新绘制，得到一张新的解压缩后的位图。其中，用到的最核心的函数是CGBitmapContextCreate() 方法，
-    ///这个方法生成一个空白的图片绘制上下文，我们传入了上述的一些参数，指定了图片的大小、颜色空间、像素排列等等属性
+    //通过 CGBitmapContextCreate 创建的位图上下文允许你直接读写像素数据，因此适用于像素级别的图形处理，如图像滤镜、图像合成等。一旦创建好位图上下文，你可以使用 Core Graphics 提供的绘图函数在位图上下文中进行绘制，也可以通过其他方式直接访问位图的像素数据。
     ///https://blog.csdn.net/hlllmr1314/article/details/8198543
     CGContextRef context = CGBitmapContextCreate(NULL, newWidth, newHeight, 8, 0, [self colorSpaceGetDeviceRGB], bitmapInfo);
     if (!context) {
@@ -386,6 +390,8 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
         return image;
     }
     
+    //image.CGImage用于获取UIImage对象底层的CGImageRef，即Core Graphics图像对象。这可以用于访问图像的底层像素数据，进行图像处理，以及在一些底层绘图操作中使用。
+    //CGImageRef是Core Graphics框架中表示图像的数据结构，它包含了图像的像素数据、颜色空间等信息。通过获取CGImageRef，你可以进行以下操作：图像处理(可以使用Core Graphics提供的函数对图像进行各种处理，如裁剪、缩放、旋转等。这对于在应用中进行图像编辑、滤镜效果等操作非常有用), 绘图操作 (在一些需要底层绘图的情况下，你可能需要将图像的CGImageRef用于Core Graphics的绘图操作。例如，你可以将图像绘制到CGContext上，从而在自定义绘图中使用图像)
     CGImageRef imageRef = [self CGImageCreateDecoded:image.CGImage];
     if (!imageRef) {
         return image;

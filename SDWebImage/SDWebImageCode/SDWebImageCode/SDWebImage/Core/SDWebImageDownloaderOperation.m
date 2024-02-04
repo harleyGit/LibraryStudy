@@ -92,7 +92,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
         _coderQueue = [NSOperationQueue new];
         _coderQueue.maxConcurrentOperationCount = 1;
 #if SD_UIKIT
-        _backgroundTaskId = UIBackgroundTaskInvalid;
+        _backgroundTaskId = UIBackgroundTaskInvalid;//标识后台任务的无效状态
 #endif
     }
     return self;

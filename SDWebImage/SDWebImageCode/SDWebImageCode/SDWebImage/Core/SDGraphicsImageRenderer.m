@@ -220,6 +220,7 @@
     NSParameterAssert(actions);
 #if SD_UIKIT
     if (@available(iOS 10.0, tvOS 10.0, *)) {
+        //UIGraphicsImageRendererContext 是 UIGraphicsImageRenderer 中用于执行图像绘制操作的上下文对象。它提供了一个接口，允许你在图像上下文中执行绘制操作，从而创建最终的图像
         UIGraphicsImageDrawingActions uiactions = ^(UIGraphicsImageRendererContext *rendererContext) {
             if (actions) {
                 actions(rendererContext.CGContext);

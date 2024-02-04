@@ -117,7 +117,10 @@
 }
 
 + (BOOL)removeExtendedAttribute:(NSString *)name atPath:(NSString *)path traverseLink:(BOOL)follow error:(NSError **)err {
+    // XATTR_NOFOLLOW 是一个标志（flag），用于在文件系统扩展属性相关的操作中指定不要跟随符号链接
+    //在 Unix-like 操作系统中，扩展属性允许为文件或目录关联额外的元数据信息。XATTR_NOFOLLOW 标志通常与文件系统操作函数一起使用，以指示在访问文件时不要跟随符号链接的扩展属性
     int flags = (follow? 0 : XATTR_NOFOLLOW);
+    //removexattr 是一个 Unix-like 操作系统中的系统调用，用于移除文件或目录的扩展属性（Extended Attributes，简称 xattr）。扩展属性是与文件或目录关联的元数据信息，可以用来存储一些额外的信息
     if (0 == removexattr([path fileSystemRepresentation], [name UTF8String], flags)) return YES;
     // error
     if (err) *err = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:

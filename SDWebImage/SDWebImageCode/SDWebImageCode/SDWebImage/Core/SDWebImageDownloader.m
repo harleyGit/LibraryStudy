@@ -272,10 +272,29 @@ static void * SDWebImageDownloaderContext = &SDWebImageDownloaderContext;
         timeoutInterval = 15.0;
     }
     
+    /**
+     * NSURLRequestUseProtocolCachePolicy (默认值):使用协议定义的缓存策略。这是默认值，它会根据请求的协议和标头来确定是否缓存数据;
+     *
+     * NSURLRequestReloadIgnoringLocalCacheData:忽略本地缓存，强制从原始源请求数据。不使用本地缓存，而是总是从服务器获取最新的数据;
+     *
+     * NSURLRequestReloadIgnoringLocalAndRemoteCacheData:忽略本地和远程缓存，强制从原始源请求数据。完全忽略本地和远程缓存，总是从服务器获取最新的数据;
+     *
+     * NSURLRequestReloadIgnoringCacheData DEPRECATED_ATTRIBUTE:这是 NSURLRequestReloadIgnoringLocalCacheData 的旧版名字，现已被弃用;
+     *
+     * NSURLRequestReturnCacheDataElseLoad:优先使用缓存，如果缓存不存在则请求数据。首先尝试加载缓存中的数据，如果缓存中没有数据，则发出请求;
+     *
+     * NSURLRequestReturnCacheDataDontLoad:仅使用缓存，不要从原始源请求数据。只使用缓存，不发出请求;
+     *
+     * NSURLRequestReloadRevalidatingCacheData:如果缓存数据过期，从原始源验证缓存数据。如果缓存过期，仍然会请求数据，但会附带一个条件GET请求，用于验证缓存是否仍然有效;
+     */
     // In order to prevent from potential duplicate caching (NSURLCache + SDImageCache) we disable the cache for image requests if told otherwise
     NSURLRequestCachePolicy cachePolicy = options & SDWebImageDownloaderUseNSURLCache ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData;
     NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:cachePolicy timeoutInterval:timeoutInterval];    //可变请求对象: https://www.cnblogs.com/qingzZ/p/9291132.html
+    //SDWebImageDownloaderHandleCookies: 希望下载器在请求图像时处理 cookies
     mutableRequest.HTTPShouldHandleCookies = SD_OPTIONS_CONTAINS(options, SDWebImageDownloaderHandleCookies);
+    
+    //HTTPShouldUsePipelining 是 NSURLRequest 类中的一个属性，而不是SDWebImage库的选项。这个属性用于控制是否使用 HTTP 管线（HTTP pipelining）。
+    //HTTP 管线是一种优化技术，它允许在一个连接上发送多个 HTTP 请求，而无需等待每个请求的响应。这可以显著减少请求和响应之间的延迟，从而提高网络性能
     mutableRequest.HTTPShouldUsePipelining = YES;
     SD_LOCK(self.HTTPHeadersLock);
     mutableRequest.allHTTPHeaderFields = self.HTTPHeaders;
@@ -299,6 +318,7 @@ static void * SDWebImageDownloaderContext = &SDWebImageDownloaderContext;
     
     NSURLRequest *request;
     if (requestModifier) {
+        //modifiedRequestWithRequest: 自定义修改图像下载请求的行为, 怎么返回一个block来返回一个对象???
         NSURLRequest *modifiedRequest = [requestModifier modifiedRequestWithRequest:[mutableRequest copy]];
         // If modified request is nil, early return
         if (!modifiedRequest) {
@@ -345,11 +365,13 @@ static void * SDWebImageDownloaderContext = &SDWebImageDownloaderContext;
         if (self.config.urlCredential) {
             operation.credential = self.config.urlCredential;
         } else if (self.config.username && self.config.password) {
+            // 创建一个 NSURLCredential 对象，设置用户名和密码，并指定持久性为 ForSession
             operation.credential = [NSURLCredential credentialWithUser:self.config.username password:self.config.password persistence:NSURLCredentialPersistenceForSession];
         }
     }
         
     if ([operation respondsToSelector:@selector(setMinimumProgressInterval:)]) {
+        // 设置最小进度更新间隔
         operation.minimumProgressInterval = MIN(MAX(self.config.minimumProgressInterval, 0), 1);
     }
     
@@ -593,6 +615,7 @@ didReceiveResponse:(NSURLResponse *)response
     
     if (cachedImage && options & SDWebImageRefreshCached) {
         // force progressive off if image already cached but forced refreshing
+        //~SDWebImageDownloaderProgressiveLoad 表示对 SDWebImageDownloaderProgressiveLoad 这个位掩码进行按位取反。这通常用于取消某个位的设置，即将某个选项的值从 1 变为 0
         downloaderOptions &= ~SDWebImageDownloaderProgressiveLoad;
         // ignore image read from NSURLCache if image if cached but force refreshing
         downloaderOptions |= SDWebImageDownloaderIgnoreCachedResponse;

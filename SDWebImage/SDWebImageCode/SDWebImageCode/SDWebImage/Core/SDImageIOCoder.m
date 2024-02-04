@@ -228,7 +228,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
             return YES;
     }
 }
-
+//将配置添加到图片中生成二进制数据
 - (NSData *)encodedDataWithImage:(UIImage *)image format:(SDImageFormat)format options:(nullable SDImageCoderOptions *)options {
     if (!image) {
         return nil;

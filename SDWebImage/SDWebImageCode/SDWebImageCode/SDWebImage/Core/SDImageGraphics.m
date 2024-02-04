@@ -54,6 +54,7 @@ void SDGraphicsBeginImageContext(CGSize size) {
 
 void SDGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat scale) {
 #if SD_UIKIT || SD_WATCH
+    //UIGraphicsBeginImageContextWithOptions 是一个在 UIKit 中用于创建图形上下文的函数。它允许你在指定的大小和配置下，开始一个基于位图的图形上下文，用于进行图形绘制操作
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale);
 #else
     CGContextRef context = SDCGContextCreateBitmapContext(size, opaque, scale);

@@ -268,6 +268,7 @@ directory 即磁盘缓存存储图片的文件夹路径
                         NSData *extendedData;
                         if (@available(iOS 11, tvOS 11, macOS 10.13, watchOS 4, *)) {
                             NSError *error;
+                            //将指定对象及其图形化表示（归档）为二进制数据
                             extendedData = [NSKeyedArchiver archivedDataWithRootObject:extendedObject requiringSecureCoding:NO error:&error];
                             if (error) {
                                 NSLog(@"NSKeyedArchiver archive failed with error: %@", error);
