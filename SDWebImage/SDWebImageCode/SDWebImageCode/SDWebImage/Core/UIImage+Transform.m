@@ -272,7 +272,9 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
 #endif
             [path closePath];
             
+            //CGContextSaveGState 是 Core Graphics 框架中的一个函数，用于保存图形上下文的当前图形状态（graphics state）。这个函数会将当前图形状态压入图形状态堆栈，以便稍后通过 CGContextRestoreGState 来还原这个状态。
             CGContextSaveGState(context);
+            //addClip用于将当前图形上下文的剪裁区域（clipping area）修改为指定的路径区域。这意味着在调用 addClip 之后，只有位于指定路径区域内的绘制内容会被保留，超出该区域的内容将被裁剪掉
             [path addClip];
             [self drawInRect:rect];
             CGContextRestoreGState(context);

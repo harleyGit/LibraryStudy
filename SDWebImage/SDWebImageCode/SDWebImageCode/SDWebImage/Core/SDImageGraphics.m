@@ -25,11 +25,14 @@ static CGContextRef SDCGContextCreateBitmapContext(CGSize size, BOOL opaque, CGF
     //pre-multiplied BGRA for non-opaque, BGRX for opaque, 8-bits per component, as Apple's doc
     CGColorSpaceRef space = CGColorSpaceCreateDeviceRGB();
     CGImageAlphaInfo alphaInfo = kCGBitmapByteOrder32Host | (opaque ? kCGImageAlphaNoneSkipFirst : kCGImageAlphaPremultipliedFirst);
+    
+    //CGBitmapContextCreate 是 Core Graphics 框架中的一个函数，用于创建一个基于位图的图形上下文（CGContext）。这个函数通常用于在内存中创建一个位图，以便进行图形绘制操作，然后可以将位图转换为图像或其他图形对象
     CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, 0, space, kCGBitmapByteOrderDefault | alphaInfo);
     CGColorSpaceRelease(space);
     if (!context) {
         return NULL;
     }
+    //CGContextScaleCTM 是 Core Graphics 框架中的一个函数，用于在图形上下文中应用缩放变换。这个函数可以缩放图形上下文中绘制的所有内容，包括路径、文本和图像等
     CGContextScaleCTM(context, scale, scale);
     
     return context;
@@ -38,6 +41,7 @@ static CGContextRef SDCGContextCreateBitmapContext(CGSize size, BOOL opaque, CGF
 
 CGContextRef SDGraphicsGetCurrentContext(void) {
 #if SD_UIKIT || SD_WATCH
+    //用于获取当前图形上下文（CGContext）。这个函数返回一个可选的 CGContext 对象，表示当前正在被绘制的图形上下文
     return UIGraphicsGetCurrentContext();
 #else
     return NSGraphicsContext.currentContext.CGContext;
@@ -57,13 +61,17 @@ void SDGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat sc
     //UIGraphicsBeginImageContextWithOptions 是一个在 UIKit 中用于创建图形上下文的函数。它允许你在指定的大小和配置下，开始一个基于位图的图形上下文，用于进行图形绘制操作
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale);
 #else
+    //生成一个上下文
     CGContextRef context = SDCGContextCreateBitmapContext(size, opaque, scale);
     if (!context) {
         return;
     }
+    //graphicsContextWithCGContext 方法创建一个 UIGraphicsContext 对象，该对象包装了指定的 Core Graphics 上下文（CGContext）
     NSGraphicsContext *graphicsContext = [NSGraphicsContext graphicsContextWithCGContext:context flipped:NO];
     objc_setAssociatedObject(graphicsContext, &kNSGraphicsContextScaleFactorKey, @(scale), OBJC_ASSOCIATION_RETAIN);
     CGContextRelease(context);
+    
+    //保存图形上下文状态的方法。这个方法会将当前图形上下文的状态保存到一个堆栈中，以便稍后通过 [NSGraphi
     [NSGraphicsContext saveGraphicsState];
     NSGraphicsContext.currentContext = graphicsContext;
 #endif
@@ -71,14 +79,17 @@ void SDGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat sc
 
 void SDGraphicsEndImageContext(void) {
 #if SD_UIKIT || SD_WATCH
+    //结束图形上下文
     UIGraphicsEndImageContext();
 #else
+    //[NSGraphicsContext restoreGraphicsState] 是 macOS 开发中用于还原图形上下文状态的方法。它用于恢复之前通过 [NSGraphicsContext saveGraphicsState] 方法保存的图形上下文状态
     [NSGraphicsContext restoreGraphicsState];
 #endif
 }
 
 UIImage * SDGraphicsGetImageFromCurrentImageContext(void) {
 #if SD_UIKIT || SD_WATCH
+    //从当前图形上下文（UIGraphicsGetCurrentContext）中获取图像对象
     return UIGraphicsGetImageFromCurrentImageContext();
 #else
     NSGraphicsContext *context = NSGraphicsContext.currentContext;
@@ -86,6 +97,7 @@ UIImage * SDGraphicsGetImageFromCurrentImageContext(void) {
     if (!contextRef) {
         return nil;
     }
+    //从位图上下文（CGBitmapContext）中创建一个 Core Graphics 图像（CGImage）对象
     CGImageRef imageRef = CGBitmapContextCreateImage(contextRef);
     if (!imageRef) {
         return nil;

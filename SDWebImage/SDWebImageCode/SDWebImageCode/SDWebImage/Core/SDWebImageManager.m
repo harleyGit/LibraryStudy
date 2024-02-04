@@ -491,7 +491,7 @@ static id<SDImageLoader> _defaultImageLoader;
                     // pass nil if the image was transformed, so we can recalculate the data from the image
                      //如果image 被转换，cacheData传递nil，imageCache会重新计算data
                     if (cacheSerializer && (storeCacheType == SDImageCacheTypeDisk || storeCacheType == SDImageCacheTypeAll)) {
-                        //高速缓存序列化器用于将解码后的图像（源下载数据）转换为用于存储到磁盘高速缓存的实际数据。 如果返回nil，则表示从图像实例生成数据
+                        //高速缓存序列化器用于将解码后的图像（源下载数据）转换为用于存储到磁盘高速缓存的实际数据。 如果返回nil，则表示从图像实例生成数据(这里怎么是一个block???)
                         cacheData = [cacheSerializer cacheDataWithImage:transformedImage originalData:(imageWasTransformed ? nil : originalData) imageURL:url];
                     } else {
                         cacheData = (imageWasTransformed ? nil : originalData);

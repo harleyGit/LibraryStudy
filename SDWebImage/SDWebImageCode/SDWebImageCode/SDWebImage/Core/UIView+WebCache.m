@@ -239,6 +239,7 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
     
     if (transition) {
 #if SD_UIKIT
+        //是 UIView 类中的一个类方法，用于在视图层次结构中进行过渡动画。这个方法允许你在视图层次结构中添加或移除子视图，并在这些改变发生时应用动画效果
         [UIView transitionWithView:view duration:0 options:0 animations:^{
             // 0 duration to let UIKit render placeholder and prepares block
             if (transition.prepares) {
