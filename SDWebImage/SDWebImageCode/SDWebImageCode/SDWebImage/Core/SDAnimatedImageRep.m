@@ -42,10 +42,13 @@
             return self;
         }
         _imageSource = imageSource;
+        //获取图像源中图像的数量。这个函数通常用于处理图像文件（如 GIF、PNG、JPEG 等）时，以确定文件中包含多少个图像
         NSUInteger frameCount = CGImageSourceGetCount(imageSource);
         if (frameCount <= 1) {
             return self;
         }
+        
+        //用于获取图像源的类型
         CFStringRef type = CGImageSourceGetType(imageSource);
         if (!type) {
             return self;

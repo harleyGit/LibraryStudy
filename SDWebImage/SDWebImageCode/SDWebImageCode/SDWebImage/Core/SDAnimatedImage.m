@@ -45,6 +45,7 @@ static CGFloat SDImageScaleFromPath(NSString *string) {
 
 #pragma mark - UIImage override method
 + (instancetype)imageNamed:(NSString *)name {
+    //用于检查当前环境是否包含 <UIKit/UITraitCollection.h> 头文件
 #if __has_include(<UIKit/UITraitCollection.h>)
     return [self imageNamed:name inBundle:nil compatibleWithTraitCollection:nil];
 #else

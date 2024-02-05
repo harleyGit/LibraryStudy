@@ -16,6 +16,7 @@
 #import <CoreImage/CoreImage.h>
 #endif
 
+//用于根据给定的 SDImageScaleMode 缩放模式，将一个矩形 rect 适应到目标大小 size
 static inline CGRect SDCGRectFitWithScaleMode(CGRect rect, CGSize size, SDImageScaleMode scaleMode) {
     rect = CGRectStandardize(rect);
     size.width = size.width < 0 ? -size.width : size.width;
@@ -189,9 +190,13 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     if (drawRect.size.width == 0 || drawRect.size.height == 0) return;
     if (clips) {
         if (context) {
+            //保存 CGContext 的当前图形状态。它主要用于在进行图形绘制时保存当前图形上下文的状态，以便后续能够还原到保存的状态
             CGContextSaveGState(context);
+            //向当前的图形上下文（CGContext）添加一个矩形路径。这个函数通常用于准备要绘制的图形的路径
             CGContextAddRect(context, rect);
+            //在当前图形上下文中创建一个裁剪区域。通过调用 CGContextClip，您可以将当前图形上下文的绘制限制在指定的区域内，超出该区域的内容将不再被绘制
             CGContextClip(context);
+            //在指定的矩形区域内绘制图像，可以指定其他参数来控制绘制操作
             [self drawInRect:drawRect];
             CGContextRestoreGState(context);
         }
@@ -237,6 +242,7 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
         return nil;
     }
     
+    //CGImageCreateWithImageInRect 是 Core Graphics 框架中的一个函数，用于从另一个 CGImage 中创建一个新的图像，该图像是原始图像中指定矩形区域的副本
     CGImageRef croppedImageRef = CGImageCreateWithImageInRect(imageRef, rect);
     if (!croppedImageRef) {
         return nil;
@@ -299,9 +305,13 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     return image;
 }
 
+///旋转变换、改变大小图片
 - (nullable UIImage *)sd_rotatedImageWithAngle:(CGFloat)angle fitSize:(BOOL)fitSize {
     size_t width = self.size.width;
     size_t height = self.size.height;
+    
+    // 用于将矩形按照指定的仿射变换矩阵进行变换。这个函数可以帮助你计算矩形在应用变换后的新位置和大小。
+    // CGAffineTransformMakeRotation 是 Core Graphics 框架中的一个函数，用于创建一个表示旋转变换的仿射矩阵
     CGRect newRect = CGRectApplyAffineTransform(CGRectMake(0, 0, width, height),
                                                 fitSize ? CGAffineTransformMakeRotation(angle) : CGAffineTransformIdentity);
 
@@ -310,12 +320,20 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     if (self.CIImage) {
         CIImage *ciImage = self.CIImage;
         if (fitSize) {
+            //CGAffineTransformMakeRotation 用于创建一个旋转矩阵，rotationAngle 表示旋转的角度，这里是45度。rotationTransform 就是表示这个旋转变换的矩阵。
             CGAffineTransform transform = CGAffineTransformMakeRotation(angle);
+            //imageByApplyingTransform 是 Core Graphics 框架中的一个方法，用于在 Core Image 中对图像应用仿射变换。这个方法属于 CIImage 类，而不是直接属于 Core Graphics。
             ciImage = [ciImage imageByApplyingTransform:transform];
         } else {
+            //CIFilter 是 Core Image 框架中的一个类，表示图像处理滤镜。滤镜可以用于执行各种图像操作、增强或修改
+            //使用 Core Image 框架中的 CIFilter 类创建一个名为 "CIStraightenFilter" 的滤镜实例
+            //CIStraightenFilter 是 Core Image 中的一个特定滤镜，用于使图像变直。它接受输入图像和一个角度参数，然后输出经过直线变换后的图像。
             CIFilter *filter = [CIFilter filterWithName:@"CIStraightenFilter"];
+            //设置输入图像
             [filter setValue:ciImage forKey:kCIInputImageKey];
+            //设置直线变换的角度
             [filter setValue:@(angle) forKey:kCIInputAngleKey];
+            //应用滤镜并获取输出图像
             ciImage = filter.outputImage;
         }
 #if SD_UIKIT || SD_WATCH
@@ -331,12 +349,22 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     format.scale = self.scale;
     SDGraphicsImageRenderer *renderer = [[SDGraphicsImageRenderer alloc] initWithSize:newRect.size format:format];
     UIImage *image = [renderer imageWithActions:^(CGContextRef  _Nonnull context) {
+        //设置是否应启用抗锯齿
         CGContextSetShouldAntialias(context, true);
+        
+        //设置是否允许抗锯齿
         CGContextSetAllowsAntialiasing(context, true);
+        
+        //设置图形上下文的插值质量，影响图像的缩放和变换过程中的插值算法。kCGInterpolationHigh 表示使用高质量的插值算法，以获得更平滑的缩放效果
         CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+       
+        //通过调整图形上下文的坐标系统，将坐标原点平移到 newRect 的中心。这是通过平移坐标变换矩阵（CTM）来实现的
         CGContextTranslateCTM(context, +(newRect.size.width * 0.5), +(newRect.size.height * 0.5));
+        
+//这里的条件编译部分（#if SD_UIKIT || SD_WATCH）表明这段代码可能与 UIKit 或 WatchKit 相关。在 UIKit 中，坐标系统是逆时针方向的，因此下面的旋转会使用 UIKit 的坐标系
 #if SD_UIKIT || SD_WATCH
         // Use UIKit coordinate system counterclockwise (⟲)
+        //通过旋转坐标变换矩阵（CTM），对绘制进行旋转。旋转的角度是 -angle，负号表示逆时针旋转。具体的旋转方向和角度可能与 UIKit 坐标系相关，因为在 UIKit 中，逆时针方向是正方向
         CGContextRotateCTM(context, -angle);
 #else
         CGContextRotateCTM(context, angle);
@@ -354,18 +382,23 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
 #if SD_UIKIT || SD_MAC
     // CIImage shortcut
     if (self.CIImage) {
+        // CGAffineTransformIdentity 是 Core Graphics 框架中的一个常量，表示一个不进行任何变换的仿射矩阵。这个矩阵是一个特殊的矩阵，当应用于图形上下文或视图的变换时，不会对图形产生任何影响，即图形保持原样
         CGAffineTransform transform = CGAffineTransformIdentity;
         // Use UIKit coordinate system
         if (horizontal) {
+            //// 创建一个水平翻转的仿射变换矩阵
             CGAffineTransform flipHorizontal = CGAffineTransformMake(-1, 0, 0, 1, width, 0);
+            //// 将水平翻转矩阵与现有的变换矩阵连接在一起
             transform = CGAffineTransformConcat(transform, flipHorizontal);
         }
         if (vertical) {
             CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, height);
             transform = CGAffineTransformConcat(transform, flipVertical);
         }
+        //对该图像应用了一个仿射变换，变换矩阵为 transform
         CIImage *ciImage = [self.CIImage imageByApplyingTransform:transform];
 #if SD_UIKIT
+        //将 CIImage 对象 ciImage 转换为一个 UIImage 对象，同时指定了缩放因子和方向信息。这在 Core Image 和 UIKit 之间进行图像处理和显示时很常见
         UIImage *image = [UIImage imageWithCIImage:ciImage scale:self.scale orientation:self.imageOrientation];
 #else
         UIImage *image = [[UIImage alloc] initWithCIImage:ciImage scale:self.scale orientation:kCGImagePropertyOrientationUp];
@@ -395,22 +428,31 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
 #pragma mark - Image Blending
 
 - (nullable UIImage *)sd_tintedImageWithColor:(nonnull UIColor *)tintColor {
+    //判断指定颜色 tintColor 是否具有透明度（alpha 值是否大于零），并将结果存储在 BOOL 类型的变量 hasTint 中
+    //__FLT_EPSILON__ 是一个浮点数常量，表示浮点数精度的最小正数。在这里，它用于作为一个很小的阈值，用来判断颜色的 alpha 值是否大于零
     BOOL hasTint = CGColorGetAlpha(tintColor.CGColor) > __FLT_EPSILON__;
     if (!hasTint) {
         return self;
     }
     
 #if SD_UIKIT || SD_MAC
+    //这段代码使用 Core Image 框架和 UIKit（或 Core Graphics）创建一个新的 UIImage 对象。它通过将两个 CIImage 进行合成和裁剪，然后将结果转换为 UIImage 对象
     // CIImage shortcut
     if (self.CIImage) {
         CIImage *ciImage = self.CIImage;
+        //使用 tintColor 创建一个纯色的 CIImage 对象，用于表示颜色图像
         CIImage *colorImage = [CIImage imageWithColor:[[CIColor alloc] initWithColor:tintColor]];
+        //将纯色图像裁剪为与原始图像相同的大小，确保两个图像的大小一致
         colorImage = [colorImage imageByCroppingToRect:ciImage.extent];
+        //创建一个合成滤镜，使用 CISourceAtopCompositing 滤镜将两个图像合成在一起
         CIFilter *filter = [CIFilter filterWithName:@"CISourceAtopCompositing"];
+        //将颜色图像和原始图像分别设置为滤镜的输入图像和背景图像
         [filter setValue:colorImage forKey:kCIInputImageKey];
         [filter setValue:ciImage forKey:kCIInputBackgroundImageKey];
+        //获取滤镜处理后的输出图像，并将其赋值给 ciImage。
         ciImage = filter.outputImage;
 #if SD_UIKIT
+        //使用前面处理后的 ciImage，并设置适当的缩放因子和方向
         UIImage *image = [UIImage imageWithCIImage:ciImage scale:self.scale orientation:self.imageOrientation];
 #else
         UIImage *image = [[UIImage alloc] initWithCIImage:ciImage scale:self.scale orientation:kCGImagePropertyOrientationUp];
@@ -424,6 +466,9 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     CGFloat scale = self.scale;
     
     // blend mode, see https://en.wikipedia.org/wiki/Alpha_compositing
+    //CGBlendMode 是 Core Graphics 框架中表示图形混合模式的枚举类型
+    //kCGBlendModeSourceAtop 是 CGBlendMode 中的一个混合模式，表示源图形仅在目标图形的上方绘制，且仅在目标图形的不透明部分。这种模式常用于将一个图像放置在另一个图像的上方，但仅覆盖目标图形的不透明部分。
+    //这个混合模式在图形处理中常用于各种合成效果的实现，可以通过设置这个混合模式来影响绘制操作的效果。在这个特定的情况下，kCGBlendModeSourceAtop 会影响到之后的图形绘制，具体的效果会依赖于之后的绘制操作和颜色信息。
     CGBlendMode blendMode = kCGBlendModeSourceAtop;
     
     SDGraphicsImageRendererFormat *format = [[SDGraphicsImageRendererFormat alloc] init];
@@ -431,13 +476,17 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     SDGraphicsImageRenderer *renderer = [[SDGraphicsImageRenderer alloc] initWithSize:size format:format];
     UIImage *image = [renderer imageWithActions:^(CGContextRef  _Nonnull context) {
         [self drawInRect:rect];
+        //设置图形上下文的混合模式。blendMode 是一个 CGBlendMode 枚举类型，它控制了图形的混合方式。在这里，blendMode 的值是之前设置的 kCGBlendModeSourceAtop，表示源图形仅在目标图形的上方绘制，且仅在目标图形的不透明部分
         CGContextSetBlendMode(context, blendMode);
+        //设置绘制的填充颜色。
         CGContextSetFillColorWithColor(context, tintColor.CGColor);
+        //使用当前的填充颜色和混合模式，在图形上下文中绘制一个矩形。rect 是一个 CGRect 类型的参数，表示要绘制的矩形
         CGContextFillRect(context, rect);
     }];
     return image;
 }
 
+//作用是获取图像指定点的颜色
 - (nullable UIColor *)sd_colorAtPoint:(CGPoint)point {
     CGImageRef imageRef = NULL;
     // CIImage compatible
@@ -495,6 +544,7 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     return SDGetColorFromPixel(pixel, bitmapInfo);
 }
 
+///获取图像指定矩形区域内的所有颜色，并以 UIColor 数组的形式返回
 - (nullable NSArray<UIColor *> *)sd_colorsWithRect:(CGRect)rect {
     CGImageRef imageRef = NULL;
     // CIImage compatible
@@ -573,6 +623,7 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
 #pragma mark - Image Effect
 
 // We use vImage to do box convolve for performance and support for watchOS. However, you can just use `CIFilter.CIGaussianBlur`. For other blur effect, use any filter in `CICategoryBlur`
+///生成一个具有指定模糊半径的模糊图像
 - (nullable UIImage *)sd_blurredImageWithRadius:(CGFloat)blurRadius {
     if (self.size.width < 1 || self.size.height < 1) {
         return nil;

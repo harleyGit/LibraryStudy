@@ -18,6 +18,8 @@
 */
 
 typedef void (^SDGraphicsImageDrawingActions)(CGContextRef _Nonnull context);
+
+//指示图形渲染器格式范围自动选择的枚举值
 typedef NS_ENUM(NSInteger, SDGraphicsImageRendererFormatRange) {
     SDGraphicsImageRendererFormatRangeUnspecified = -1,
     SDGraphicsImageRendererFormatRangeAutomatic = 0,

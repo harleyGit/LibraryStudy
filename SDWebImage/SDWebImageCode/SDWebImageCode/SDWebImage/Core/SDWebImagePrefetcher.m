@@ -95,6 +95,7 @@
     token->_finishedCount = 0;
     token->_totalCount = token.urls.count;
     atomic_flag_clear(&(token->_isAllFinished));
+    //创建一个支持弱引用的指针数组
     token.loadOperations = [NSPointerArray weakObjectsPointerArray];
     token.prefetchOperations = [NSPointerArray weakObjectsPointerArray];
     token.progressBlock = progressBlock;
@@ -123,6 +124,8 @@
                     if (!finished) {
                         return;
                     }
+                    //这是C++ Atomic库提供的用于原子递增操作的函数模板。它对原子对象执行给定值的原子加法操作，并返回加法操作之前原子对象的先前值。
+                    //memory_order_relaxed：这是原子操作的内存排序约束。内存排序约束用于指定内存操作相互之间的顺序关系。memory_order_relaxed是最不限制的排序约束，提供最高性能水平。它表示对于操作，不需要特定的排序保证
                     atomic_fetch_add_explicit(&(token->_finishedCount), 1, memory_order_relaxed);
                     if (error) {
                         // Add last failed
