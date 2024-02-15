@@ -64,6 +64,26 @@
  */
 
 NS_ASSUME_NONNULL_BEGIN
+/**
+ * 具体来说，当一个类实现了 NSSecureCoding 协议时，通常会包含以下两个步骤：
+ 
+ * 实现 + (BOOL)supportsSecureCoding 方法，返回 YES 表示该类支持安全编码。
+ * 实现 encodeWithCoder: 和 initWithCoder: 方法，用于实际的编码和解码过程。
+ * 示例：
+         + (BOOL)supportsSecureCoding {
+             return YES;
+         }
+
+         - (void)encodeWithCoder:(NSCoder *)encoder {
+             // 实现对象的编码逻辑
+         }
+
+         - (instancetype)initWithCoder:(NSCoder *)decoder {
+             // 实现对象的解码逻辑
+             return self;
+         }
+ 通过这个类方法的返回值，系统可以在需要归档和解档的时候知道该类是否支持安全编码，以便采取相应的安全措施。
+ */
 
 @interface AFHTTPSessionManager : AFURLSessionManager <NSSecureCoding, NSCopying>
 

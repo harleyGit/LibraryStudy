@@ -24,11 +24,11 @@
 #if TARGET_OS_IOS
 #import "AFURLSessionManager.h"
 
-typedef NS_ENUM(NSInteger, AFNetworkActivityManagerState) {
-    AFNetworkActivityManagerStateNotActive,
-    AFNetworkActivityManagerStateDelayingStart,
-    AFNetworkActivityManagerStateActive,
-    AFNetworkActivityManagerStateDelayingEnd
+typedef NS_ENUM(NSInteger, AFNetworkActivityManagerState) {//网络活动枚举
+    AFNetworkActivityManagerStateNotActive,  // 无网络活动
+    AFNetworkActivityManagerStateDelayingStart,// 延迟开始，等待其他网络请求
+    AFNetworkActivityManagerStateActive,// 有网络活动
+    AFNetworkActivityManagerStateDelayingEnd// 延迟结束，等待其他网络请求完成
 };
 
 static NSTimeInterval const kDefaultAFNetworkActivityManagerActivationDelay = 1.0;
@@ -36,6 +36,7 @@ static NSTimeInterval const kDefaultAFNetworkActivityManagerCompletionDelay = 0.
 
 static NSURLRequest * AFNetworkRequestFromNotification(NSNotification *notification) {
     if ([[notification object] respondsToSelector:@selector(originalRequest)]) {
+        //originalRequest 这个属性表示任务的原始请求，即创建任务时传递给 NSURLSession 的请求。如果任务不是通过重定向或其他方式修改的，那么 originalRequest 将与任务的当前请求（currentRequest）相同
         return [(NSURLSessionTask *)[notification object] originalRequest];
     } else {
         return nil;
@@ -45,6 +46,11 @@ static NSURLRequest * AFNetworkRequestFromNotification(NSNotification *notificat
 typedef void (^AFNetworkActivityActionBlock)(BOOL networkActivityIndicatorVisible);
 
 @interface AFNetworkActivityIndicatorManager ()
+
+/**
+ * 用于跟踪网络活动状态的属性
+ * activityCount 是一个计数器，每当发起一个网络请求时就会增加，当网络请求完成时就会减少。这样，通过监控 activityCount 的值，可以在其值为零时确定当前没有网络活动，而在值大于零时表示有网络活动
+ */
 @property (readwrite, nonatomic, assign) NSInteger activityCount;
 @property (readwrite, nonatomic, strong) NSTimer *activationDelayTimer;
 @property (readwrite, nonatomic, strong) NSTimer *completionDelayTimer;
@@ -152,6 +158,9 @@ typedef void (^AFNetworkActivityActionBlock)(BOOL networkActivityIndicatorVisibl
 }
 
 #pragma mark - Internal State Management
+
+/// 设置延迟、完成计时器状态,设置是否显示活动指示器
+/// @param currentState 状态
 - (void)setCurrentState:(AFNetworkActivityManagerState)currentState {
     @synchronized(self) {
         if (_currentState != currentState) {
@@ -177,6 +186,7 @@ typedef void (^AFNetworkActivityActionBlock)(BOOL networkActivityIndicatorVisibl
     }
 }
 
+/// 网络活动状态改变
 - (void)updateCurrentStateForNetworkActivityChange {
     if (self.enabled) {
         switch (self.currentState) {

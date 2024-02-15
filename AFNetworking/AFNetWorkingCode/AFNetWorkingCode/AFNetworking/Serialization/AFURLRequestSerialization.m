@@ -221,6 +221,7 @@ static void *AFHTTPRequestSerializerObserverContext = &AFHTTPRequestSerializerOb
 
     // Accept-Language HTTP Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
     NSMutableArray *acceptLanguagesComponents = [NSMutableArray array];
+    //[NSLocale preferredLanguages] 用于获取用户首选的语言顺序
     [[NSLocale preferredLanguages] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         float q = 1.0f - (idx * 0.1f);
         [acceptLanguagesComponents addObject:[NSString stringWithFormat:@"%@;q=%0.1g", obj, q]];
@@ -233,6 +234,15 @@ static void *AFHTTPRequestSerializerObserverContext = &AFHTTPRequestSerializerOb
 #if TARGET_OS_IOS
     userAgent = [NSString stringWithFormat:@"%@/%@ (%@; iOS %@; Scale/%0.2f)", [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleExecutableKey] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleIdentifierKey], [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleVersionKey], [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], [[UIScreen mainScreen] scale]];
 #elif TARGET_OS_TV
+    /**
+     * kCFBundleExecutableKey: 获取应用程序的可执行文件标识符
+     * kCFBundleIdentifierKey: 应用程序标识符
+     * CFBundleShortVersionString: 获取应用程序的短版本号（即用户可读的版本号）
+     * kCFBundleVersionKey: 应用程序版本号
+     * [[UIDevice currentDevice] model]：获取当前设备的型号，例如 iPhone、iPad 等
+     * [[UIDevice currentDevice] systemVersion]：获取当前设备的操作系统版本号
+     * [[UIScreen mainScreen] scale]：获取屏幕的缩放因子，通常用于处理 Retina 屏幕等高分辨率屏幕
+     */
     userAgent = [NSString stringWithFormat:@"%@/%@ (%@; tvOS %@; Scale/%0.2f)", [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleExecutableKey] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleIdentifierKey], [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleVersionKey], [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], [[UIScreen mainScreen] scale]];
 #elif TARGET_OS_WATCH
     userAgent = [NSString stringWithFormat:@"%@/%@ (%@; watchOS %@; Scale/%0.2f)", [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleExecutableKey] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleIdentifierKey], [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleVersionKey], [[WKInterfaceDevice currentDevice] model], [[WKInterfaceDevice currentDevice] systemVersion], [[WKInterfaceDevice currentDevice] screenScale]];
@@ -240,16 +250,29 @@ static void *AFHTTPRequestSerializerObserverContext = &AFHTTPRequestSerializerOb
     userAgent = [NSString stringWithFormat:@"%@/%@ (Mac OS X %@)", [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleExecutableKey] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleIdentifierKey], [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"] ?: [[NSBundle mainBundle] infoDictionary][(__bridge NSString *)kCFBundleVersionKey], [[NSProcessInfo processInfo] operatingSystemVersionString]];
 #endif
     if (userAgent) {
+        //检查字符串是否可以转换为指定的字符编码
         if (![userAgent canBeConvertedToEncoding:NSASCIIStringEncoding]) {
             NSMutableString *mutableUserAgent = [userAgent mutableCopy];
+            //CFStringTransform 它支持多种不同的转换操作，包括音标转换、大小写转换、字符集转换等。在这里，我们使用它来进行字符集转换;
+            // (__bridge CFMutableStringRef)(mutableUserAgent)：这是将 Objective-C 字符串对象 mutableUserAgent 转换为 Core Foundation 字符串的可变版本。__bridge 是 Objective-C 和 Core Foundation 之间进行桥接的方式
+            //NULL：这是用于指定转换操作的上下文。在这里我们使用 NULL 表示没有特定的上下文
+            
+            //(__bridge CFStringRef)@"Any-Latin; Latin-ASCII; [:^ASCII:] Remove"：这是一个字符串参数，指定了要进行的转换操作。这个字符串描述了一系列的转换步骤：
+            //"Any-Latin"：将字符串中的任何字符转换为拉丁字符。
+            //"Latin-ASCII"：将字符串中的拉丁字符转换为ASCII字符。
+            //[:^ASCII:] Remove：删除除ASCII字符之外的所有字符。
+            
+            //false：这是一个布尔值，表示是否执行反向转换。在这里我们设置为 false，表示不执行反向转换。
             if (CFStringTransform((__bridge CFMutableStringRef)(mutableUserAgent), NULL, (__bridge CFStringRef)@"Any-Latin; Latin-ASCII; [:^ASCII:] Remove", false)) {
                 userAgent = mutableUserAgent;
             }
         }
+        //"User-Agent" 字段：HTTP 请求头的 "User-Agent" 字段用于标识发起请求的用户代理。服务器可以使用这个信息来适应性地提供不同的内容或行为，以便更好地服务特定类型的客户端应用或设备
         [self setValue:userAgent forHTTPHeaderField:@"User-Agent"];
     }
 
     // HTTP Method Definitions; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+    //控制 HTTP 请求中的参数编码方式, 这是一个布尔类型的属性，用于控制是否将请求参数编码到 URI 中。如果设置为 YES，则请求参数将编码到 URI 中；如果设置为 NO，则请求参数将放在请求体中
     self.HTTPMethodsEncodingParametersInURI = [NSSet setWithObjects:@"GET", @"HEAD", @"DELETE", nil];
     
     //  每次都会重置变化
@@ -383,12 +406,11 @@ forHTTPHeaderField:(NSString *)field
     mutableRequest.HTTPMethod = method;
     
     //  将request的各种属性循环遍历
-    //  AFHTTPRequestSerializerObservedKeyPaths()是一个c函数
-    // AFHTTPRequestSerializerObservedKeyPaths 返回一个数组，数组内是一些方法，对其进行了KVO监听在566行和256行
+    //  AFHTTPRequestSerializerObservedKeyPaths()返回一个包含被 AFHTTPRequestSerializer 类观察的关键路径（key paths）的数组。这个函数的目的是获取那些属性发生变化时需要触发观察者方法的关键路径列表
     for (NSString *keyPath in AFHTTPRequestSerializerObservedKeyPaths()) {
         //  如果自己观察到的发生变化的属性，在这些方法里
         if ([self.mutableObservedChangedKeyPaths containsObject:keyPath]) {
-            //  把给自己设置的属性给request设置
+            // 将当前对象中对应关键路径的属性值赋值给 mutableRequest 对象中的同名属性。这是为了将当前对象中的属性变化应用到网络请求对象中。
             [mutableRequest setValue:[self valueForKeyPath:keyPath] forKey:keyPath];
         }
     }
@@ -512,6 +534,8 @@ forHTTPHeaderField:(NSString *)field
         //  自定义的解析方式
         if (self.queryStringSerialization) {
             NSError *serializationError;
+            //怎么通过block返回一个NSString??
+            // 这是一个属性或方法，用于获取查询字符串的序列化操作的具体实现。在网络请求中，查询字符串通常是将参数附加到 URL 中的一种方式。这个实现可能是一个函数、一个 block，或者其他可调用对象，负责将参数转换为符合特定格式的查询字符串
             query = self.queryStringSerialization(request, parameters, &serializationError);
 
             if (serializationError) {
@@ -531,10 +555,10 @@ forHTTPHeaderField:(NSString *)field
         }
     }
 
-    // 最后判断该request中是否包含了GET、HEAD、DELETE（都包含在HTTPMethodsEncodingParametersInURI）。因为这几个method的quey是拼接到url后面的。而POST、PUT是把query拼接到http body中的。
-    //  如果是GET、HEAD、DELETE，则把参数quey是拼接到url后面的。而POST、PUT是把query拼接到http body中
+    // 最后判断该request中是否包含了GET、HEAD、DELETE（都包含在HTTPMethodsEncodingParametersInURI）。
+    // 因为这几个method的quey是拼接到url后面的。而POST、PUT是把query拼接到http body中的。
     if ([self.HTTPMethodsEncodingParametersInURI containsObject:[[request HTTPMethod] uppercaseString]]) {
-        if (query && query.length > 0) {
+        if (query && query.length > 0) {// 如果是GET、HEAD、DELETE，则把参数quey是拼接到url后面的。而POST、PUT是把query拼接到http body中
             mutableRequest.URL = [NSURL URLWithString:[[mutableRequest.URL absoluteString] stringByAppendingFormat:mutableRequest.URL.query ? @"&%@" : @"?%@", query]];
         }
     } else {
@@ -544,6 +568,7 @@ forHTTPHeaderField:(NSString *)field
             query = @"";
         }
         if (![mutableRequest valueForHTTPHeaderField:@"Content-Type"]) {
+            //告诉服务器请求主体（如果有的话）的编码方式和数据格式。在这个例子中，"application/x-www-form-urlencoded" 表示请求体将使用 URL 编码的表单数据格式，这是常见的在 POST 请求中发送表单数据的方式
             [mutableRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
         }
         //  设置请求体
@@ -702,6 +727,7 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
 
     self.request = urlRequest;
     self.stringEncoding = encoding;
+    // AFCreateMultipartFormBoundary() 是 AFNetworking 库中的一个函数，用于创建一个唯一的分隔符字符串，用于构建 HTTP 请求的multipart/form-data类型的消息体。multipart/form-data 是一种用于在 HTTP 请求中上传二进制文件或通过表单上传文件的标准方式
     self.boundary = AFCreateMultipartFormBoundary();
     self.bodyStream = [[AFMultipartBodyStream alloc] initWithStringEncoding:encoding];
 
@@ -853,9 +879,14 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
     }
 
     // Reset the initial and final boundaries to ensure correct Content-Length
+    //这个方法负责设置或配置流，可能包括设置多部分表单边界或处理与流相关的其他配置
     [self.bodyStream setInitialAndFinalBoundaries];
+   
+    //通过设置 HTTPBodyStream 属性，表示在进行请求时应从指定的流 (self.bodyStream) 中读取请求体。通常与多部分表单请求或其他情况一起使用，其中请求体是动态生成的或太大而无法完全加载到内存中
+    //当处理大量数据时，可能无法将整个数据块完全加载到内存中时，通常会使用此方法
     [self.request setHTTPBodyStream:self.bodyStream];
 
+    //通过设置 "Content-Type" 为 "multipart/form-data"，通知服务器按照多部分表单数据的方式来解析请求体，以便正确处理上传的文件或其他二进制数据
     [self.request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", self.boundary] forHTTPHeaderField:@"Content-Type"];
     [self.request setValue:[NSString stringWithFormat:@"%llu", [self.bodyStream contentLength]] forHTTPHeaderField:@"Content-Length"];
 
@@ -1285,10 +1316,11 @@ typedef enum {
 
     if (parameters) {
         if (![mutableRequest valueForHTTPHeaderField:@"Content-Type"]) {
+            //设置 "Content-Type" 字段为 "application/json"，这个请求表明它的主体部分将包含 JSON 格式的数据。这种设置通常在发送 POST 请求时，将 JSON 数据作为请求主体的情况下使用。服务器可以据此正确解析请求并处理 JSON 格式的数据。
             [mutableRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
         }
 
-        if (![NSJSONSerialization isValidJSONObject:parameters]) {
+        if (![NSJSONSerialization isValidJSONObject:parameters]) {//是否可以转换成json数据
             if (error) {
                 NSDictionary *userInfo = @{NSLocalizedFailureReasonErrorKey: NSLocalizedStringFromTable(@"The `parameters` argument is not valid JSON.", @"AFNetworking", nil)};
                 *error = [[NSError alloc] initWithDomain:AFURLRequestSerializationErrorDomain code:NSURLErrorCannotDecodeContentData userInfo:userInfo];
@@ -1296,6 +1328,7 @@ typedef enum {
             return nil;
         }
 
+        //将给定的 JSON 对象（通常是字典或数组）转换成二进制数据
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:self.writingOptions error:error];
         
         if (!jsonData) {
@@ -1377,10 +1410,13 @@ typedef enum {
     }];
 
     if (parameters) {
-        if (![mutableRequest valueForHTTPHeaderField:@"Content-Type"]) {
+        if (![mutableRequest valueForHTTPHeaderField:@"Content-Type"]) {//valueForHTTPHeaderField: 用于获取指定 HTTP 请求头字段的值
+            
+            //设置 "Content-Type" 字段为 "application/x-plist"，这个请求表明它的主体部分将包含 Property List 格式的数据。这种设置通常在发送 POST 请求时，将 Property List 数据作为请求主体的情况下使用。服务器可以据此正确解析请求并处理 Property List 格式的数据。
             [mutableRequest setValue:@"application/x-plist" forHTTPHeaderField:@"Content-Type"];
         }
 
+        //将给定的 Property List 对象（通常是字典或数组）转换成二进制数据。
         NSData *plistData = [NSPropertyListSerialization dataWithPropertyList:parameters format:self.format options:self.writeOptions error:error];
         
         if (!plistData) {

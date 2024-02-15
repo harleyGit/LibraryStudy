@@ -182,6 +182,7 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
 
 + (instancetype)defaultPolicy {
     AFSecurityPolicy *securityPolicy = [[self alloc] init];
+    //表示在进行 SSL/TLS 握手时，不进行证书或公钥的校验，不要求服务器的证书必须是信任的证书。
     securityPolicy.SSLPinningMode = AFSSLPinningModeNone;
 
     return securityPolicy;

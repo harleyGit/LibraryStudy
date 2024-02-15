@@ -79,6 +79,7 @@
 
     self.baseURL = url;
 
+    //请求序列化配置
     self.requestSerializer = [AFHTTPRequestSerializer serializer];
     self.responseSerializer = [AFJSONResponseSerializer serializer];
 
@@ -126,6 +127,7 @@
                       failure:(nullable void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
 {
     //  生成一个task
+    //NSURLSessionDataTask 是 Foundation 框架中的类，属于 NSURLSession 的一部分，用于执行和管理 HTTP 或 HTTPS 请求的数据任务。这个类允许你创建并发送网络请求，并处理从服务器返回的数据。
     NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"GET"
                                                         URLString:URLString
                                                        parameters:parameters
@@ -179,6 +181,8 @@
                        success:(nullable void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
 {
     NSError *serializationError = nil;
+    
+    //URLWithString:relativeToURL: 是 NSURL 类提供的一个类方法，用于通过组合基本 URL 和表示相对 URL 的字符串来创建新的 NSURL 对象
     NSMutableURLRequest *request = [self.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters constructingBodyWithBlock:block error:&serializationError];
     for (NSString *headerField in headers.keyEnumerator) {
         [request setValue:headers[headerField] forHTTPHeaderField:headerField];
@@ -262,7 +266,10 @@
     NSError *serializationError = nil;
     //  把参数，还有各种东西转化为一个request
     NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters error:&serializationError];
+    
+    //keyEnumerator 是 Foundation 框架中的一个方法，它属于 NSDictionary 类的接口，用于获取一个字典中所有键的枚举器（enumerator）。具体来说，keyEnumerator 返回一个 NSEnumerator 对象，可以用于遍历字典中所有的键。
     for (NSString *headerField in headers.keyEnumerator) {
+        //设置请求域
         [request setValue:headers[headerField] forHTTPHeaderField:headerField];
     }
     if (serializationError) {
@@ -303,12 +310,21 @@
 
 #pragma mark - NSSecureCoding
 
+/// 用于指示类是否支持安全编码（secure coding）。这个方法通常在采用了 NSSecureCoding 协议的类中实现
+/// 返回 YES 表示该类支持安全编码
 + (BOOL)supportsSecureCoding {
     return YES;
 }
 
+
+/// 实现对象的解码逻辑
+/// @param decoder <#decoder description#>
 - (instancetype)initWithCoder:(NSCoder *)decoder {
+    //decodeObjectOfClass:forKey: 是一个解码方法，用于从解码器中获取对象
+    //从解码器（decoder）中解码出一个 NSURL 对象，该对象是通过键名为 NSStringFromSelector(@selector(baseURL)) 的键值来存储的
     NSURL *baseURL = [decoder decodeObjectOfClass:[NSURL class] forKey:NSStringFromSelector(@selector(baseURL))];
+    
+    //从解码器中解码出一个 NSURLSessionConfiguration 对象，该对象是通过键名为 @"sessionConfiguration" 的键值来存储的
     NSURLSessionConfiguration *configuration = [decoder decodeObjectOfClass:[NSURLSessionConfiguration class] forKey:@"sessionConfiguration"];
     if (!configuration) {
         NSString *configurationIdentifier = [decoder decodeObjectOfClass:[NSString class] forKey:@"identifier"];
@@ -332,6 +348,9 @@
     return self;
 }
 
+
+/// 实现对象的编码逻辑
+/// @param coder 
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
 

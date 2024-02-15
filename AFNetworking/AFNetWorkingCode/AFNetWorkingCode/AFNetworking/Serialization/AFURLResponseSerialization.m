@@ -105,8 +105,11 @@ id AFJSONObjectByRemovingKeysWithNullValues(id JSONObject, NSJSONReadingOptions 
     if (!self) {
         return nil;
     }
-
+    //acceptableStatusCodes 是 AFHTTPResponseSerializer 类的属性，用于指定允许的 HTTP 状态码范围。在这里，它被设置为允许的状态码范围是从 200 到 299，包括这两个值。这表示只有在 HTTP 状态码为 200 到 299 之间时，响应才会被认为是成功的。其他状态码将被视为错误
     self.acceptableStatusCodes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(200, 100)];
+   
+    //acceptableContentTypes 是 AFHTTPResponseSerializer 类的另一个属性，用于指定允许的响应内容类型（MIME 类型）。
+    //将其设置为 nil 表示接受任何类型的响应内容。这意味着不会对响应的内容类型进行限制，无论是 HTML、JSON、XML 还是其他类型，都将被接受
     self.acceptableContentTypes = nil;
 
     return self;
@@ -126,6 +129,8 @@ id AFJSONObjectByRemovingKeysWithNullValues(id JSONObject, NSJSONReadingOptions 
 
     //如果存在且是NSHTTPURLResponse
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        
+        //MIMEType 是一种标识文件格式的方式。MIME Type 主要用于指示在网络上传输的文件的性质和格式，以便接收方能够正确地处理这些文件。在 HTTP 协议中，MIME Type 通常被用于标识响应的内容类型。
         if (self.acceptableContentTypes && ![self.acceptableContentTypes containsObject:[response MIMEType]] &&
             !([response MIMEType] == nil && [data length] == 0)) {
 

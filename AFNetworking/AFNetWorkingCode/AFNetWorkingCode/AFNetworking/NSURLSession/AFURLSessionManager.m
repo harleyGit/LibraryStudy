@@ -96,6 +96,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 @property (nonatomic, strong) NSProgress *downloadProgress;
 @property (nonatomic, copy) NSURL *downloadFileURL;
 #if AF_CAN_INCLUDE_SESSION_TASK_METRICS
+//sessionTaskMetrics 是在 NSURLSession 中用于获取关于网络请求性能和统计信息的属性。它提供了一种方式来检查单个网络请求任务（NSURLSessionTask）的性能参数，如请求开始时间、请求结束时间、重定向次数、传输大小、TLS连接时间等
 @property (nonatomic, strong) NSURLSessionTaskMetrics *sessionTaskMetrics AF_API_AVAILABLE(ios(10), macosx(10.12), watchos(3), tvos(10));
 #endif
 @property (nonatomic, copy) AFURLSessionDownloadTaskDidFinishDownloadingBlock downloadTaskDidFinishDownloading;
@@ -119,12 +120,17 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
     __weak __typeof__(task) weakTask = task;
     for (NSProgress *progress in @[ _uploadProgress, _downloadProgress ])
     {
+        //表示在 NSURLSessionTaskMetrics 对象中用于表示特定请求或响应的传输大小的未知值
         progress.totalUnitCount = NSURLSessionTransferSizeUnknown;
         progress.cancellable = YES;
+        
+        //表示与进度相关联的任务被取消时要执行的处理程序
         progress.cancellationHandler = ^{
             [weakTask cancel];
         };
         progress.pausable = YES;
+        
+        //表示当与进度相关联的任务被暂停时要执行的处理程序。NSProgress 类用于跟踪操作的进度，允许开发者将暂停处理程序（pausing handler）与进度关联起来，以在任务被暂停时执行特定的操作。
         progress.pausingHandler = ^{
             [weakTask suspend];
         };
@@ -134,11 +140,13 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
             if ([progress respondsToSelector:@selector(setResumingHandler:)])
 #endif
             {
+                // 设置恢复处理程序
                 progress.resumingHandler = ^{
                     [weakTask resume];
                 };
             }
         
+        //fractionCompleted 是 NSProgress 类的一个属性，表示任务的完成百分比。NSProgress 类用于跟踪操作的进度，提供了一个通用的、可观察的进度模型
         [progress addObserver:self
                    forKeyPath:NSStringFromSelector(@selector(fractionCompleted))
                       options:NSKeyValueObservingOptionNew
@@ -171,6 +179,10 @@ static const void * const AuthenticationChallengeErrorKey = &AuthenticationChall
 
 #pragma mark - NSURLSessionTaskDelegate
 
+/// 用于在一个网络请求任务完成时被调用。这个方法提供了请求任务的完成状态和可能的错误信息
+/// @param session 调用该方法的 NSURLSession 对象
+/// @param task 完成的网络请求任务，即调用此方法的任务。
+/// @param error 一个可能为 nil 的 NSError 对象，表示请求任务是否完成时是否发生了错误。如果任务成功完成，error 将为 nil；如果发生错误，error 将包含有关错误的详细信息
 - (void)URLSession:(__unused NSURLSession *)session
               task:(NSURLSessionTask *)task
 didCompleteWithError:(NSError *)error
@@ -227,7 +239,18 @@ didCompleteWithError:(NSError *)error
         //url_session_manager_processing_queue AF的并行队列
         dispatch_async(url_session_manager_processing_queue(), ^{
             NSError *serializationError = nil;
-            //解析数据
+            /**
+             * 解析数据
+             * manager 是 AFHTTPSessionManager 或其子类的一个实例，用于管理网络请求的配置和处理
+             *
+             * responseSerializer 是 AFHTTPResponseSerializer 的一个实例，负责将服务器返回的响应数据解析成所需的格式。例如，可以是 AFJSONResponseSerializer 用于解析 JSON 数据，也可以是 AFXMLParserResponseSerializer 用于解析 XML 数据
+             *
+             * task 是网络请求任务，其响应信息包含在 task.response 中
+             *
+             * data 是从服务器收到的原始数据，通常是二进制格式的
+             *
+             * serializationError 是一个 NSError 指针，用于捕获解析过程中可能发生的错误
+             */
             responseObject = [manager.responseSerializer responseObjectForResponse:task.response data:data error:&serializationError];
             
             //如果是下载文件，那么responseObject为下载的路径
@@ -259,16 +282,23 @@ didCompleteWithError:(NSError *)error
     }
 }
 
+///检查是否定义了 AF_CAN_INCLUDE_SESSION_TASK_METRICS 这个宏。如果定义了，那么编译器会处理条件编译块内的代码；如果没有定义，那么这部分代码将被编译器忽略
 #if AF_CAN_INCLUDE_SESSION_TASK_METRICS
+//这是一个委托方法，用于在请求任务完成时收集性能数据。该方法在支持 iOS 10、macOS 10.12、watchOS 3、tvOS 10 及以上版本的系统上可用
 - (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
 didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics AF_API_AVAILABLE(ios(10), macosx(10.12), watchos(3), tvos(10)) {
+    //将收集到的任务性能数据存储在 self.sessionTaskMetrics 中，以便在其他地方使用或记录
     self.sessionTaskMetrics = metrics;
 }
 #endif
 
 #pragma mark - NSURLSessionDataDelegate
 
+/// 在每次从服务器接收到数据时都会被调用一次
+/// @param session 调用该方法的 NSURLSession 对象
+/// @param dataTask 接收到数据的数据任务
+/// @param data 从服务器接收到的数据块
 - (void)URLSession:(__unused NSURLSession *)session
           dataTask:(__unused NSURLSessionDataTask *)dataTask
     didReceiveData:(NSData *)data
@@ -276,9 +306,17 @@ didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics AF_API_AVAILABLE(i
     self.downloadProgress.totalUnitCount = dataTask.countOfBytesExpectedToReceive;
     self.downloadProgress.completedUnitCount = dataTask.countOfBytesReceived;
     
+    // 将接收到的数据追加到可变数据缓冲区
     [self.mutableData appendData:data];
 }
 
+
+/// 这个方法在上传过程中，每次发送数据块时都会被调用一次
+/// @param session 调用该方法的 NSURLSession 对象
+/// @param task 正在进行的任务，通常是一个上传任务
+/// @param bytesSent 当前发送的数据块的字节数
+/// @param totalBytesSent 截至目前已经发送的总字节数
+/// @param totalBytesExpectedToSend 期望发送的总字节数，通常是上传数据的总大小
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
    didSendBodyData:(int64_t)bytesSent
     totalBytesSent:(int64_t)totalBytesSent
@@ -290,6 +328,12 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
 
 #pragma mark - NSURLSessionDownloadDelegate
 
+/// 这个方法在下载过程中，每次接收到数据块时都会被调用一次
+/// @param session 调用该方法的 NSURLSession 对象
+/// @param downloadTask 正在进行的下载任务
+/// @param bytesWritten 当前接收到的数据块的字节数
+/// @param totalBytesWritten 截至目前已经接收的总字节数
+/// @param totalBytesExpectedToWrite 期望接收的总字节数，通常是下载文件的总大小
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
       didWriteData:(int64_t)bytesWritten
  totalBytesWritten:(int64_t)totalBytesWritten
@@ -299,6 +343,12 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite{
     self.downloadProgress.completedUnitCount = totalBytesWritten;
 }
 
+
+/// 这个方法在一个之前暂停的下载任务重新开始时被调用
+/// @param session 调用该方法的 NSURLSession 对象
+/// @param downloadTask 正在进行的下载任务
+/// @param fileOffset  断点续传的偏移量，表示从文件的哪个位置开始续传
+/// @param expectedTotalBytes 期望下载的总字节数，通常是下载文件的总大小
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
  didResumeAtOffset:(int64_t)fileOffset
 expectedTotalBytes:(int64_t)expectedTotalBytes{
@@ -307,6 +357,11 @@ expectedTotalBytes:(int64_t)expectedTotalBytes{
     self.downloadProgress.completedUnitCount = fileOffset;
 }
 
+
+/// 这个方法在下载任务完成后被调用，提供了包含下载文件的临时文件的本地文件 URL
+/// @param session 调用该方法的 NSURLSession 对象
+/// @param downloadTask 已完成下载的下载任务
+/// @param location 包含下载文件的临时文件的本地文件 URL
 - (void)URLSession:(NSURLSession *)session
       downloadTask:(NSURLSessionDownloadTask *)downloadTask
 didFinishDownloadingToURL:(NSURL *)location
@@ -396,7 +451,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
          7) If the current class implementation of `resume` is not equal to the super class implementation of `resume` AND the current implementation of `resume` is not equal to the original implementation of `af_resume`, THEN swizzle the methods
          8) Set the current class to the super class, and repeat steps 3-8
          */
+        //创建了一个临时会话配置,临时会话配置与默认会话配置有一些区别，主要在于它不会将缓存、cookie 等数据进行持久化，适用于需要一次性使用并不保存任何会话数据的场景
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        //这个会话对象可以用于创建和管理任务，如数据任务、下载任务、上传任务等
         NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
@@ -417,6 +474,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
         }
         
         [localDataTask cancel];
+        //该方法无法再向该会话中添加新的任务，但已经正在执行的任务会继续执行直到完成。
         [session finishTasksAndInvalidate];
     }
 }
@@ -502,6 +560,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     }
     
     if (!configuration) {
+        //这个方法返回一个默认的会话配置对象，该配置对象使用了默认的缓存策略、证书策略和超时时间等设置。默认会话配置通常适用于大多数网络请求场景，但你仍然可以根据需要创建自定义的会话配置对象
         configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     }
     
@@ -529,8 +588,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     //  置空task关联的代理
     //  这个方法用来异步的获取当前session的所有未完成的task
     /**
-     *在初始化中调用这个方法应该里面一个task都不会有。我们打断点去看，也确实如此，里面的数组都是空的
-     *原来这是为了防止后台回来，重新初始化这个session，一些之前的后台请求任务，导致程序的crash
+     * getTasksWithCompletionHandler:用于获取当前会话中的所有任务（data tasks、upload tasks、download tasks），并通过回调返回这些任务的数组
+     * 在初始化中调用这个方法应该里面一个task都不会有。我们打断点去看，也确实如此，里面的数组都是空的
+     * 原来这是为了防止后台回来，重新初始化这个session，一些之前的后台请求任务，导致程序的crash
      */
     [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
         for (NSURLSessionDataTask *task in dataTasks) {
@@ -561,6 +621,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
         if (!_session) {
             //注意代理，代理的继承，实际上NSURLSession去判断了，你实现了哪个方法会去调用，包括子代理的方法
             /**
+             * 创建一个具有自定义配置、代理和操作队列的NSURLSession对象
              *self.operationQueue: 见 509 行
              *self.sessionConfiguration： 见 503 行
              */
@@ -577,6 +638,8 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     return [NSString stringWithFormat:@"%p", self];
 }
 
+/// 任务启动
+/// @param notification 通知
 - (void)taskDidResume:(NSNotification *)notification {
     NSURLSessionTask *task = notification.object;
     if ([task respondsToSelector:@selector(taskDescription)]) {
@@ -588,6 +651,8 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     }
 }
 
+/// 任务暂停
+/// @param notification 通知
 - (void)taskDidSuspend:(NSNotification *)notification {
     NSURLSessionTask *task = notification.object;
     if ([task respondsToSelector:@selector(taskDescription)]) {
@@ -600,7 +665,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 }
 
 #pragma mark -
-
+/// 通过调用这个方法，AFURLSessionManager将返回与给定任务关联的任务代理对象。任务代理对象的责任是处理任务的进度、完成情况、错误处理等
+/// @param task 这是输入参数，表示需要获取任务代理的NSURLSessionTask对象
+/// AFURLSessionManagerTaskDelegate：这是一个自定义的类，它是AFURLSessionManager的内部私有类，用于处理NSURLSessionTask的代理方法和其他与任务相关的事件。它的具体实现由AFNetworking库内部进行管理
 - (AFURLSessionManagerTaskDelegate *)delegateForTask:(NSURLSessionTask *)task {
     NSParameterAssert(task);
     
@@ -650,6 +717,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     delegate.downloadProgressBlock = downloadProgressBlock;
 }
 
+//通过调用这个方法，可以为指定的上传任务添加代理，以便监控上传进度和处理任务完成时的响应
 - (void)addDelegateForUploadTask:(NSURLSessionUploadTask *)uploadTask
                         progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock
                completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
@@ -725,6 +793,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 }
 
 - (NSArray *)tasks {
+    //tasksForKeyPath: 方法的作用是根据传入的键路径查找和返回与之关联的任务
     return [self tasksForKeyPath:NSStringFromSelector(_cmd)];
 }
 
@@ -742,6 +811,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 
 #pragma mark -
 
+/// 使NSURLSession对象失效，并可以选择取消正在进行的任务和重置会话
+/// @param cancelPendingTasks 这是一个布尔类型的参数，用于指定是否取消正在进行的任务。如果为YES，则调用invalidateAndCancel方法取消所有进行中的任务；如果为NO，则调用finishTasksAndInvalidate方法等待任务完成后再失效会话
+/// @param resetSession 这是另一个布尔类型的参数，用于指定是否在失效后重置会话。如果为YES，则将self.session设置为nil，以便之后可以重新创建或使用新的会话
 - (void)invalidateSessionCancelingTasks:(BOOL)cancelPendingTasks resetSession:(BOOL)resetSession {
     if (cancelPendingTasks) {
         [self.session invalidateAndCancel];
@@ -795,6 +867,11 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 
 #pragma mark -
 
+/// 创建一个基于文件的上传任务
+/// @param request 表示包含上传任务相关信息的请求对象
+/// @param fileURL 指定上传文件路径的参数，用于指定要上传的文件的位置
+/// @param uploadProgressBlock 上传进度的回调
+/// @param completionHandler 上传任务完成时调用
 - (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request
                                          fromFile:(NSURL *)fileURL
                                          progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock
@@ -827,6 +904,8 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
                                                  progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock
                                         completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
 {
+    //此方法用于创建一个上传任务，其中请求的 HTTP 主体数据可以以流的方式动态生成
+    //该方法适用于在请求体数据太大而无法一次性加载到内存的情况。它允许你通过流式方式生成请求体，这对于处理大型文件或流数据非常有用。
     NSURLSessionUploadTask *uploadTask = [self.session uploadTaskWithStreamedRequest:request];
     
     [self addDelegateForUploadTask:uploadTask progress:uploadProgressBlock completionHandler:completionHandler];
@@ -841,6 +920,8 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
                                           destination:(NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination
                                     completionHandler:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))completionHandler
 {
+    //downloadTaskWithRequest: 方法被调用以创建一个支持下载的任务。你可以通过配置 request 对象来设置请求的其他属性，例如 HTTP 方法、标头等。然后，通过调用 resume 方法启动任务。
+    //downloadTaskWithRequest: 是用于在下载操作中创建任务的便捷方法，适用于需要下载大文件或将数据保存到本地的情况
     NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithRequest:request];
     
     [self addDelegateForDownloadTask:downloadTask progress:downloadProgressBlock destination:destination completionHandler:completionHandler];
@@ -853,6 +934,8 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
                                              destination:(NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination
                                        completionHandler:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))completionHandler
 {
+    //此方法用于创建一个下载任务，通过提供之前被中断的下载任务的恢复数据，可以继续未完成的下载。这对于在下载中途被中断的情况下，能够恢复下载而不必重新开始非常有用
+    //resumeData 之前下载任务被中断后获得的恢复数据
     NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithResumeData:resumeData];
     
     [self addDelegateForDownloadTask:downloadTask progress:downloadProgressBlock destination:destination completionHandler:completionHandler];
@@ -861,6 +944,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 }
 
 #pragma mark -
+
+/// 获取到与特定任务相关的上传进度对象，从而监视上传任务的进度
+/// @param task 任务
 - (NSProgress *)uploadProgressForTask:(NSURLSessionTask *)task {
     return [[self delegateForTask:task] uploadProgress];
 }
@@ -875,11 +961,17 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     self.sessionDidBecomeInvalid = block;
 }
 
+/// 通过调用这个方法，你可以自定义处理NSURLSession接收到的身份验证挑战的逻辑。在块内部，你可以根据具体的挑战情况决定如何响应，例如提供用户名和密码、使用证书进行身份验证等。这种灵活性允许你定制应用程序对于身份验证挑战的处理方式。
+/// @param block 用于处理身份验证挑战。这个block接受三个参数：
+///         session：表示发生挑战的NSURLSession对象。
+///         challenge：表示具体的身份验证挑战。
+///         credential：表示用于身份验证的凭据，可以通过修改这个参数来提供凭据。
 - (void)setSessionDidReceiveAuthenticationChallengeBlock:(NSURLSessionAuthChallengeDisposition (^)(NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential))block {
     self.sessionDidReceiveAuthenticationChallenge = block;
 }
 
 #if !TARGET_OS_OSX
+///通过调用这个方法，你可以为后台会话设置一个回调块，以便在会话完成所有事件（例如下载完成）时执行特定的操作。这在处理后台下载任务时特别有用，因为在后台执行完成之后，你可能希望执行一些特定的逻辑，例如通知用户下载已完成或执行其他后续操作
 - (void)setDidFinishEventsForBackgroundURLSessionBlock:(void (^)(NSURLSession *session))block {
     self.didFinishEventsForBackgroundURLSession = block;
 }
@@ -891,10 +983,18 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     self.taskNeedNewBodyStream = block;
 }
 
+
+/// 用于设置一个回调块，该块会在 HTTP 重定向即将发生时被调用。该回调允许你自定义 HTTP 重定向的行为
+/// @param block 一个带有四个参数的块，用于在 HTTP 重定向即将发生时被调用。这个块应该返回一个 NSURLRequest 对象，该对象指定了新的请求，或者返回 nil 表示使用默认的重定向行为。参数包括：
+///             session：包含这个任务的 NSURLSession 对象。
+///             task：即将发生 HTTP 重定向的任务。
+///             response：包含服务器的响应信息。
+///             request：包含即将发生的重定向的请求信息。
 - (void)setTaskWillPerformHTTPRedirectionBlock:(NSURLRequest * (^)(NSURLSession *session, NSURLSessionTask *task, NSURLResponse *response, NSURLRequest *request))block {
     self.taskWillPerformHTTPRedirection = block;
 }
 
+/// 通过调用这个方法，你可以为NSURLSession任务设置一个回调块，以便在任务发送请求体数据的时候执行特定的操作。这在监控上传进度、实时更新用户界面或执行其他与请求体数据相关的操作时非常有用
 - (void)setTaskDidSendBodyDataBlock:(void (^)(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend))block {
     self.taskDidSendBodyData = block;
 }
@@ -904,6 +1004,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 }
 
 #if AF_CAN_INCLUDE_SESSION_TASK_METRICS
+/// 通过调用这个方法，你可以为NSURLSession任务设置一个回调块，以便在任务完成收集指标时执行特定的操作。指标信息可以包括任务的响应时间、重定向次数、传输大小等。这样的回调机制允许你在任务的特定事件发生时插入自定义逻辑，以适应你的应用程序的需求
 - (void)setTaskDidFinishCollectingMetricsBlock:(void (^)(NSURLSession * _Nonnull, NSURLSessionTask * _Nonnull, NSURLSessionTaskMetrics * _Nullable))block AF_API_AVAILABLE(ios(10), macosx(10.12), watchos(3), tvos(10)) {
     self.taskDidFinishCollectingMetrics = block;
 }
@@ -915,14 +1016,26 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     self.dataTaskDidReceiveResponse = block;
 }
 
+
+/// 是 NSURLSessionDataTask 类的方法，用于设置一个回调块，该块会在普通的数据任务 (NSURLSessionDataTask) 转变为下载任务 (NSURLSessionDownloadTask) 时被调用。这种情况可能发生在服务器响应指示应该使用下载任务来接收响应体时
+/// @param block 一个没有返回值的块，带有三个参数，用于在数据任务转变为下载任务时被调用。参数包括：
+///             session：包含这个任务的 NSURLSession 对象。
+///             dataTask：原始的数据任务。
+///             downloadTask：转变后的下载任务
 - (void)setDataTaskDidBecomeDownloadTaskBlock:(void (^)(NSURLSession *session, NSURLSessionDataTask *dataTask, NSURLSessionDownloadTask *downloadTask))block {
     self.dataTaskDidBecomeDownloadTask = block;
 }
 
+///  是 NSURLSessionDataTask 类的方法，用于设置一个回调块，该块在接收到部分数据时被调用。这个方法提供了一个途径，允许你在每次接收到数据时执行一些操作
+/// @param block block：一个没有返回值的块，带有三个参数，用于在接收到部分数据时被调用。参数包括：
+///             session：包含这个任务的 NSURLSession 对象。
+///             dataTask：原始的数据任务。
+///             data：接收到的部分数据
 - (void)setDataTaskDidReceiveDataBlock:(void (^)(NSURLSession *session, NSURLSessionDataTask *dataTask, NSData *data))block {
     self.dataTaskDidReceiveData = block;
 }
 
+/// 通过调用这个方法，你可以为NSURLSession数据任务设置一个回调块，以便在任务将要缓存响应时执行特定的操作。这种回调机制允许你在任务的特定事件发生时插入自定义逻辑，以适应你的应用程序的需求
 - (void)setDataTaskWillCacheResponseBlock:(NSCachedURLResponse * (^)(NSURLSession *session, NSURLSessionDataTask *dataTask, NSCachedURLResponse *proposedResponse))block {
     self.dataTaskWillCacheResponse = block;
 }
@@ -933,6 +1046,13 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     self.downloadTaskDidFinishDownloading = block;
 }
 
+/// 是 NSURLSessionDownloadTask 类的方法，用于设置一个回调块，该块在下载任务写入数据时被调用。这个方法提供了一个途径，允许你在下载任务每次写入数据时执行一些操作，例如用于实时监视下载进度
+/// @param block block：一个没有返回值的块，带有五个参数，用于在下载任务写入数据时被调用。参数包括：
+///             session：包含这个任务的 NSURLSession 对象。
+///             downloadTask：下载任务。
+///             bytesWritten：本次写入的字节数。
+///             totalBytesWritten：到目前为止已经写入的总字节数。
+///             totalBytesExpectedToWrite：总共要写入的字节数，可能是未知的（如果服务器未提供 Content-Length）
 - (void)setDownloadTaskDidWriteDataBlock:(void (^)(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite))block {
     self.downloadTaskDidWriteData = block;
 }
@@ -974,6 +1094,12 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
  那么session首先会先完成最后一个task，然后再调用URLSession:didBecomeInvalidWithError:代理方法，
  如果你调用invalidateAndCancel方法来使session失效，那么该session会立即调用上面的代理方法。
  */
+
+/// 这个方法是NSURLSessionDelegate协议中的一部分，通过实现该协议，你可以接收有关NSURLSession的事件和状态变化的通知。
+/// 在这个具体的方法中，当会话失效时，会调用这个代理方法，使得你的应用程序能够响应并处理失效的情况。
+/// 你可以在这个方法中执行一些清理操作或记录日志，以适应你的应用程序的需求
+/// @param session 表示会话对象本身，通常是发起请求的NSURLSession实例
+/// @param error 表示导致会话失效的错误信息。如果会话未因错误而失效，则此参数为nil
 - (void)URLSession:(NSURLSession *)session
 didBecomeInvalidWithError:(NSError *)error
 {
@@ -1009,6 +1135,14 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
 #pragma mark - NSURLSessionTaskDelegate
 
 //  被服务器重定向的时候调用
+/// 在这个方法中，你有机会检查重定向的响应和新的请求，并根据需要修改新请求的属性。
+/// 然后，通过调用completionHandler块，你可以告诉NSURLSession继续执行请求，进一步处理HTTP重定向。
+/// 这样的回调机制允许你在重定向过程中插入自定义逻辑，以适应你的应用程序的需求
+/// @param session 表示会话对象本身，通常是发起请求的NSURLSession实例
+/// @param task 表示与HTTP重定向相关的NSURLSessionTask对象
+/// @param response 表示发生HTTP重定向时接收到的响应，是一个NSHTTPURLResponse对象
+/// @param request 表示新的重定向请求，是一个NSURLRequest对象。你可以通过修改这个请求来定制重定向的行为
+/// @param completionHandler 这是一个块（block）参数，用于通知NSURLSession继续处理重定向。你需要调用这个块，并将新的NSURLRequest作为参数传递给它，以便继续执行重定向。如果你不调用这个块，请求将不会继续执行
 - (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
 willPerformHTTPRedirection:(NSHTTPURLResponse *)response
@@ -1090,6 +1224,12 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
     }
 }
 
+
+/// 在这个方法中，可能的操作包括检查服务器信任（SSL证书验证）的结果，并根据需要生成一个NSError对象。
+/// 这可以用于处理服务器信任失败的情况，例如SSL证书不匹配、证书过期等。
+/// 在生成错误对象时，你可以设置适当的错误代码、描述和其他有关错误的信息。
+/// @param serverTrust  表示服务器信任的SecTrustRef对象。这通常是由服务器返回的SSL证书链，用于验证服务器的身份
+/// @param url 表示与服务器信任相关的URL。这是一个NSURL对象，用于与服务器建立连接的URL
 - (nonnull NSError *)serverTrustErrorForServerTrust:(nullable SecTrustRef)serverTrust url:(nullable NSURL *)url
 {
     NSBundle *CFNetworkBundle = [NSBundle bundleWithIdentifier:@"com.apple.CFNetwork"];
@@ -1116,6 +1256,12 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
 }
 
 //当一个session task需要发送一个新的request body stream到服务器端的时候，调用该代理方法。
+/// 在这个方法中，你需要实现提供新请求体流的逻辑，并通过调用completionHandler块来传递NSInputStream对象。
+/// 这个块的调用告诉NSURLSession你已经准备好提供请求体流了
+/// 这种回调机制允许你在需要时动态地提供请求体流，例如，当你需要上传较大的请求体数据时，可以将数据从流中逐步读取，而不是一次性加载到内存中
+/// @param session 表示会话对象本身，通常是发起请求的NSURLSession实例
+/// @param task 表示与请求体流相关的NSURLSessionTask对象
+/// @param completionHandler 这是一个块（block）参数，用于通知NSURLSession需要一个新的请求体流。你需要在这个块中提供一个NSInputStream对象，该流对象将用于提供任务的请求体数据
 - (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
  needNewBodyStream:(void (^)(NSInputStream *bodyStream))completionHandler
@@ -1135,6 +1281,14 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
 }
 
 //周期性地通知代理发送到服务器端数据的进度
+/// 这个方法会在任务发送请求体数据时被调用，提供了关于数据发送进度的信息。
+/// 通过这些参数，你可以了解到发送请求体的实时进度，以及总体的期望进度。
+/// 这对于监控上传进度、更新用户界面或执行其他与请求体数据相关的操作非常有用
+/// @param session 表示会话对象本身，通常是发起请求的NSURLSession实例
+/// @param task 表示与请求体数据发送相关的NSURLSessionTask对象
+/// @param bytesSent 表示最近一次发送的字节数
+/// @param totalBytesSent 表示到目前为止已经发送的总字节数
+/// @param totalBytesExpectedToSend 表示请求体的总字节数，也就是整个请求体的大小
 - (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
    didSendBodyData:(int64_t)bytesSent
@@ -1144,6 +1298,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     // 如果totalUnitCount获取失败，就使用HTTP header中的Content-Length作为totalUnitCount
     int64_t totalUnitCount = totalBytesExpectedToSend;
     if (totalUnitCount == NSURLSessionTransferSizeUnknown) {
+        //这行代码的目的是检索与任务相关的原始请求中"Content-Length"字段的值。
+        //这个值可以用于获取请求体的长度信息，对于上传任务来说，这可能对监控上传进度等场景很有用。
+        //需要注意的是，如果"Content-Length"字段在原始请求中未设置，该方法可能返回nil
         NSString *contentLength = [task.originalRequest valueForHTTPHeaderField:@"Content-Length"];
         if (contentLength) {
             totalUnitCount = (int64_t) [contentLength longLongValue];
@@ -1186,8 +1343,9 @@ didCompleteWithError:(NSError *)error
         self.taskDidComplete(session, task, error);
     }
 }
-
+//表示仅当 AF_CAN_INCLUDE_SESSION_TASK_METRICS 宏已定义时才包含这部分代码。
 #if AF_CAN_INCLUDE_SESSION_TASK_METRICS
+/// 责处理在收集了NSURLSession任务指标（metrics）后调用的逻辑
 - (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
 didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics AF_API_AVAILABLE(ios(10), macosx(10.12), watchos(3), tvos(10))
@@ -1238,6 +1396,11 @@ didReceiveResponse:(NSURLResponse *)response
 }
 
 //代理如果设置为NSURLSessionResponseBecomeDownload，则会调用这个方法
+/// 这个方法在数据任务需要转变为下载任务时被调用。
+/// 这种转变可能发生在服务器返回一个重定向的时候，或者在需要处理数据时（例如，数据任务的响应体被写入到临时文件）
+/// @param session 表示会话对象本身，通常是发起请求的 NSURLSession 实例
+/// @param dataTask 表示原始的数据任务 (NSURLSessionDataTask) 对象
+/// @param downloadTask 表示已经转变为下载任务
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)dataTask
 didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask
@@ -1256,6 +1419,13 @@ didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask
 }
 
 //当我们获取到数据就会调用，会被反复调用，请求到的数据就在这被拼装完整
+/// 这个方法会在每次从服务器接收到数据时被调用，允许你逐步处理接收到的数据。
+/// 你可以在这个方法中执行一些特定的操作，例如将数据追加到一个缓存中，实时更新下载进度，或者进行其他与数据接收相关的处理
+/// 需要注意的是，该方法可能会被多次调用，每次传递一个数据块，直到整个响应体的数据都被接收完毕。
+/// 在处理数据时，你可能需要合并或追加这些数据块，以获取完整的响应体数据。
+/// @param session 表示会话对象本身，通常是发起请求的 NSURLSession 实例
+/// @param dataTask 表示与接收到新数据相关的数据任务 (NSURLSessionDataTask) 对象
+/// @param data 表示接收到的新数据，以 NSData 对象的形式提供
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)dataTask
     didReceiveData:(NSData *)data
@@ -1270,6 +1440,13 @@ didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask
 }
 
 //当task接收到所有期望的数据后，session会调用此代理方法。
+/// 这个方法在收到响应并在缓存之前被调用，允许你有机会自定义缓存的行为。
+/// 你可以在这个方法中检查响应的信息，并决定是否缓存以及是否使用自定义的缓存响应。
+/// 在调用 completionHandler 块时，你可以传递一个新的 NSCachedURLResponse 对象来替代默认的缓存响应
+/// @param session <#session description#>
+/// @param dataTask 表示与将要缓存响应相关的数据任务
+/// @param proposedResponse 表示将要被缓存的响应，是一个 NSCachedURLResponse 对象
+/// @param completionHandler 这是一个块（block）参数，用于通知 NSURLSession 是否应该缓存响应以及提供自定义的缓存响应
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)dataTask
  willCacheResponse:(NSCachedURLResponse *)proposedResponse
@@ -1288,6 +1465,10 @@ didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask
 
 #if !TARGET_OS_OSX
 //当session中所有已经入队的消息被发送出去后，会调用该代理方法
+/// 这个方法在后台会话中所有数据传输完成后被调用，用于告知代理会话已经完成所有事件。在后台会话中，数据传输可能包括下载任务或上传任务等。当所有相关的任务完成时，系统会调用此方法，通知应用程序后台会话已经完成，并且此时可以执行任何相关的后续操作。
+
+/// 通常，在使用后台会话进行数据传输时，你需要在应用程序的委托中实现这个方法。在这个方法中，你可以执行一些与会话完成相关的逻辑，例如通知用户、执行额外的处理等。在处理完成后，可以调用与后台会话相关联的 completionHandler 块，以便系统能够及时唤醒应用程序
+/// @param session 表示与后台会话相关的 NSURLSession 对象
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
     if (self.didFinishEventsForBackgroundURLSession) {
         dispatch_async(dispatch_get_main_queue(), ^{
