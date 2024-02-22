@@ -98,6 +98,7 @@
 @property (nonatomic, strong) dispatch_queue_t synchronizationQueue;
 @property (nonatomic, strong) dispatch_queue_t responseQueue;
 
+///默认最大下载数是4个
 @property (nonatomic, assign) NSInteger maximumActiveDownloads;
 @property (nonatomic, assign) NSInteger activeRequestCount;
 
@@ -227,10 +228,10 @@
         }
 
         // 2) Attempt to load the image from the image cache if the cache policy allows it
-        switch (request.cachePolicy) {
-            case NSURLRequestUseProtocolCachePolicy:
-            case NSURLRequestReturnCacheDataElseLoad:
-            case NSURLRequestReturnCacheDataDontLoad: {
+        switch (request.cachePolicy) {//NSURLRequestCachePolicy 是一个枚举，用于指定 NSURLRequest 对象的缓存策略
+            case NSURLRequestUseProtocolCachePolicy: //使用协议定义的缓存策略。即根据请求的协议（HTTP、HTTPS等）使用默认的缓存策略
+            case NSURLRequestReturnCacheDataElseLoad://首先尝试从缓存加载数据，如果缓存中没有数据，则从原始源加载数据。如果有缓存则使用缓存，否则从服务器获取数据
+            case NSURLRequestReturnCacheDataDontLoad: { //只使用缓存数据，不尝试从原始源加载数据。如果有缓存则使用缓存，否则返回一个错误
                 UIImage *cachedImage = [self.imageCache imageforRequest:request withAdditionalIdentifier:nil];
                 if (cachedImage != nil) {
                     if (success) {
@@ -320,6 +321,9 @@
     dispatch_sync(self.synchronizationQueue, ^{
         NSString *URLIdentifier = imageDownloadReceipt.task.originalRequest.URL.absoluteString;
         AFImageDownloaderMergedTask *mergedTask = self.mergedTasks[URLIdentifier];
+        
+        // indexOfObjectPassingTest: 是 NSArray 类中的一个方法，用于查找数组中满足指定测试条件的第一个对象，并返回其在数组中的索引
+        //块返回一个 BOOL 值，表示是否满足测试条件。如果返回 YES，则表示找到了满足条件的对象，搜索会停止；如果返回 NO，则表示当前对象不符合条件，继续搜索下一个对象
         NSUInteger index = [mergedTask.responseHandlers indexOfObjectPassingTest:^BOOL(AFImageDownloaderResponseHandler * _Nonnull handler, __unused NSUInteger idx, __unused BOOL * _Nonnull stop) {
             return handler.uuid == imageDownloadReceipt.receiptID;
         }];

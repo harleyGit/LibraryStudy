@@ -107,6 +107,9 @@
     return result;
 }
 
+/// 添加图片缓存,根据identifier
+/// @param image 图片
+/// @param identifier 图片唯一标志符
 - (void)addImage:(UIImage *)image withIdentifier:(NSString *)identifier {
     dispatch_barrier_async(self.synchronizationQueue, ^{
         AFCachedImage *cacheImage = [[AFCachedImage alloc] initWithImage:image identifier:identifier];
@@ -176,6 +179,7 @@
     return image;
 }
 
+/// 根据请求request添加图片缓存
 - (void)addImage:(UIImage *)image forRequest:(NSURLRequest *)request withAdditionalIdentifier:(NSString *)identifier {
     [self addImage:image withIdentifier:[self imageCacheKeyFromURLRequest:request withAdditionalIdentifier:identifier]];
 }
@@ -183,6 +187,7 @@
 - (BOOL)removeImageforRequest:(NSURLRequest *)request withAdditionalIdentifier:(NSString *)identifier {
     return [self removeImageWithIdentifier:[self imageCacheKeyFromURLRequest:request withAdditionalIdentifier:identifier]];
 }
+
 
 - (nullable UIImage *)imageforRequest:(NSURLRequest *)request withAdditionalIdentifier:(NSString *)identifier {
     return [self imageWithIdentifier:[self imageCacheKeyFromURLRequest:request withAdditionalIdentifier:identifier]];

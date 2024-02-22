@@ -92,12 +92,14 @@ static void AFPostReachabilityStatusChange(SCNetworkReachabilityFlags flags, AFN
     });
 }
 
+/// SCNetworkReachabilityFlags 是用于表示网络可达性的标志位（flags）的一个数据类型，通常在iOS和macOS开发中使用。
 static void AFNetworkReachabilityCallback(SCNetworkReachabilityRef __unused target, SCNetworkReachabilityFlags flags, void *info) {
     AFPostReachabilityStatusChange(flags, (__bridge AFNetworkReachabilityStatusCallback)info);
 }
 
 
 static const void * AFNetworkReachabilityRetainCallback(const void *info) {
+    //Block_copy 这个宏的作用是用于安全地复制传递给它的 Block，并保持类型一致性。在 ARC 环境中，通常不需要手动管理 Block 的内存，但在某些情况下，特别是在 C 函数指针等地方，可能需要手动复制 Block。
     return Block_copy(info);
 }
 
@@ -108,6 +110,16 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
 }
 
 @interface AFNetworkReachabilityManager ()
+/**
+ *SCNetworkReachabilityRef 是 Core Foundation 框架中与网络可达性相关的引用类型。它用于在 macOS 和 iOS 等苹果平台上检查设备的网络连接状态。具体而言，它提供了一种方法来检测设备是否可以访问特定的网络地址，并提供了有关网络连接的信息。
+ *   这个引用类型通常用于以下目的：
+ *
+ *      检测网络连接状态： 通过使用 SCNetworkReachabilityCreateWithName 或 SCNetworkReachabilityCreateWithAddress 等函数创建一个 SCNetworkReachabilityRef 实例，然后使用 SCNetworkReachabilityGetFlags 函数获取网络连接的状态。
+ 
+ *      监测网络连接的变化： 通过使用 SCNetworkReachabilitySetCallback 和 SCNetworkReachabilityScheduleWithRunLoop 等函数设置回调函数，可以监视网络连接状态的变化，当网络状态发生变化时，会触发注册的回调函数。
+ 
+ *      处理网络连接状态变化： 使用注册的回调函数处理网络连接状态的变化，以便在网络状态发生变化时采取适当的操作
+ */
 @property (readonly, nonatomic, assign) SCNetworkReachabilityRef networkReachability;
 @property (readwrite, nonatomic, assign) AFNetworkReachabilityStatus networkReachabilityStatus;
 @property (readwrite, nonatomic, copy) AFNetworkReachabilityStatusBlock networkReachabilityStatusBlock;
@@ -126,6 +138,8 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
 }
 
 + (instancetype)managerForDomain:(NSString *)domain {
+    //创建一个网络可达性引用，以检查指定域名的网络连接状态
+    //SCNetworkReachabilityCreateWithName: 这是创建网络可达性引用的函数。它接受两个参数，第一个参数是分配器（Allocator），用于分配内存。kCFAllocatorDefault 是 Core Foundation 默认的分配器
     SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, [domain UTF8String]);
 
     AFNetworkReachabilityManager *manager = [[self alloc] initWithReachability:reachability];
@@ -248,8 +262,13 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
         return strongSelf;
     };
 
+    // 创建一个 SCNetworkReachabilityContext 结构体，用于传递回调函数相关的信息
     SCNetworkReachabilityContext context = {0, (__bridge void *)callback, AFNetworkReachabilityRetainCallback, AFNetworkReachabilityReleaseCallback, NULL};
+    //设置网络可达性引用的回调函数.在这里，传递了 AFNetworkReachabilityCallback 作为回调函数，并将 context 作为上下文信息传递给回调函数。这意味着当网络状态发生变化时，会调用 AFNetworkReachabilityCallback 函数，并将 context 中的信息传递给该函数
     SCNetworkReachabilitySetCallback(self.networkReachability, AFNetworkReachabilityCallback, &context);
+    
+    //在主运行循环上注册回调函数，以便在网络状态发生变化时得到通知
+    //CFRunLoopGetMain() 获取主运行循环，kCFRunLoopCommonModes 表示将回调函数添加到主运行循环的通用模式中，以确保在不同的运行循环模式下都能接收到通知
     SCNetworkReachabilityScheduleWithRunLoop(self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),^{

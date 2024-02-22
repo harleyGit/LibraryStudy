@@ -65,6 +65,8 @@
        placeholderImage:(UIImage *)placeholderImage
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    //向请求的 "Accept" 头字段中添加了一个值 "image/*"，表示客户端希望接受服务器返回的任何图像类型的数据。
+    //在 HTTP 协议中，"Accept" 头字段用于告知服务器客户端可以接受的响应内容类型。在这里，通过设置 "Accept" 头字段为 "image/*"，客户端表达了对图像类型数据的接受意愿
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
 
     [self setImageWithURLRequest:request placeholderImage:placeholderImage success:nil failure:nil];
@@ -108,6 +110,10 @@
         }
 
         __weak __typeof(self)weakSelf = self;
+        
+        //NSUUID：这是 Foundation 框架中的一个类，用于表示通用唯一标识符（UUID）。UUID 是一种标准的字符串标识符，通常用于唯一标识数据或对象
+        //[NSUUID UUID]：这是 NSUUID 类的类方法，用于生成一个新的 UUID 对象。每次调用 [NSUUID UUID] 都会生成一个新的、唯一的 UUID
+        //UUID 的生成是基于时间戳和设备信息等因素的，以确保其在大多数情况下是唯一的
         NSUUID *downloadID = [NSUUID UUID];
         AFImageDownloadReceipt *receipt;
         receipt = [downloader

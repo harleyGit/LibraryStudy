@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  This category adds methods to the UIKit framework's `UIRefreshControl` class. The methods in this category provide support for automatically beginning and ending refreshing depending on the loading state of a session task.
+ * UIRefreshControl 是 iOS 中的一个用户界面控件，通常用于在 UIScrollView（比如 UITableView 或 UICollectionView）中添加下拉刷新功能。下拉刷新是指用户可以通过下拉内容视图，触发刷新操作，以更新显示的数据
  */
 @interface UIRefreshControl (AFNetworking)
 

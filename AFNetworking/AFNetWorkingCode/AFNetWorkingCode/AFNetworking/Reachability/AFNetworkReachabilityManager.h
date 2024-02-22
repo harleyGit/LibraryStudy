@@ -42,6 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 
  @warning Instances of `AFNetworkReachabilityManager` must be started with `-startMonitoring` before reachability status can be determined.
  */
+
+/// AFNetworkReachabilityManager 是 AFNetworking 库中的一个类，用于监测设备的网络连接状态
+/// AFNetworkReachabilityManager 主要用于检测设备当前的网络连接状态，包括是Wi-Fi、蜂窝数据网络还是无网络连接。它可以帮助应用程序在不同的网络环境下做出适当的调整，比如在网络状况较差时延迟请求，或者在没有网络连接时提醒用户
 @interface AFNetworkReachabilityManager : NSObject
 
 /**
@@ -123,11 +126,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Starts monitoring for changes in network reachability status.
+ 开始监测网络连接状态的变化
  */
 - (void)startMonitoring;
 
 /**
  Stops monitoring for changes in network reachability status.
+ 调用此方法停止监测网络连接状态的变化
  */
 - (void)stopMonitoring;
 
