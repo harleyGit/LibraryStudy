@@ -51,21 +51,32 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 
 static id AFPublicKeyForCertificate(NSData *certificate) {
     id allowedPublicKey = nil;
+    
+    //用于存储创建的证书
     SecCertificateRef allowedCertificate;
+    //用于指定信任策略
     SecPolicyRef policy = nil;
+    //用于存储信任管理信息
     SecTrustRef allowedTrust = nil;
+    //存储信任评估的结果类型
     SecTrustResultType result;
 
+    //使用 SecCertificateCreateWithData 函数根据提供的二进制数据 (certificate) 创建一个证书对象。这通常是用于表示公钥证书的二进制数据。__bridge CFDataRef 是将 Objective-C 类型的 NSData 转换为 Core Foundation 类型的 CFDataRef
     allowedCertificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificate);
+    //这是一个宏，用于进行错误检查。如果 allowedCertificate 为 NULL，则跳到 _out 标签处，可能是为了执行一些错误处理或清理代码。
     __Require_Quiet(allowedCertificate != NULL, _out);
 
+    //使用 SecPolicyCreateBasicX509 函数创建一个基本的 X.509 信任策略。X.509 是一种证书标准，用于在网络中进行身份验证和加密通信
     policy = SecPolicyCreateBasicX509();
+    //这是一个宏，用于检查 SecTrustCreateWithCertificates 函数的返回值。该函数基于提供的证书 (allowedCertificate) 和信任策略 (policy) 创建一个信任管理对象 (allowedTrust)
     __Require_noErr_Quiet(SecTrustCreateWithCertificates(allowedCertificate, policy, &allowedTrust), _out);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    //使用 SecTrustEvaluate 函数对先前创建的信任管理对象 allowedTrust 进行评估，并将评估的结果存储在 result 变量中。它还使用 __Require_noErr_Quiet 宏来检查评估是否成功，如果不成功，则跳转到 _out 标签处，可能包含一些错误处理或清理代码。
     __Require_noErr_Quiet(SecTrustEvaluate(allowedTrust, &result), _out);
 #pragma clang diagnostic pop
 
+    //返回与给定信任管理对象相关联的公钥。这是一个 Core Foundation 函数，返回的类型是 SecKeyRef，表示一个安全的公钥。
     allowedPublicKey = (__bridge_transfer id)SecTrustCopyPublicKey(allowedTrust);
 
 _out:
@@ -84,14 +95,18 @@ _out:
     return allowedPublicKey;
 }
 
+/// 验证服务器信任的
+/// @param serverTrust <#serverTrust description#>
 static BOOL AFServerTrustIsValid(SecTrustRef serverTrust) {
     BOOL isValid = NO;
     SecTrustResultType result;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    //评估给定的 serverTrust，并将结果存储在 result 中。这是验证服务器信任的关键步骤。
     __Require_noErr_Quiet(SecTrustEvaluate(serverTrust, &result), _out);
 #pragma clang diagnostic pop
 
+    // 检查评估结果和状态
     isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
 
 _out:
@@ -169,10 +184,13 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
 @implementation AFSecurityPolicy
 
 + (NSSet *)certificatesInBundle:(NSBundle *)bundle {
+    //获取了在主Bundle中所有文件扩展名为"cer"的资源的文件路径数组（由inDirectory:@"."指定）。得到的数组赋值给paths变量
     NSArray *paths = [bundle pathsForResourcesOfType:@"cer" inDirectory:@"."];
 
+    //创建了一个可变集合certificates，使用setWithCapacity:。容量设置为paths数组的元素个数，这是一种根据预期元素数量预先分配集合内存的优化
     NSMutableSet *certificates = [NSMutableSet setWithCapacity:[paths count]];
     for (NSString *path in paths) {
+        //读取了由当前path指定的文件的内容，并创建了一个NSData对象certificateData，其中包含了文件的内容
         NSData *certificateData = [NSData dataWithContentsOfFile:path];
         [certificates addObject:certificateData];
     }
@@ -213,6 +231,7 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
     return self;
 }
 
+///根据这些证书获取设置公钥数组
 - (void)setPinnedCertificates:(NSSet *)pinnedCertificates {
     _pinnedCertificates = pinnedCertificates;
 
@@ -251,11 +270,15 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
 
     NSMutableArray *policies = [NSMutableArray array];
     if (self.validatesDomainName) {
+        //SecPolicyCreateSSL: 创建一个启用SSL策略的对象，并且可能会与给定的域名（通过domain参数传递）相关联。SSL策略通常用于在进行安全通信时验证远程服务器的证书
+        //  SecPolicyCreateSSL: 这是一个Security框架中的函数，用于创建SSL策略对象。SSL策略通常用于在安全通信中验证证书
+        //  true: 这是一个布尔值，表示是否启用SSL策略。在这里，它被设置为true，表示启用SSL策略
         [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
     } else {
         [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
     }
 
+    //SecPolicyCreateBasicX509: 这是 Security 框架中的函数，用于创建基本的 X.509 策略对象。X.509 是一种公钥基础设施（PKI）标准，用于描述公共密钥证书的格式
     SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
 
     if (self.SSLPinningMode == AFSSLPinningModeNone) {
@@ -268,8 +291,16 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
         case AFSSLPinningModeCertificate: {
             NSMutableArray *pinnedCertificates = [NSMutableArray array];
             for (NSData *certificateData in self.pinnedCertificates) {
+                //SecCertificateCreateWithData: 这是 Security 框架中的函数，用于根据提供的二进制数据创建一个证书对象
                 [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
             }
+            /**
+             * 通过调用 SecTrustSetAnchorCertificates，你告诉系统使用指定的锚点证书来验证服务器的证书。这在进行安全通信时非常有用，可以帮助确保通信方与预期的服务器建立安全连接。
+             *
+             * 1.SecTrustSetAnchorCertificates: 这是 Security 框架中的函数，用于为指定的 SecTrustRef 对象设置锚点证书（anchor certificates）。锚点证书是一组用于验证远程服务器证书的信任锚点。
+             * 2.serverTrust: 这是一个 SecTrustRef 对象，代表了一个服务器的信任链。通常，这个 serverTrust 对象会包含服务器返回的证书链。
+             * 3.(__bridge CFArrayRef)pinnedCertificates: 这是一个 Objective-C 数组，包含了你希望作为锚点的证书。__bridge CFArrayRef 用于将 Objective-C 数组转换为 Core Foundation 数组。这些锚点证书是你明确指定的、可信任的证书，用于验证服务器证书链
+             */
             SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
 
             if (!AFServerTrustIsValid(serverTrust)) {

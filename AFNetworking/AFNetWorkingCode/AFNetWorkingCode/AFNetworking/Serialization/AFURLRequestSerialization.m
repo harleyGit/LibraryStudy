@@ -19,6 +19,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/*
+ MobileCoreServices
+ MobileCoreServices 是用于 iOS 应用开发的框架，主要包含与移动设备相关的一些核心服务。其中最常见的使用场景是处理 Uniform Type Identifiers (UTI)，它是一种标识文件类型的标准化方式。主要功能包括：
+
+     1.文件类型标识（Uniform Type Identifiers）： 提供了处理文件类型标识的 API，用于确定文件的类型和处理文件的相关信息。
+     2.文件操作和 MIME 类型： 包含与文件操作相关的功能，以及处理 MIME 类型的功能。
+     3.UTType 和 UTI： 提供了 UTType 和 UTI 类型，用于表示和操作 Uniform Type Identifiers。
+     4.预定义的 UTI： 包含了一些常见文件类型的预定义 Uniform Type Identifiers，例如图片、音频、视频等
+ 
+ 
+ CoreServices
+ CoreServices 则是 macOS 开发中的一个框架，它更加广泛地涵盖了一系列系统服务。主要功能包括：
+
+     1.Bundle 操作： 提供了处理应用程序和框架 bundle 的功能，例如获取 bundle 的信息、加载 bundle 中的资源等。
+     2.资源管理： 包含了与资源管理相关的一些功能，可以用于访问系统资源、文件属性等。
+     3.Launch Services： 提供了启动服务的功能，用于处理应用程序的启动和退出，以及处理文档的打开和关闭。
+     4.标准化路径： 提供了一些函数用于处理标准化路径，以便在不同系统上保持路径的一致性。
+     5.Pasteboard 和 Drag-and-Drop： 包含了与剪贴板和拖放相关的功能，用于在应用程序之间传递数据。
+ */
+
 #import "AFURLRequestSerialization.h"
 
 #if TARGET_OS_IOS || TARGET_OS_WATCH || TARGET_OS_TV
@@ -44,11 +64,29 @@ typedef NSString * (^AFQueryStringSerializationBlock)(NSURLRequest *request, id 
     - parameter string: The string to be percent-escaped.
     - returns: The percent-escaped string.
  */
+///用于将输入的字符串进行百分比编码（percent encoding）。百分比编码是一种将字符串中的特殊字符替换为 % 后跟其十六进制表示的编码方式，以确保字符串可以在 URL 中正确传递而不引起歧义。这在构建 URL 参数时特别有用
 NSString * AFPercentEscapedStringFromString(NSString *string) {
     static NSString * const kAFCharactersGeneralDelimitersToEncode = @":#[]@"; // does not include "?" or "/" due to RFC 3986 - Section 3.4
-    static NSString * const kAFCharactersSubDelimitersToEncode = @"!$&'()*+,;=";
+    static NSString * const kAFCharactersSubDelimitersToEncode = @"!$&'()*+,;=";//要编码的字符、子分隔符
 
+    /*
+     URLQueryAllowedCharacterSet 是 NSCharacterSet 类的一个类方法，返回一个字符集，该字符集包含了 URL 查询字符串中允许出现的字符。这个字符集是由 RFC 3986 中规定的 URL 规范所定义的，用于表示 URL 查询字符串中可用的字符:
+     
+     URLQueryAllowedCharacterSet 包含了以下字符：
+         大小写字母（A-Z, a-z）
+         数字（0-9）
+         连字符（-）
+         下划线（_）
+         点号（.）
+         波浪线（~）
+         以及一些保留字符，如冒号（:）、正斜杠（/）、问号（?）、等号（=）、以及分号（;）等。这确保了 URL 查询字符串中的这些字符是被允许的，并且在 URL 中的合适位置进行了正确的百分比编码。
+
+
+     在 URL 中，查询字符串是紧跟在问号 ? 后面的部分，用于包含参数和参数值。该字符集用于确保查询字符串中的各个参数值正确编码，以避免引起歧义或破坏 URL 结构.
+     allowedCharacterSet 包含了在 URL 查询字符串中允许的字符
+     */
     NSMutableCharacterSet * allowedCharacterSet = [[NSCharacterSet URLQueryAllowedCharacterSet] mutableCopy];
+    //从字符集中移除指定的字符。这个方法允许你在字符集中排除一些特定的字符，使得字符集不再包含这些字符
     [allowedCharacterSet removeCharactersInString:[kAFCharactersGeneralDelimitersToEncode stringByAppendingString:kAFCharactersSubDelimitersToEncode]];
 
 	// FIXME: https://github.com/AFNetworking/AFNetworking/pull/3028
@@ -64,9 +102,12 @@ NSString * AFPercentEscapedStringFromString(NSString *string) {
         NSRange range = NSMakeRange(index, length);
 
         // To avoid breaking up character sequences such as 👴🏻👮🏽
+        // 获取包含合成字符(如:👴🏻👮🏽)的范围
         range = [string rangeOfComposedCharacterSequencesForRange:range];
 
+        //获取这个范围内的子字符串
         NSString *substring = [string substringWithRange:range];
+        //将原始字符串 substring 中不在允许字符集中的字符进行百分比编码，得到编码后的字符串 encoded
         NSString *encoded = [substring stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacterSet];
         [escaped appendString:encoded];
 
@@ -113,9 +154,11 @@ NSString * AFPercentEscapedStringFromString(NSString *string) {
 
 #pragma mark -
 
+//用于将字典中的键值对转换为 URL 查询字符串中的参数对（key-value pairs）。这样的查询字符串常用于构建 HTTP 请求的 URL 中的参数部分。
 FOUNDATION_EXPORT NSArray * AFQueryStringPairsFromDictionary(NSDictionary *dictionary);
 FOUNDATION_EXPORT NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value);
 
+//parameters键值对转换为用于 URL 查询字符串的形式
 NSString * AFQueryStringFromParameters(NSDictionary *parameters) {
     NSMutableArray *mutablePairs = [NSMutableArray array];
     //  把参数给AFQueryStringPairsFromDictionary，拿到AF的一个类型的数据就一个key，value对象，在URLEncodedStringValue拼接keyValue，一个加到数组里
@@ -135,7 +178,9 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
     NSMutableArray *mutableQueryStringComponents = [NSMutableArray array];
 
     // 根据需要排列的对象的description来进行升序排列，并且selector使用的是compare:
-    // 因为对象的description返回的是NSString，所以此处compare:使用的是NSString的compare函数
+    // sortDescriptorWithKey:@"description"：指定排序的关键路径，即要排序的属性的名称。在这个例子中，使用 description 作为排序的关键路径，这通常是一个对象的 description 方法返回的字符串，用于对对象进行字符串表示
+    //ascending:YES：指定排序的顺序，如果为 YES，则是升序，如果为 NO，则是降序
+    //selector:@selector(compare:)：指定用于比较元素的选择器。在这个例子中，使用 compare: 方法进行比较，这是一个标准的字符串比较方法
     // 即@[@"foo", @"bar", @"bae"] ----> @[@"bae", @"bar",@"foo"]
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"description" ascending:YES selector:@selector(compare:)];
 
@@ -143,6 +188,7 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
     if ([value isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dictionary = value;
         // Sort dictionary keys to ensure consistent ordering in query string, which is important when deserializing potentially ambiguous sequences, such as an array of dictionaries
+        //使用 NSSortDescriptor 对数组进行排序。在这里，sortDescriptor 指定了排序规则，即按照键的描述升序排序
         for (id nestedKey in [dictionary.allKeys sortedArrayUsingDescriptors:@[ sortDescriptor ]]) {
             id nestedValue = dictionary[nestedKey];
             if (nestedValue) {
@@ -664,7 +710,16 @@ static inline NSString * AFMultipartFormFinalBoundary(NSString *boundary) {
 }
 
 static inline NSString * AFContentTypeForPathExtension(NSString *extension) {
+    /*
+     UTTypeCreatePreferredIdentifierForTag 是 Core Services 框架中的函数，用于根据给定的标签创建首选的 Uniform Type Identifier（UTI）。Uniform Type Identifier 是一种标准化的方式来表示文件类型。
+
+             inTagClass：标签类别，是一个字符串，通常是一个常量字符串，表示标签的类别，例如 kUTTagClassFilenameExtension 表示文件扩展名。
+             inTag：标签，是一个字符串，通常是一个具体的标签值，例如文件扩展名的字符串。
+             inConformingToUTI：可选参数，是一个字符串，指定 UTI 的约束条件，只有符合条件的 UTI 才会被返回
+     */
     NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)extension, NULL);
+    
+    //UTTypeCopyPreferredTagWithClass 是 Core Services 框架中的函数，用于根据给定的 Uniform Type Identifier (UTI) 和标签类别获取首选的标签值
     NSString *contentType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
     if (!contentType) {
         return @"application/octet-stream";
@@ -770,7 +825,7 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
         }
 
         return NO;
-    } else if ([fileURL checkResourceIsReachableAndReturnError:error] == NO) {
+    } else if ([fileURL checkResourceIsReachableAndReturnError:error] == NO) {//checkResourceIsReachableAndReturnError: 是 NSURL 类的方法，用于检查指定 URL 对应的资源是否可达（reachable）。它会检查指定的 URL 是否指向一个存在的资源，并且应用程序是否有权限访问该资源
         NSDictionary *userInfo = @{NSLocalizedFailureReasonErrorKey: NSLocalizedStringFromTable(@"File URL not reachable.", @"AFNetworking", nil)};
         if (error) {
             *error = [[NSError alloc] initWithDomain:AFURLRequestSerializationErrorDomain code:NSURLErrorBadURL userInfo:userInfo];
@@ -785,6 +840,7 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
     }
 
     NSMutableDictionary *mutableHeaders = [NSMutableDictionary dictionary];
+    //Content-Disposition 是 HTTP 头部字段之一，用于指示在响应消息体中如何处理数据。通常，它用于指示浏览器是否应该直接显示数据、将其保存到本地磁盘，或者提示用户选择保存的位置
     [mutableHeaders setValue:[NSString stringWithFormat:@"form-data; name=\"%@\"; filename=\"%@\"", name, fileName] forKey:@"Content-Disposition"];
     [mutableHeaders setValue:mimeType forKey:@"Content-Type"];
 
@@ -1349,6 +1405,7 @@ typedef enum {
         return nil;
     }
 
+    //从归档数据中解码一个表示 NSNumber 的对象，然后将其转换为 unsignedIntegerValue
     self.writingOptions = [[decoder decodeObjectOfClass:[NSNumber class] forKey:NSStringFromSelector(@selector(writingOptions))] unsignedIntegerValue];
 
     return self;
@@ -1376,6 +1433,7 @@ typedef enum {
 @implementation AFPropertyListRequestSerializer
 
 + (instancetype)serializer {
+    //NSPropertyListXMLFormat_v1_0 是一个常量，表示使用 XML 格式进行属性列表（Property List）的编码或解码
     return [self serializerWithFormat:NSPropertyListXMLFormat_v1_0 writeOptions:0];
 }
 

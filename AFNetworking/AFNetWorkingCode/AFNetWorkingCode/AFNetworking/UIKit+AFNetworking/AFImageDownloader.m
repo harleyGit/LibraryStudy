@@ -124,6 +124,9 @@
                                          diskCapacity:diskCapacity
                                          directoryURL:cacheURL];
 #else
+    //创建一个 NSURLCache 对象，配置其内存和磁盘缓存的容量，并指定磁盘缓存的路径。通过创建自定义的缓存对象，你可以控制缓存的容量和存储位置，以满足应用程序的需求。通常，在应用程序的启动阶段，会使用这样的代码来设置全局的缓存策略
+    //memoryCapacity：指定缓存的内存容量（以字节为单位）。当请求的响应数据可以在内存中缓存时，会使用内存缓存
+    //diskCapacity：指定缓存的磁盘容量（以字节为单位）。如果数据无法完全缓存在内存中，超出内存容量的数据将写入磁盘缓存
     return [[NSURLCache alloc] initWithMemoryCapacity:memoryCapacity
                                          diskCapacity:diskCapacity
                                              diskPath:[cacheURL path]];
@@ -180,6 +183,7 @@
         self.synchronizationQueue = dispatch_queue_create([name cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_SERIAL);
 
         name = [NSString stringWithFormat:@"com.alamofire.imagedownloader.responsequeue-%@", [[NSUUID UUID] UUIDString]];
+        //cStringUsingEncoding:将 Objective-C 字符串传递给 C 语言 API 的情况，因为 C 字符串是 C 语言的标准字符串表示形式
         self.responseQueue = dispatch_queue_create([name cStringUsingEncoding:NSASCIIStringEncoding], DISPATCH_QUEUE_CONCURRENT);
     }
 

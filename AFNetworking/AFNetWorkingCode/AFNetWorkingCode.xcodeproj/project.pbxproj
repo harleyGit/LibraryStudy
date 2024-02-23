@@ -151,9 +151,9 @@
 			isa = PBXGroup;
 			children = (
 				6EACCF1F2546744F00F50C41 /* AFURLRequestSerialization.h */,
-				6EACCF202546744F00F50C41 /* AFURLResponseSerialization.m */,
-				6EACCF212546744F00F50C41 /* AFURLResponseSerialization.h */,
 				6EACCF222546744F00F50C41 /* AFURLRequestSerialization.m */,
+				6EACCF212546744F00F50C41 /* AFURLResponseSerialization.h */,
+				6EACCF202546744F00F50C41 /* AFURLResponseSerialization.m */,
 			);
 			path = Serialization;
 			sourceTree = "<group>";
