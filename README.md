@@ -1,16 +1,17 @@
-# LibraryStudy
-**优秀三方库学习**
-
-- **终端代理设置**
-- [**AFNetworking**](https://juejin.cn/post/6844903825581555726)
-- **Project**
+> <h1 id=''>LibraryStudy</h1>
+<p>**优秀三方库学习**</p>
+- [**终端代理设置**](#终端代理设置)
+- [**AFNetworking**](#AFNetworking)
+- [**Project**](#Project)
+- [**IQKeyboardManager(V7.0.3)**](#IQKeyboardManager(V7.0.3))
 
 <br/>
 
 ***
-<br/>
+<br/><br/><br/>
 
->#	 终端代理设置
+> <h1 id='终端代理设置'>终端代理设置</h1>
+	 
 
 -	两个命令可以查看当前的http、https代理
 
@@ -43,9 +44,9 @@ export https_proxy=http://代理ip:端口
 <br/>
 
 ***
-<br/>
+<br/><br/><br/>
 
-># AFNetworking
+># <h1 id='AFNetworking'>[AFNetworking](https://juejin.cn/post/6844903825581555726)</h1>
 
 
 
@@ -53,9 +54,9 @@ export https_proxy=http://代理ip:端口
 <br/>
 
 ***
-<br/>
+<br/><br/><br/>
 
-># Project
+> <h1 id='Project'></h1>
 优秀项目代码的学习借鉴
 
 - 仿喜马拉雅
@@ -65,6 +66,34 @@ export https_proxy=http://代理ip:端口
 - SwiftEOS: 加密库练习
 - SwiftHub： 国外大神借助RxSwift的优秀代码项目
 - [MHDevelopExample](https://www.jianshu.com/p/db8400e1d40e)：优秀设计模式Demo
+
+
+
+<br/>
+
+***
+<br/><br/><br/>
+
+> <h1 id='IQKeyboardManager(V7.0.3)'>IQKeyboardManager(V7.0.3)</h1>
+
+从[IQKeyboardManager(V7.0.3)源码库的Master](https://github.com/hackiftekhar/IQKeyboardManager.git)直接下载的Demo代码
+
+
+<br/>
+
+***
+<br/><br/><br/>
+
+> <h1 id=''></h1>
+
+
+
+<br/>
+
+***
+<br/><br/><br/>
+
+> <h1 id=''></h1>
 
 
 
