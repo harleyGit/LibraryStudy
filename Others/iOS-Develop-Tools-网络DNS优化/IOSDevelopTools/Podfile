@@ -1,0 +1,21 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'IOSDevelopTools' do
+  # Comment the next line if you don't want to use dynamic frameworks
+
+  pod 'AFNetworking', '3.2.1'
+  pod 'FMDB', '2.5'
+  pod 'YYModel'
+  # Pods for IOSDevelopTools
+
+  target 'IOSDevelopToolsTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'IOSDevelopToolsUITests' do
+    # Pods for testing
+  end
+
+end

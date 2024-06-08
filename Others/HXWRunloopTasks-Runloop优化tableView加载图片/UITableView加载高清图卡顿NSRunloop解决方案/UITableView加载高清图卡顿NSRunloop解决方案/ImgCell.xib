@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="imgCell" rowHeight="149" id="KGk-i7-Jjw" customClass="ImgCell">
+            <rect key="frame" x="0.0" y="0.0" width="395" height="149"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="395" height="148.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tbV-pV-Bxk">
+                        <rect key="frame" x="5" y="5" width="125" height="138.5"/>
+                    </imageView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="chh-Tm-pAG">
+                        <rect key="frame" x="265" y="5" width="125" height="138.5"/>
+                    </imageView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="XnR-aQ-yBG">
+                        <rect key="frame" x="135" y="5" width="125" height="138.5"/>
+                    </imageView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="tbV-pV-Bxk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="5" id="6n1-QN-yfJ"/>
+                    <constraint firstItem="chh-Tm-pAG" firstAttribute="leading" secondItem="XnR-aQ-yBG" secondAttribute="trailing" constant="5" id="96Q-Pb-hqY"/>
+                    <constraint firstItem="chh-Tm-pAG" firstAttribute="centerY" secondItem="tbV-pV-Bxk" secondAttribute="centerY" id="CdD-eK-5bB"/>
+                    <constraint firstItem="XnR-aQ-yBG" firstAttribute="width" secondItem="tbV-pV-Bxk" secondAttribute="width" id="HR9-Il-Uzx"/>
+                    <constraint firstItem="XnR-aQ-yBG" firstAttribute="leading" secondItem="tbV-pV-Bxk" secondAttribute="trailing" constant="5" id="MCU-4o-osw"/>
+                    <constraint firstItem="XnR-aQ-yBG" firstAttribute="centerY" secondItem="tbV-pV-Bxk" secondAttribute="centerY" id="N9c-se-VfI"/>
+                    <constraint firstItem="tbV-pV-Bxk" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="NYe-kb-aSG"/>
+                    <constraint firstAttribute="bottom" secondItem="tbV-pV-Bxk" secondAttribute="bottom" constant="5" id="PDT-Zn-KVe"/>
+                    <constraint firstAttribute="trailing" secondItem="chh-Tm-pAG" secondAttribute="trailing" constant="5" id="Yir-Yj-VYR"/>
+                    <constraint firstItem="chh-Tm-pAG" firstAttribute="height" secondItem="tbV-pV-Bxk" secondAttribute="height" id="fvB-K0-mVF"/>
+                    <constraint firstItem="XnR-aQ-yBG" firstAttribute="height" secondItem="tbV-pV-Bxk" secondAttribute="height" id="i6I-EM-g8h"/>
+                    <constraint firstItem="chh-Tm-pAG" firstAttribute="width" secondItem="tbV-pV-Bxk" secondAttribute="width" id="uNH-wj-vEx"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="imageView1" destination="tbV-pV-Bxk" id="6gi-0C-iGI"/>
+                <outlet property="imageView2" destination="XnR-aQ-yBG" id="ggd-zy-fFQ"/>
+                <outlet property="imageView3" destination="chh-Tm-pAG" id="LFb-xM-z85"/>
+            </connections>
+            <point key="canvasLocation" x="115.21739130434783" y="141.62946428571428"/>
+        </tableViewCell>
+    </objects>
+</document>

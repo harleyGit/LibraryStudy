@@ -1,0 +1,2 @@
+# HXWRunloopTasks
+将多个耗时任务添加到runloop即将进入休眠的时候一个一个的执行，避免卡顿
