@@ -10,9 +10,9 @@ import RxSwift
 import RxCocoa
 
 enum RxTestModule: String {
-    case trianbleModule = "三角形绘制模块"
-    case textureModule00 = "纹理01-图片叠加"
-    case pyramidModule00 = "角锥体"
+    case observable = "可观察序列"
+    case subject = "桥梁subject-既可做观察者和订阅者"
+    case observable_signal = "observable的signal序列"
     case drawLine = "绘制曲线"
     case filter = "滤镜"
     case cameraFilter = "相机滤镜"
@@ -21,9 +21,9 @@ enum RxTestModule: String {
 class ViewController: UIViewController {
     
     fileprivate let items: [RxTestModule] = [
-        .trianbleModule,
-        .textureModule00,
-        .pyramidModule00,
+        .observable,
+        .subject,
+        .observable_signal,
         .drawLine,
         .filter,
         .cameraFilter
@@ -37,14 +37,7 @@ class ViewController: UIViewController {
         return m
     }()
     
-    lazy fileprivate var triangleBtn: UIButton = {
-        let triangleBtn = UIButton(type: .system)
-        triangleBtn.setTitle("三角形绘制", for: .normal)
-        triangleBtn.backgroundColor = .systemBlue
-        triangleBtn.setTitleColor(.white, for: .normal)
-        //triangleBtn.addTarget(self, action: #selector(triangleTapped), for: .touchUpInside)
-        return triangleBtn
-    }()
+    
     
     lazy fileprivate var circleBtn: UIButton = {
         let circleBtn = UIButton(type: .system)
@@ -60,15 +53,6 @@ class ViewController: UIViewController {
         
         self.view.backgroundColor = UIColor.lightGray
         view.addSubview(listView)
-        // self.setupContentSubViews()
-    }
-    
-    func setupContentSubViews() {
-        self.triangleBtn.frame = CGRect(x: 100, y: 100, width: 100, height: 60)
-        self.view.addSubview(self.triangleBtn)
-        
-        self.circleBtn.frame = CGRect(x: 100, y: self.triangleBtn.frame.maxY + 20, width: 100, height: 60)
-        self.view.addSubview(self.circleBtn)
     }
 }
 
@@ -92,51 +76,17 @@ extension ViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let moduleName: RxTestModule = self.items[indexPath.row]
+        var controller = UIViewController()
         switch moduleName {
+        case.observable:
+            controller = TestObservableController()
+        case .subject:
+            controller = TestSubjectController()
+        case .observable_signal:
+            controller = TestObservableSignalController()
         default: break
         }
+        
+        self.navigationController?.pushViewController(controller, animated: true)
     }
 }
-
-
-//MARK: - WKNavigationAction
-extension ViewController {
-    
-    @objc func tappedObservable(sender: UIButton) {
-        // 1: 创建序列
-        _ = Observable<String>.create { (obserber) -> Disposable in
-            // 3:发送信号 // AnyObserver的父类ObserverType的onNext方法
-            obserber.onNext("Cooci -  框架班级")
-            return Disposables.create()  // 这个销毁不影响我们这次的解读
-            // 2: 订阅序列
-        }.subscribe(onNext: { (text) in
-            print("订阅到:\(text)")
-        })
-        
-    }
-    
-    
-    @objc func tapped(sender: UIButton)  {
-        let disposeBag = DisposeBag()
-        let subject = AsyncSubject<String>()
-        
-        subject.subscribe{
-            print("subscription: 1 Event:", $0)
-        }.disposed(by: disposeBag)
-        
-        subject.onNext("🐩")
-        subject.onNext("🐶")
-        subject.onNext("🐱")
-        subject.onNext("🥜")
-        subject.onCompleted()
-    }
-    
-}
-
-
-
-
-
-
-
-

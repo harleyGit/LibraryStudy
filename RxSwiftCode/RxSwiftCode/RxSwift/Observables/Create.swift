@@ -58,12 +58,14 @@ final private class AnonymousObservableSink<Observer: ObserverType>: Sink<Observ
     }
 
     func run(_ parent: Parent) -> Disposable {
-        //parent 就是上面传过来的AnonymousObservable对象 //_subscribeHandler就是之前create函数的闭包 //在这个方法中把self转换成AnyObserver对象，也就是把AnonymousObservableSink对象转换成AnyObserver对象
+        // parent 就是上面传过来的AnonymousObservable对象
+        // _subscribeHandler就是之前create函数的闭包
+        // 在这个方法中把self转换成AnyObserver对象，也就是把AnonymousObservableSink对象转换成AnyObserver对象
         parent.subscribeHandler(AnyObserver(self))
     }
 }
 
-// AnonymousObservable继承了 Producer 具有非常重要的方法 subscribe
+/// AnonymousObservable继承了 Producer 具有非常重要的方法 subscribe
 final private class AnonymousObservable<Element>: Producer<Element> {
     typealias SubscribeHandler = (AnyObserver<Element>) -> Disposable
 
@@ -74,7 +76,8 @@ final private class AnonymousObservable<Element>: Producer<Element> {
     }
 
     override func run<Observer: ObserverType>(_ observer: Observer, cancel: Cancelable) -> (sink: Disposable, subscription: Disposable) where Observer.Element == Element {
-        let sink = AnonymousObservableSink(observer: observer, cancel: cancel)//AnonymousObservableSink这个类将可观察者Observable和观察者Observer链接起来,实现事件的传递，起到一个桥梁的作用
+        // AnonymousObservableSink这个类将可观察者Observable和观察者Observer链接起来,实现事件的传递，起到一个桥梁的作用
+        let sink = AnonymousObservableSink(observer: observer, cancel: cancel)
         let subscription = sink.run(self)
         return (sink: sink, subscription: subscription)
     }

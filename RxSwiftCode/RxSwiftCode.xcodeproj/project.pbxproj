@@ -11,6 +11,10 @@
 		073536622CD1D8C800D2C021 /* RxCocoa.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20929D1B43400483273 /* RxCocoa.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		073536632CD1D94900D2C021 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20B29D1B43400483273 /* RxRelay.framework */; };
 		073536642CD1D94900D2C021 /* RxRelay.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20B29D1B43400483273 /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		073536672CD1DBDA00D2C021 /* TestObserverController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073536662CD1DBDA00D2C021 /* TestObserverController.swift */; };
+		073536692CD2003700D2C021 /* TestObservableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073536682CD2003700D2C021 /* TestObservableController.swift */; };
+		0735366B2CD20A2000D2C021 /* TestSubjectController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0735366A2CD20A2000D2C021 /* TestSubjectController.swift */; };
+		0735366D2CD2295A00D2C021 /* TestObservableSignalController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0735366C2CD2295A00D2C021 /* TestObservableSignalController.swift */; };
 		6E87E1B929D1B2D800483273 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E87E1B829D1B2D800483273 /* AppDelegate.swift */; };
 		6E87E1BB29D1B2D800483273 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E87E1BA29D1B2D800483273 /* SceneDelegate.swift */; };
 		6E87E1BD29D1B2D800483273 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E87E1BC29D1B2D800483273 /* ViewController.swift */; };
@@ -111,6 +115,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		073536662CD1DBDA00D2C021 /* TestObserverController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestObserverController.swift; sourceTree = "<group>"; };
+		073536682CD2003700D2C021 /* TestObservableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestObservableController.swift; sourceTree = "<group>"; };
+		0735366A2CD20A2000D2C021 /* TestSubjectController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSubjectController.swift; sourceTree = "<group>"; };
+		0735366C2CD2295A00D2C021 /* TestObservableSignalController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestObservableSignalController.swift; sourceTree = "<group>"; };
 		6E87E1B529D1B2D800483273 /* RxSwiftCode.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RxSwiftCode.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E87E1B829D1B2D800483273 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6E87E1BA29D1B2D800483273 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -136,6 +144,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		073536652CD1DA0D00D2C021 /* TestModules */ = {
+			isa = PBXGroup;
+			children = (
+				073536662CD1DBDA00D2C021 /* TestObserverController.swift */,
+				073536682CD2003700D2C021 /* TestObservableController.swift */,
+				0735366A2CD20A2000D2C021 /* TestSubjectController.swift */,
+				0735366C2CD2295A00D2C021 /* TestObservableSignalController.swift */,
+			);
+			path = TestModules;
+			sourceTree = "<group>";
+		};
 		6E87E1AC29D1B2D800483273 = {
 			isa = PBXGroup;
 			children = (
@@ -156,6 +175,7 @@
 		6E87E1B729D1B2D800483273 /* RxSwiftCode */ = {
 			isa = PBXGroup;
 			children = (
+				073536652CD1DA0D00D2C021 /* TestModules */,
 				6E87E1F929D1B43300483273 /* Rx.xcodeproj */,
 				6E87E1B829D1B2D800483273 /* AppDelegate.swift */,
 				6E87E1BA29D1B2D800483273 /* SceneDelegate.swift */,
@@ -343,6 +363,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				073536692CD2003700D2C021 /* TestObservableController.swift in Sources */,
+				073536672CD1DBDA00D2C021 /* TestObserverController.swift in Sources */,
+				0735366B2CD20A2000D2C021 /* TestSubjectController.swift in Sources */,
+				0735366D2CD2295A00D2C021 /* TestObservableSignalController.swift in Sources */,
 				6E87E1BD29D1B2D800483273 /* ViewController.swift in Sources */,
 				6E87E1B929D1B2D800483273 /* AppDelegate.swift in Sources */,
 				6E87E1BB29D1B2D800483273 /* SceneDelegate.swift in Sources */,
