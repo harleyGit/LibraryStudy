@@ -7,14 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		073536612CD1D8C800D2C021 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20929D1B43400483273 /* RxCocoa.framework */; };
+		073536622CD1D8C800D2C021 /* RxCocoa.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20929D1B43400483273 /* RxCocoa.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		073536632CD1D94900D2C021 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20B29D1B43400483273 /* RxRelay.framework */; };
+		073536642CD1D94900D2C021 /* RxRelay.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20B29D1B43400483273 /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6E87E1B929D1B2D800483273 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E87E1B829D1B2D800483273 /* AppDelegate.swift */; };
 		6E87E1BB29D1B2D800483273 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E87E1BA29D1B2D800483273 /* SceneDelegate.swift */; };
 		6E87E1BD29D1B2D800483273 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E87E1BC29D1B2D800483273 /* ViewController.swift */; };
 		6E87E1C029D1B2D800483273 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E87E1BE29D1B2D800483273 /* Main.storyboard */; };
 		6E87E1C229D1B2DA00483273 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E87E1C129D1B2DA00483273 /* Assets.xcassets */; };
 		6E87E1C529D1B2DA00483273 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E87E1C329D1B2DA00483273 /* LaunchScreen.storyboard */; };
-		6E87E25629D1B4AF00483273 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20929D1B43400483273 /* RxCocoa.framework */; };
-		6E87E25729D1B4AF00483273 /* RxCocoa.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20929D1B43400483273 /* RxCocoa.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6E87E25829D1B4AF00483273 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20729D1B43400483273 /* RxSwift.framework */; };
 		6E87E25929D1B4AF00483273 /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E87E20729D1B43400483273 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -99,8 +101,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				073536622CD1D8C800D2C021 /* RxCocoa.framework in Embed Frameworks */,
 				6E87E25929D1B4AF00483273 /* RxSwift.framework in Embed Frameworks */,
-				6E87E25729D1B4AF00483273 /* RxCocoa.framework in Embed Frameworks */,
+				073536642CD1D94900D2C021 /* RxRelay.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -124,8 +127,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				073536612CD1D8C800D2C021 /* RxCocoa.framework in Frameworks */,
 				6E87E25829D1B4AF00483273 /* RxSwift.framework in Frameworks */,
-				6E87E25629D1B4AF00483273 /* RxCocoa.framework in Frameworks */,
+				073536632CD1D94900D2C021 /* RxRelay.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,12 +493,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9V5V76MMGS;
 				INFOPLIST_FILE = RxSwiftCode/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = HarleyHuang.RxSwiftCode;
+				PRODUCT_BUNDLE_IDENTIFIER = GangHuang.test.com;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -507,12 +513,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9V5V76MMGS;
 				INFOPLIST_FILE = RxSwiftCode/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = HarleyHuang.RxSwiftCode;
+				PRODUCT_BUNDLE_IDENTIFIER = GangHuang.test.com;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
