@@ -8,6 +8,12 @@
 import UIKit
 import RxSwift
 
+// 定义一个错误类型
+enum FetchError: Error {
+    case networkError
+    case dataCorruption
+}
+
 class TestObservableController: UIViewController {
     
     // 管理订阅的销毁
@@ -15,9 +21,13 @@ class TestObservableController: UIViewController {
     
     fileprivate lazy var observableBtn00: UIButton = createBtn(title: "Observable观察者",
                                                                action: #selector(tappedObservable(_:)))
-    fileprivate lazy var observableBtn01: UIButton = createBtn(title: "按钮Observable观察者")
     fileprivate lazy var bindPictureBtn02: UIButton = createBtn(title: "图片绑定",
                                                                 action: #selector(bindPictureDataAction(_:)))
+    fileprivate lazy var signalBtn00: UIButton = createBtn(title: "Signal的范型枚举处理",
+                                                           action: #selector(signalAction00(_:)))
+    fileprivate lazy var observableBtn01: UIButton = createBtn(title: "按钮Observable观察者")
+    
+    
     
     
     override func viewDidLoad() {
@@ -35,13 +45,14 @@ extension TestObservableController {
     private func setupContentSubViews() {
         self.view.addSubview(self.observableBtn00)
         self.view.addSubview(self.bindPictureBtn02)
+        self.view.addSubview(self.signalBtn00)
         
         self.view.addSubview(self.observableBtn01)
         
         
         self.observableBtn00.frame = CGRect(x: 16, y: 100, width: 100, height: 60)
         self.bindPictureBtn02.frame = CGRect(x: self.observableBtn00.frame.maxX+6, y: 100, width: 100, height: 60)
-        
+        self.signalBtn00.frame = CGRect(x: self.bindPictureBtn02.frame.maxX+6, y: 100, width: 100, height: 60)
         self.observableBtn01.frame = CGRect(x: 16, y: self.observableBtn00.frame.maxY + 10, width: 100, height: 60)
     }
     
@@ -80,10 +91,51 @@ extension TestObservableController {
         })// 确保订阅在视图控制器释放时自动销毁
         .disposed(by: disposeBag)
     }
+    
+    
+    // 模拟一个 fetchData 函数，它返回一个 Observable<Result<Data, FetchError>>
+    // fetchData 方法返回 Observable<Result<Data, FetchError>>，表示一个异步的数据获取操作，可能成功返回 Data，也可能失败返回 FetchError
+    func testFetchData() -> Observable<Result<Data, FetchError>> {
+        return Observable.create { observer in
+            // 模拟异步操作
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) {
+                let success = Bool.random()  // 随机成功或失败
+                
+                if success {
+                    let data = Data("Fetched Data".utf8)  // 假设这是成功的数据
+                    observer.onNext(Result.success(data)) // 使用 Result.success(Data)
+                } else {
+                    observer.onNext(Result.failure(FetchError.networkError)) // 使用 Result.failure(Error)
+                }
+                observer.onCompleted()
+            }
+            
+            return Disposables.create()
+        }
+    }
 }
 
 //MARK: - Action
 extension TestObservableController {
+    
+    @objc fileprivate func signalAction00(_ sender: UIButton) {
+        self.testFetchData()
+            .subscribe(onNext: { result in
+                switch result {
+                case .success(let data):
+                    if let string = String(data: data, encoding: .utf8) {
+                        print("成功接收到数据：\(string)")
+                    }
+                case .failure(let error):
+                    print("发生错误：\(error)")
+                }
+            }, onError: { error in
+                print("Observable 错误：\(error)")
+            }, onCompleted: {
+                print("数据获取操作完成")
+            })
+            .disposed(by: disposeBag)
+    }
     
     @objc fileprivate func tappedObservable(_ sender: UIButton) {
         // 1: 创建序列
