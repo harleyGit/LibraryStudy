@@ -67,6 +67,13 @@ final private class AnonymousObservableSink<Observer: ObserverType>: Sink<Observ
 
 /// AnonymousObservable继承了 Producer 具有非常重要的方法 subscribe
 final private class AnonymousObservable<Element>: Producer<Element> {
+    /**
+     SubscribeHandler 是一个 闭包类型：
+        参数：AnyObserver<Element>（一个泛型 Element 的观察者）。
+        返回值：Disposable（一个可释放的订阅）。
+     
+     (AnyObserver<Element>： 表示一个可以接收 Element 类型的观察者，它可以用来手动发送 .next、.error、.completed 事件。
+     */
     typealias SubscribeHandler = (AnyObserver<Element>) -> Disposable
 
     let subscribeHandler: SubscribeHandler

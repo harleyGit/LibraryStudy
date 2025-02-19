@@ -201,6 +201,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
             }
         }
         //https://www.jianshu.com/p/8184e762872c
+        // 使用dataTaskWithRequest需要使用 NSURLSessionDataDelegate 来手动处理数据的接收过程，涉及代理方法：didReceiveData：、didCompleteWithError：
         self.dataTask = [session dataTaskWithRequest:self.request];
         self.executing = YES;
     }

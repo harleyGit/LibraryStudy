@@ -11,7 +11,7 @@
 /// Forwards operations to an arbitrary underlying observer with the same `Element` type, hiding the specifics of the underlying observer type.
 public struct AnyObserver<Element> : ObserverType {
     /// Anonymous event handler type.
-    public typealias EventHandler = (Event<Element>) -> Void
+    public typealias EventHandler = (Event<Element>) -> Void //定义了 EventHandler，它是一个 闭包类型，参数是 Event<Element>，返回值是 Void（即没有返回值）
 
     private let observer: EventHandler
 
@@ -35,7 +35,7 @@ public struct AnyObserver<Element> : ObserverType {
     ///
     /// - parameter event: Event instance.
     public func on(_ event: Event<Element>) {
-        self.observer(event)
+        self.observer(event)    // 这个self.observer是 self.observer = observer.on，但是observer.on(注意：这个on是一个方法，不是一个属性，)中的observer是Create.swift文件中的AnonymousObservableSink类实例对象
     }
 
     /// Erases type of observer and returns canonical observer.

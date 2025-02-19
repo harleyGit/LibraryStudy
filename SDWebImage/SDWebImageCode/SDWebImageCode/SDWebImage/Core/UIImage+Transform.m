@@ -205,6 +205,29 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     }
 }
 
+/**
+ 案例代码：
+ // 定义图像的大小
+ CGSize size = CGSizeMake(200, 200);
+
+ // 创建图像格式
+ // UIGraphicsImageRenderer 是一个用于绘制图像的类。它提供了一种简单的方式来创建位图图像，并且比传统的 UIGraphicsBeginImageContextWithOptions 方法更高效和易用。
+ UIGraphicsImageRendererFormat *uiformat = [UIGraphicsImageRendererFormat defaultFormat];
+ uiformat.scale = [UIScreen mainScreen].scale; // 使用屏幕的缩放比例
+ uiformat.opaque = NO; // 图像不透明
+
+ // 创建图像渲染器
+ self.uirenderer = [[UIGraphicsImageRenderer alloc] initWithSize:size format:uiformat];
+
+ // 使用渲染器绘制图像
+ UIImage *image = [self.uirenderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
+     // 在这里进行绘制操作
+     [[UIColor redColor] setFill];
+     [rendererContext fillRect:CGRectMake(0, 0, size.width, size.height)];
+ }];
+
+ // 现在 image 是一个 200x200 的红色图像
+ */
 - (nullable UIImage *)sd_resizedImageWithSize:(CGSize)size scaleMode:(SDImageScaleMode)scaleMode {
     if (size.width <= 0 || size.height <= 0) return nil;
     SDGraphicsImageRendererFormat *format = [[SDGraphicsImageRendererFormat alloc] init];

@@ -24,7 +24,7 @@ extension ObserverType {
     ///
     /// - parameter element: Next element to send to observer(s)
     public func onNext(_ element: Element) {
-        self.on(.next(element))
+        self.on(.next(element)) //这个on方法是来自AnyObserver.swift文件中AnyObserver类的on方法
     }
     
     /// Convenience method equivalent to `on(.completed)`

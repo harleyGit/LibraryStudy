@@ -139,14 +139,20 @@ extension TestObservableController {
     
     @objc fileprivate func tappedObservable(_ sender: UIButton) {
         // 1: 创建序列
-        _ = Observable<String>.create { (obserber) -> Disposable in
+        let currentObserver = Observable<String>.create { (obserber) -> Disposable in   // ‼️断点1.1
             // 3:发送信号 // AnyObserver的父类ObserverType的onNext方法
-            obserber.onNext("Cooci -  框架班级")
-            return Disposables.create()  // 这个销毁不影响我们这次的解读
-            // 2: 订阅序列
-        }.subscribe(onNext: { (text) in//subscribe方法来到ObservableType+Extensions.swift里的subscribe方法中
-            print("订阅到:\(text)")
-        })
+            obserber.onNext("Cooci -  框架班级")    // ‼️断点1.2
+            obserber.onCompleted()  // ‼️断点1.3
+            
+            return Disposables.create()  // 这个销毁不影响我们这次的解读  // ‼️断点1.4
+        }
+        
+        // 2: 订阅序列
+        currentObserver.subscribe(onNext: { (text) in//subscribe方法来到ObservableType+Extensions.swift里的subscribe方法中  // ‼️断点2.1
+            print("订阅到:\(text)")    // ‼️断点2.2
+        }, onError: nil, onCompleted: { // ‼️断点2.3
+            print("Completed 完成！！") // ‼️断点2.4
+        }, onDisposed: nil).disposed(by: disposeBag) // ‼️断点2.5
     }
     
     @objc fileprivate func bindPictureDataAction(_ sender: UIButton) {
