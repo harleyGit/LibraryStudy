@@ -4,7 +4,7 @@
 - [**AFNetworking**](#AFNetworking)
 - [**Project**](#Project)
 - [**IQKeyboardManager(V7.0.3)**](#IQKeyboardManager(V7.0.3))
-- [WebRTC-音视频流的推拉流](#WebRTC-音视频流的推拉流)
+- [WebRTC-音视频流的推拉](#WebRTC-音视频流的推拉)
 
 <br/>
 
@@ -84,7 +84,8 @@ export https_proxy=http://代理ip:端口
 
 ***
 <br/>
-> <h1 id='WebRTC-音视频流的推拉流'>WebRTC-音视频流的推拉</h1>
+
+> <h1 id='WebRTC-音视频流的推拉'>WebRTC-音视频流的推拉</h1>
 
 **‌ WebRTC-iOS_Demo** 一个简单Demo用于理解WebRTC的基本原理。
 
